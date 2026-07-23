@@ -9,8 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
   
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-5064995654489535" crossorigin="anonymous"></script>
-
   <style>
     :root {
       --bg-deep: #06060c;
@@ -45,7 +43,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      padding: 12px 10px 80px 10px; 
+      padding: 12px 10px 20px 10px; 
       overflow-x: hidden;
       position: relative;
       -webkit-tap-highlight-color: transparent;
@@ -476,7 +474,7 @@
     
     /* ========== DESIGN DO MAPA TELA CHEIA ========== */
     #tela-mapa {
-      position: absolute !important;
+      position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       width: 100% !important;
@@ -506,7 +504,7 @@
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
-      max-width: 50% !important;
+      max-width: 70% !important;
     }
     
     .caixa-botoes-topo-mapa {
@@ -550,101 +548,143 @@
       height: 100% !important;
     }
     
-    .caixa-controles-laterais {
+    /* ========== BOTÕES INFERIORES ENFILEIRADOS ========== */
+    #container-botoes-inferior {
       position: absolute !important;
-      top: 15px !important;
-      right: 10px !important;
-      z-index: 105 !important;
+      bottom: 30px !important;
+      left: 15px !important;
+      right: 15px !important;
       display: flex !important;
-      flex-direction: column !important;
-      gap: 8px !important;
+      gap: 6px !important;
+      align-items: center !important;
+      z-index: 105 !important;
+      justify-content: flex-start !important;
     }
-
+    
+    .btn-satelite,
+    .btn-streetview,
+    .btn-voltar-mapa-inferior {
+      flex: 1 !important;
+      min-width: 60px !important;
+      max-width: 85px !important;
+      padding: 10px 6px !important;
+      font-size: 0.68rem !important;
+      border-radius: 12px !important;
+      font-weight: bold !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+      justify-content: center !important;
+      white-space: nowrap !important;
+    }
+    
     .btn-satelite {
       background: rgba(20, 20, 30, 0.9) !important;
       color: #fff !important;
       border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      padding: 10px 12px !important;
-      border-radius: 12px !important;
-      font-size: 0.75rem !important;
-      font-weight: bold !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-      width: 130px !important;
-      justify-content: center !important;
     }
     
     .btn-streetview {
-      background: rgba(15, 15, 25, 0.98) !important; 
-      color: #ffffff !important; 
-      border: 1px solid rgba(255, 255, 255, 0.18) !important; 
-      padding: 10px 12px !important;
-      border-radius: 12px !important;
-      font-size: 0.75rem !important;
-      font-weight: bold !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6) !important;
-      width: 130px !important;
-      justify-content: center !important;
+      background: rgba(15, 15, 25, 0.98) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    }
+    
+    .btn-voltar-mapa-inferior {
+      background: #c91a30 !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
     }
     
     #btn-recentralizar {
-      position: absolute !important;
-      bottom: 30px !important;
-      left: 20px !important;
-      z-index: 105 !important;
       background: #e0243f !important;
       color: #fff !important;
       border: 1px solid rgba(255, 255, 255, 0.3) !important;
-      padding: 12px !important;
+      padding: 0 !important;
       border-radius: 50% !important;
-      width: 52px !important;
-      height: 52px !important;
-      font-size: 20px !important;
+      width: 44px !important;
+      height: 44px !important;
+      min-width: 44px !important;
+      font-size: 18px !important;
       font-weight: bold !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+      flex-shrink: 0 !important;
     }
     
-    /* ========== MINI VELOCÍMETRO & ALTITUDE ========== */
+    /* ========== MINI VELOCÍMETRO & ALTITUDE (CANTOS SUPERIORES) ========== */
     .mini-velocimetro-mapa {
       position: absolute !important;
-      bottom: 95px !important;
-      left: 20px !important;
+      top: 15px !important;
+      left: 15px !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 6px 12px !important;
-      border-radius: 16px !important;
+      padding: 8px 16px !important;
+      border-radius: 18px !important;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       pointer-events: none;
-      min-width: 75px !important;
+      min-width: 90px !important;
     }
     
     .mini-velocimetro-mapa .num {
       font-family: var(--font-digital) !important;
-      font-size: 1.5rem !important;
+      font-size: 2rem !important;
       font-weight: 700 !important;
       color: #00ff88 !important;
       line-height: 1 !important;
     }
     
     .mini-velocimetro-mapa .unidade {
-      font-size: 0.5rem !important;
+      font-size: 0.6rem !important;
+      color: #888 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      margin-top: 2px !important;
+    }
+    
+    .mini-altitude-mapa {
+      position: absolute !important;
+      top: 15px !important;
+      right: 15px !important;
+      left: auto !important;
+      z-index: 105 !important;
+      background: rgba(20, 20, 30, 0.85) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 8px 16px !important;
+      border-radius: 18px !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      pointer-events: none;
+      min-width: 90px !important;
+    }
+    
+    .mini-altitude-mapa .num {
+      font-family: var(--font-digital) !important;
+      font-size: 1.6rem !important;
+      font-weight: 700 !important;
+      color: var(--accent-amber) !important;
+      line-height: 1 !important;
+    }
+    
+    .mini-altitude-mapa .unidade {
+      font-size: 0.6rem !important;
       color: #888 !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
@@ -688,43 +728,6 @@
       color: #666666;
     }
     
-    .mini-altitude-mapa {
-      position: absolute !important;
-      bottom: 165px !important;
-      left: 20px !important;
-      z-index: 105 !important;
-      background: rgba(20, 20, 30, 0.85) !important;
-      backdrop-filter: blur(10px) !important;
-      -webkit-backdrop-filter: blur(10px) !important;
-      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 6px 12px !important;
-      border-radius: 16px !important;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      pointer-events: none;
-      min-width: 75px !important;
-    }
-    
-    .mini-altitude-mapa .num {
-      font-family: var(--font-digital) !important;
-      font-size: 1.2rem !important;
-      font-weight: 700 !important;
-      color: var(--accent-amber) !important;
-      line-height: 1 !important;
-    }
-    
-    .mini-altitude-mapa .unidade {
-      font-size: 0.5rem !important;
-      color: #888 !important;
-      font-weight: 700 !important;
-      text-transform: uppercase !important;
-      letter-spacing: 0.5px !important;
-      margin-top: 2px !important;
-    }
-
     .container-busca-profissional {
       position: absolute !important;
       top: 15px !important;
@@ -756,21 +759,20 @@
       font-family: 'Inter', sans-serif !important;
     }
 
-    /* ========== STREET VIEW BLINDADO ========== */
+    /* ========== STREET VIEW CORRIGIDO ========== */
     #tela-streetview {
-      position: absolute !important;
+      position: fixed !important;
       top: 0 !important;
       left: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
+      width: 100vw !important;
+      height: 100vh !important;
       background: #000 !important;
       z-index: 10000 !important;
       display: none;
-      flex-direction: column !important;
     }
 
     #painel-superior-street {
-      position: fixed !important;
+      position: absolute !important;
       top: 0 !important;
       left: 0 !important;
       width: 100% !important;
@@ -781,14 +783,15 @@
       display: flex !important;
       justify-content: space-between !important;
       align-items: center !important;
-      z-index: 10005 !important; 
+      z-index: 10005 !important;
     }
 
     #container-panorama {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      margin-top: 60px !important;
-      flex: 1 !important;
     }
 
     /* ========== ADMOB ========== */
@@ -876,49 +879,104 @@
       <span id="texto-endereco">📍 Aguardando GPS fixar...</span>
       <div class="caixa-botoes-topo-mapa">
         <button class="btn-salvar" onclick="salvarRotaAtual()"> 📲 Enviar p/ Zap</button>
-        <button class="btn-voltar-mapa" onclick="fecharMapa()">Voltar</button>
       </div>
     </div>
     <div id="meu-mapa-container">
-      <div class="caixa-controles-laterais">
-        <button class="btn-satelite" onclick="alternarCamadaMapa()">🚀 <span id="txt-btn-satelite">Modo Satélite</span></button>
+      <!-- Quatro botões enfileirados lado a lado -->
+      <div id="container-botoes-inferior">
+        <button id="btn-recentralizar" onclick="recentralizarMapaManual()">🎯</button>
+        <button class="btn-satelite" onclick="alternarCamadaMapa()">🚀 <span id="txt-btn-satelite">Satélite</span></button>
         <button class="btn-streetview" onclick="window.toggleStreetView()">🚶 <span>Ver Rua</span></button>
+        <button class="btn-voltar-mapa-inferior" onclick="fecharMapa()">Voltar</button>
       </div>
       
-      <button id="btn-recentralizar" onclick="recentralizarMapaManual()">🎯</button>
-      
+      <!-- Mini displays nos cantos superiores -->
       <div class="mini-velocimetro-mapa"><span class="num" id="mini-speed-val">0</span><span class="unidade">km/h</span></div>
       <div class="mini-altitude-mapa"><span class="num" id="mini-altitude-val">0</span><span class="unidade">ALT (m)</span></div>
       
       <div id="mapa"></div>
     </div>
-
-    <div id="tela-streetview">
-      <div id="painel-superior-street">
-        <span style="color: #00ff88; font-weight: bold; font-size: 0.85rem;">👀 Olhando ao Redor (360°)</span>
-        <button class="btn-voltar-mapa" onclick="window.fecharStreetView()">Voltar p/ Rota</button>
-      </div>
-      <div id="container-panorama"></div>
-    </div>
   </div>
 
-  <div class="container-admob-velozmapa">
-    <ins class="adsbygoogle"
-         style="display:inline-block;width:320px;height:50px"
-         data-ad-client="ca-app-pub-5064995654489535"
-         data-ad-slot="4227987790"></ins>
-    <script>
-         (window.adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
+  <div id="tela-streetview">
+    <div id="painel-superior-street">
+      <span style="color: #00ff88; font-weight: bold; font-size: 0.85rem;">👀 Olhando ao Redor (360°)</span>
+      <button class="btn-voltar-mapa" onclick="window.fecharStreetView()">Voltar p/ Rota</button>
+    </div>
+    <div id="container-panorama"></div>
   </div>
 
   <script>
     (function() {
+
+        // ========== PERSISTÊNCIA CONTRA TROCA DE REDE ==========
+        function salvarEstado() {
+            const inputBusca = document.getElementById('input-busca');
+            const mapaAberto = document.getElementById('tela-mapa').style.display === 'flex';
+            localStorage.setItem('severino_mapa_aberto', mapaAberto);
+            if (inputBusca) {
+                localStorage.setItem('severino_busca_texto', inputBusca.value);
+            }
+            if (window.destinoAtualSalvo && typeof window.destinoAtualSalvo.lat === 'function') {
+                localStorage.setItem('severino_destino_lat', window.destinoAtualSalvo.lat());
+                localStorage.setItem('severino_destino_lng', window.destinoAtualSalvo.lng());
+            } else {
+                localStorage.removeItem('severino_destino_lat');
+                localStorage.removeItem('severino_destino_lng');
+            }
+            if (document.getElementById('texto-endereco')) {
+                localStorage.setItem('severino_texto_endereco', document.getElementById('texto-endereco').innerText);
+            }
+        }
+
+        function restaurarEstado() {
+            const mapaEstavaAberto = localStorage.getItem('severino_mapa_aberto') === 'true';
+            const buscaTexto = localStorage.getItem('severino_busca_texto') || '';
+            const destinoLat = parseFloat(localStorage.getItem('severino_destino_lat'));
+            const destinoLng = parseFloat(localStorage.getItem('severino_destino_lng'));
+            const textoEnderecoSalvo = localStorage.getItem('severino_texto_endereco') || '';
+
+            if (mapaEstavaAberto) {
+                window._deveAbrirMapa = true;
+            }
+            if (buscaTexto) {
+                document.getElementById('input-busca').value = buscaTexto;
+            }
+            if (!isNaN(destinoLat) && !isNaN(destinoLng) && window.google && window.google.maps) {
+                window.destinoAtualSalvo = new google.maps.LatLng(destinoLat, destinoLng);
+                window.destinoJaAvisado = false;
+                window.timestampUltimoRecalculo = 0;
+                document.getElementById('texto-endereco').innerText = textoEnderecoSalvo || "🏁 Destino restaurado";
+                if (window.lastCoord) {
+                    window.calcularEDesenharRota(window.destinoAtualSalvo);
+                }
+            }
+        }
+
+        setInterval(salvarEstado, 2000);
+        window.addEventListener('beforeunload', salvarEstado);
+        const originalFecharMapa = window.fecharMapa;
+        window.fecharMapa = function() {
+            originalFecharMapa();
+            salvarEstado();
+        };
+        const originalAbrirMapa = window.abrirMapa;
+        window.abrirMapa = function() {
+            originalAbrirMapa();
+            salvarEstado();
+        };
+
+        // ========== VARIÁVEIS DE ANIMAÇÃO SUAVE (MELHORADAS) ==========
+        let targetLat = null, targetLon = null, targetHeading = 0;
+        let currentAnimLat = null, currentAnimLon = null, currentAnimHeading = 0;
+        const LERP_FACTOR_BASE = 4.5;
+        let lastFrameTime = performance.now();
+
         const GOOGLE_API_KEY = "AIzaSyD0PRpZXpBUEea4IA7o8HLXoxYUgIhhsw4";
         
         let totalDistance = parseFloat(localStorage.getItem('severino_distancia')) || 0;
         let lastCoord = null;
-        window.velocidadeAlvoGPS = 0;
+        window.velocidadeAlvoGPS = 0;             
         let totalSomaVelocidades = 0;
         window.totalLeiturasGpsContador = 0;
         window.isLightMode = false;
@@ -930,15 +988,15 @@
         let marcadorUsuario = null;
         let circuloRadar = null;
         let mapaBloqueadoAoCarro = true;
-        let destinoJaAvisado = false;
+        window.destinoJaAvisado = false;
 
         let panoramaObjeto = null;
         let directionsService = null;
         let directionsRenderer = null;
-        let destinoAtualSalvo = null; 
-        let ultimaLocalizacaoRecalculo = null;
-        let timestampUltimoRecalculo = 0; 
-        
+        window.destinoAtualSalvo = null; 
+        window.ultimaLocalizacaoRecalculo = null;
+        window.timestampUltimoRecalculo = 0; 
+
         const distVal = document.getElementById('dist-val');
         const avgVal = document.getElementById('avg-val');
         const dirVal = document.getElementById('dir-val');
@@ -1002,7 +1060,7 @@
         function carregarGoogleMapsScript() {
             if (window.google && window.google.maps) { inicializarMapeamentoOriginal(); return; }
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&v=weekly&callback=inicializarMapeamentoOriginal`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places,geometry&v=weekly&callback=inicializarMapeamentoOriginal`;
             script.async = true; script.defer = true;
             document.head.appendChild(script);
         }
@@ -1011,10 +1069,12 @@
             document.getElementById('tela-mapa').style.display = 'flex';
             carregarGoogleMapsScript();
             setTimeout(recentralizarMapaManual, 400);
+            salvarEstado();
         };
 
         window.fecharMapa = function() { 
-            document.getElementById('tela-mapa').style.display = 'none'; 
+            document.getElementById('tela-mapa').style.display = 'none';
+            salvarEstado();
         };
 
         window.switchPanel = function() {
@@ -1030,6 +1090,122 @@
             }
         };
 
+        // ===================== CORTE PRECISO (mantido) =====================
+        function recortarRotaNaBolinha(lat, lon) {
+            if (!window.linhaRotaInquebravel || !window.google || !window.google.maps) return;
+            const caminho = window.linhaRotaInquebravel.getPath();
+            if (caminho.getLength() < 2) return;
+
+            const posicaoAtual = new google.maps.LatLng(lat, lon);
+            const pontos = caminho.getArray();
+            
+            let minDist = Infinity;
+            let melhorLatLng = pontos[0];
+            let indiceSegmento = 0;
+
+            const toXY = (latlng) => {
+                const ref = pontos[0];
+                const latM = (latlng.lat() - ref.lat()) * 111320;
+                const lonM = (latlng.lng() - ref.lng()) * 111320 * Math.cos(ref.lat() * Math.PI / 180);
+                return { x: lonM, y: latM };
+            };
+
+            const posXY = toXY(posicaoAtual);
+
+            for (let i = 0; i < pontos.length - 1; i++) {
+                const p1 = pontos[i];
+                const p2 = pontos[i + 1];
+                const a = toXY(p1);
+                const b = toXY(p2);
+                const segX = b.x - a.x;
+                const segY = b.y - a.y;
+                const len2 = segX * segX + segY * segY;
+
+                let t = 0;
+                if (len2 > 0) {
+                    t = ((posXY.x - a.x) * segX + (posXY.y - a.y) * segY) / len2;
+                    t = Math.max(0, Math.min(1, t));
+                }
+
+                const projX = a.x + t * segX;
+                const projY = a.y + t * segY;
+                const dist = Math.hypot(posXY.x - projX, posXY.y - projY);
+
+                if (dist < minDist) {
+                    minDist = dist;
+                    indiceSegmento = i;
+                    const ref = pontos[0];
+                    const newLat = ref.lat() + projY / 111320;
+                    const newLng = ref.lng() + projX / (111320 * Math.cos(ref.lat() * Math.PI / 180));
+                    melhorLatLng = new google.maps.LatLng(newLat, newLng);
+                }
+            }
+
+            const novoCaminho = [melhorLatLng];
+            for (let j = indiceSegmento + 1; j < pontos.length; j++) {
+                novoCaminho.push(pontos[j]);
+            }
+
+            window.linhaRotaInquebravel.setPath(novoCaminho);
+            if (window.linhaRotaInquebravelContorno && window.linhaRotaInquebravelContorno.getPath().getLength() > 0) {
+                window.linhaRotaInquebravelContorno.setPath(novoCaminho);
+            }
+        }
+
+        // ===================== ANIMAÇÃO SUAVE COM DELTA TIME =====================
+        function iniciarAnimacaoSuave() {
+            function animar(now) {
+                if (!mapaObjeto || !marcadorUsuario) {
+                    requestAnimationFrame(animar);
+                    return;
+                }
+
+                const dt = Math.min((now - lastFrameTime) / 1000, 0.1);
+                lastFrameTime = now;
+                
+                const fator = 1 - Math.exp(-LERP_FACTOR_BASE * dt);
+
+                if (targetLat !== null && targetLon !== null) {
+                    if (currentAnimLat === null || currentAnimLon === null) {
+                        currentAnimLat = targetLat;
+                        currentAnimLon = targetLon;
+                        currentAnimHeading = targetHeading;
+                    } else {
+                        currentAnimLat += (targetLat - currentAnimLat) * fator;
+                        currentAnimLon += (targetLon - currentAnimLon) * fator;
+
+                        let diff = targetHeading - currentAnimHeading;
+                        while (diff < -180) diff += 360;
+                        while (diff > 180) diff -= 360;
+                        currentAnimHeading += diff * fator;
+                        if (currentAnimHeading > 360) currentAnimHeading -= 360;
+                        if (currentAnimHeading < 0) currentAnimHeading += 360;
+                    }
+
+                    const posSuave = new google.maps.LatLng(currentAnimLat, currentAnimLon);
+                    marcadorUsuario.setPosition(posSuave);
+                    
+                    const icone = marcadorUsuario.getIcon();
+                    if (icone) {
+                        icone.rotation = currentAnimHeading;
+                        marcadorUsuario.setIcon(icone);
+                    }
+
+                    if (mapaBloqueadoAoCarro) {
+                        mapaObjeto.setCenter(posSuave);
+                        let diffHeading = Math.abs(currentAnimHeading - (mapaObjeto.getHeading() || 0));
+                        if (diffHeading > 180) diffHeading = 360 - diffHeading;
+                        if (diffHeading > 2) {
+                            mapaObjeto.setHeading(currentAnimHeading);
+                        }
+                    }
+                }
+
+                requestAnimationFrame(animar);
+            }
+            requestAnimationFrame(animar);
+        }
+
        window.inicializarMapeamentoOriginal = function() {
             if (mapaObjeto) return;
             const temGpsValido = (lastCoord && Math.abs(lastCoord.lat) > 0.001);
@@ -1038,16 +1214,17 @@
             mapaObjeto = new google.maps.Map(document.getElementById('mapa'), {
                 center: centroInicial,
                 zoom: temGpsValido ? 18 : 14,
-                heading: rumoAtualVeiculo,
+                heading: ultimoRumoFiltrado || 0,
                 tilt: 45, 
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 renderingType: google.maps.RenderingType.VECTOR, 
                 disableDefaultUI: true,
                 isFractionalZoomEnabled: false,
-                gestureHandling: "greedy",
+                gestureHandling: "cooperative",
                 rotateControl: true, 
                 tiltControl: false,
-                mapId: "874c539244460c4f55b04093"
+                mapId: "874c539244460c4f55b04093",
+                restriction: null
             }); 
             
             directionsService = new google.maps.DirectionsService();
@@ -1059,12 +1236,20 @@
                 preserveViewport: true
             });
             
+            window.linhaRotaInquebravelContorno = new google.maps.Polyline({
+                map: mapaObjeto,
+                strokeColor: "#00FF7F",
+                strokeOpacity: 0.8,
+                strokeWeight: 18,
+                zIndex: 1
+            });
+
             window.linhaRotaInquebravel = new google.maps.Polyline({
                 map: mapaObjeto,
-                strokeColor: "#FFD700",
-                strokeOpacity: 0.95,
-                strokeWeight: 14,
-                zIndex: 999999
+                strokeColor: "#00008B",
+                strokeOpacity: 1.0,
+                strokeWeight: 10,
+                zIndex: 2
             });
 
             const inputBusca = document.getElementById('input-busca');
@@ -1075,20 +1260,21 @@
                 const place = autocomplete.getPlace();
                 if (!place.geometry || !place.geometry.location) return;
                 
-                destinoAtualSalvo = place.geometry.location;
-                destinoJaAvisado = false;
-                timestampUltimoRecalculo = 0; 
+                window.destinoAtualSalvo = place.geometry.location;
+                window.destinoJaAvisado = false;
+                window.timestampUltimoRecalculo = 0; 
                 
                 if (lastCoord) {
                     mapaBloqueadoAoCarro = true;
                     document.getElementById('btn-recentralizar').style.background = '#e0243f';
-                    calcularEDesenharRota(destinoAtualSalvo);
+                    window.calcularEDesenharRota(window.destinoAtualSalvo);
                     falarDirecaoGPS("Rota iniciada para " + place.name);
                 } else {
-                    mapaObjeto.setCenter(destinoAtualSalvo);
+                    mapaObjeto.setCenter(window.destinoAtualSalvo);
                     mapaObjeto.setZoom(18);
                 }
                 document.getElementById('texto-endereco').innerText = "🏁 " + place.name;
+                salvarEstado();
             });
 
             marcadorUsuario = new google.maps.Marker({
@@ -1096,13 +1282,12 @@
                 map: mapaObjeto,
                 optimized: false,
                 icon: {
-                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                    scale: 6,
-                    fillColor: "#00FF7F", 
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: "#0000FF",
                     fillOpacity: 1.0,
-                    strokeColor: "#FFFFFF", 
-                    strokeWeight: 2,
-                    anchor: new google.maps.Point(0, 2.5)
+                    strokeColor: "#FFD700",
+                    strokeWeight: 3
                 }
             });
 
@@ -1144,28 +1329,42 @@
 
             mapaObjeto.addListener('dragstart', liberarCameraManual);
             mapaObjeto.addListener('zoom_changed', liberarCameraManual);
-            mapaObjeto.addListener('heading_changed', liberarCameraManual); 
+            mapaObjeto.addListener('heading_changed', liberarCameraManual);
+
+            iniciarAnimacaoSuave();
+
+            restaurarEstado();
+            if (window._deveAbrirMapa) {
+                document.getElementById('tela-mapa').style.display = 'flex';
+                window._deveAbrirMapa = false;
+                if (window.destinoAtualSalvo && lastCoord) {
+                    window.calcularEDesenharRota(window.destinoAtualSalvo);
+                }
+            }
         };
 
-        function calcularEDesenharRota(destinoLatLng) {
+        window.calcularEDesenharRota = function(destinoLatLng) {
             if (!directionsService || !lastCoord || !destinoLatLng) return;
-            
-            const agora = Date.now();
-            if (agora - timestampUltimoRecalculo < 12000) return; 
-            timestampUltimoRecalculo = agora;
 
-            const orig = new google.maps.LatLng(lastCoord.lat, lastCoord.lon);
+            const agora = Date.now();
+            if (agora - window.timestampUltimoRecalculo < 12000) return; 
+            window.timestampUltimoRecalculo = agora;
+
+            const origem = new google.maps.LatLng(lastCoord.lat, lastCoord.lon);
             
             directionsService.route({
-                origin: { lat: orig.lat(), lng: orig.lng() },
+                origin: { lat: origem.lat(), lng: origem.lng() },
                 destination: destinoLatLng,
                 travelMode: google.maps.TravelMode.DRIVING,
                 provideRouteAlternatives: false
             }, (response, status) => {
                 if (status === "OK") {
-                    directionsRenderer.setDirections(response);
-                    ultimaLocalizacaoRecalculo = { lat: orig.lat(), lng: orig.lng() };
+                    if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath([]);
+                    if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath([]);
                     
+                    directionsRenderer.setDirections(response);
+                    window.ultimaLocalizacaoRecalculo = { lat: origem.lat(), lng: origem.lng() };
+                            
                     const pontosMilimetricos = [];
                     const percursoLeg = response.routes[0].legs[0];
                     for (let i = 0; i < percursoLeg.steps.length; i++) {
@@ -1175,24 +1374,24 @@
                         }
                     }
 
-                    if (window.linhaRotaInquebravel) {
-                        window.linhaRotaInquebravel.setPath(pontosMilimetricos);
-                    }
+                    if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath(pontosMilimetricos);
+                    if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath(pontosMilimetricos);
 
                     if (mapaBloqueadoAoCarro && mapaObjeto) {
-                        mapaObjeto.setCenter(orig);
+                        mapaObjeto.setCenter(origem);
                         mapaObjeto.setZoom(18);
                         mapaObjeto.setTilt(45);
                         mapaObjeto.setHeading(ultimoRumoFiltrado);
                     }
+                    salvarEstado();
                 }
             });
-        }
+        };
 
         window.alternarCamadaMapa = function() {
             if (!mapaObjeto) return;
             mapaEmModoSatelite = !mapaEmModoSatelite;
-            document.getElementById('txt-btn-satelite').innerText = mapaEmModoSatelite ? "Modo Ruas" : "Modo Satélite";
+            document.getElementById('txt-btn-satelite').innerText = mapaEmModoSatelite ? "Ruas" : "Satélite";
             mapaObjeto.setMapTypeId(mapaEmModoSatelite ? google.maps.MapTypeId.HYBRID : google.maps.MapTypeId.ROADMAP);
             mapaObjeto.setTilt(45);
         };
@@ -1201,20 +1400,51 @@
             if (!lastCoord || !mapaObjeto) return;
             mapaBloqueadoAoCarro = true;
             document.getElementById('btn-recentralizar').style.background = '#e0243f';
+            if (targetLat !== null) {
+                currentAnimLat = targetLat;
+                currentAnimLon = targetLon;
+                currentAnimHeading = targetHeading;
+            }
             mapaObjeto.setCenter({lat: lastCoord.lat, lng: lastCoord.lon});
             mapaObjeto.setZoom(18);
             mapaObjeto.setTilt(45);
             mapaObjeto.setHeading(ultimoRumoFiltrado);
         };
 
-        /* ========== ATUALIZAÇÃO ULTRA PRECISA DA SETA E GRUDADA NA LINHA ========== */
+        // ========== GPS NATIVO DE ALTA PRECISÃO ==========
+        function iniciarGPSNativo() {
+            if (!navigator.geolocation) return;
+            
+            navigator.geolocation.watchPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const speed = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
+                    const altitude = pos.coords.altitude;
+                    const heading = pos.coords.heading;
+                    
+                    window.atualizarVelocidade(speed, lat, lon, heading, altitude);
+                },
+                (err) => {
+                    console.warn("Erro GPS nativo:", err.message);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 1000
+                }
+            );
+        }
+        
+        if (document.readyState === 'complete') {
+            iniciarGPSNativo();
+        } else {
+            window.addEventListener('load', iniciarGPSNativo);
+        }
+
         window.atualizarVelocidade = function(velocidadeKmh, lat, lon, bearing, altitude) {
-            if (!lat || !lon) return;
-            
-            let latNum = parseFloat(lat);
-            let lonNum = parseFloat(lon);
-            
             if (gpsWarning && gpsWarning.style.display !== 'none') gpsWarning.style.display = 'none';
+
             window.velocidadeAlvoGPS = velocidadeKmh > 0.5 ? velocidadeKmh : 0;
             
             const numVel = Math.round(window.velocidadeAlvoGPS);
@@ -1239,40 +1469,52 @@
             if (tapeTrackDigital) tapeTrackDigital.style.transform = `translateX(${deslocamentoFita}px)`;
             if (tapeTrackAnalog) tapeTrackAnalog.style.transform = `translateX(${deslocamentoFita}px)`;
 
-            // SNAP TO ROUTE: TRAVA O CARRO EXATAMENTE EM CIMA DO TRAÇADO AMARELO
-            if (window.linhaRotaInquebravel && window.linhaRotaInquebravel.getPath()) {
-                const arr = window.linhaRotaInquebravel.getPath().getArray();
-                if (arr.length > 0) {
-                    let menorD = Infinity, idx = -1;
-                    for (let i = 0; i < Math.min(arr.length, 10); i++) {
-                        let d = haversine(latNum, lonNum, arr[i].lat(), arr[i].lng());
-                        if (d < menorD) { menorD = d; idx = i; }
+            if (!lat || !lon) return;
+            let latNum = parseFloat(lat);
+            let lonNum = parseFloat(lon);
+
+            targetLat = latNum;
+            targetLon = lonNum;
+
+            if (window.linhaRotaInquebravel && window.destinoAtualSalvo) {
+                const agora = Date.now();
+                if (agora - window.timestampUltimoRecalculo > 5000) { 
+                    const caminho = window.linhaRotaInquebravel.getPath().getArray();
+                    let estaNaRota = false;
+                    for (let i = 0; i < caminho.length; i++) {
+                        if (haversine(latNum, lonNum, caminho[i].lat(), caminho[i].lng()) < 50) { 
+                            estaNaRota = true;
+                            break;
+                        }
                     }
-                    if (menorD < 22) { 
-                        latNum = arr[idx].lat(); 
-                        lonNum = arr[idx].lng(); 
-                        if (idx > 0) window.linhaRotaInquebravel.setPath(arr.slice(idx)); 
+                    if (!estaNaRota) {
+                        window.calcularEDesenharRota(window.destinoAtualSalvo);
                     }
                 }
             }
 
-            // FILTRO DE RUMO SUAVE (EVITA SETA GIRAR SE ESTIVER PARADO)
             if (lastCoord) {
-                const distMovida = haversine(lastCoord.lat, lastCoord.lon, latNum, lonNum);
-                if (distMovida > 1.5) {
-                    const dLon = (lonNum - lastCoord.lon) * Math.PI / 180;
-                    const y = Math.sin(dLon) * Math.cos(latNum * Math.PI / 180);
-                    const x = Math.cos(lastCoord.lat * Math.PI / 180) * Math.sin(latNum * Math.PI / 180) - Math.sin(lastCoord.lat * Math.PI / 180) * Math.cos(latNum * Math.PI / 180) * Math.cos(dLon);
-                    rumoAtualVeiculo = ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360;
-                    
-                    let diff = rumoAtualVeiculo - ultimoRumoFiltrado;
-                    while (diff < -180) diff += 360;
-                    while (diff > 180) diff -= 360;
-                    ultimoRumoFiltrado += diff * 0.35; 
-                }
+                const dLon = (lonNum - lastCoord.lon) * Math.PI / 180;
+                const lat1 = lastCoord.lat * Math.PI / 180;
+                const lat2 = latNum * Math.PI / 180;
+                const y = Math.sin(dLon) * Math.cos(lat2);
+                const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+                let brng = Math.atan2(y, x) * 180 / Math.PI;
+                rumoAtualVeiculo = (brng + 360) % 360;
             } else if (bearing !== undefined && bearing !== null) {
                 rumoAtualVeiculo = parseFloat(bearing);
-                ultimoRumoFiltrado = rumoAtualVeiculo;
+            }
+            
+            if (window.velocidadeAlvoGPS > 3) {
+                let dif = rumoAtualVeiculo - ultimoRumoFiltrado;
+                while (dif < -180) dif += 360;
+                while (dif > 180) dif -= 360;
+                ultimoRumoFiltrado += dif * 0.15;
+                if (ultimoRumoFiltrado > 360) ultimoRumoFiltrado -= 360;
+                if (ultimoRumoFiltrado < 0) ultimoRumoFiltrado += 360;
+                targetHeading = ultimoRumoFiltrado;
+            } else {
+                targetHeading = ultimoRumoFiltrado;
             }
             
             if (dirVal) dirVal.innerText = Math.round(ultimoRumoFiltrado) + "°";
@@ -1288,48 +1530,38 @@
 
             lastCoord = { lat: latNum, lon: lonNum };
             
+            if (mapaObjeto && window.linhaRotaInquebravel) {
+                recortarRotaNaBolinha(latNum, lonNum);
+            }
+            
             if (mapaObjeto) {
-                const novaPosGoogle = {lat: latNum, lng: lonNum};
-                
-                if (marcadorUsuario) {
-                    marcadorUsuario.setPosition(novaPosGoogle);
-                    const iconeSeta = marcadorUsuario.getIcon();
-                    if (iconeSeta) {
-                        iconeSeta.rotation = Math.round(ultimoRumoFiltrado);
-                        marcadorUsuario.setIcon(iconeSeta);
-                    }
-                }
-                
                 if (window.velocidadeAlvoGPS > 5 && !mapaBloqueadoAoCarro) {
                     mapaBloqueadoAoCarro = true;
                     document.getElementById('btn-recentralizar').style.background = '#e0243f';
-                }
-
-                if (mapaBloqueadoAoCarro) {
-                    mapaObjeto.setCenter(novaPosGoogle);
-                    mapaObjeto.setHeading(Math.round(ultimoRumoFiltrado)); 
                 }
 
                 if (document.getElementById('texto-endereco').innerText.includes("Aguardando")) {
                     document.getElementById('texto-endereco').innerText = "📍 GPS Conectado";
                 }
 
-                if (destinoAtualSalvo && !destinoJaAvisado) {
-                    const distanciaAteDestino = haversine(latNum, lonNum, destinoAtualSalvo.lat(), destinoAtualSalvo.lng());
-                    if (distanciaAteDestino <= 30) { 
-                        destinoJaAvisado = true;
-                        document.getElementById('texto-endereco').innerText = "🏁 Você chegou ao destino!";
-                        falarDirecaoGPS("Você chegou ao seu destino final!");
-                        destinoAtualSalvo = null; 
-                        ultimaLocalizacaoRecalculo = null;
-                        if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath([]); 
+                if (window.destinoAtualSalvo) {
+                    const distFinal = haversine(latNum, lonNum, window.destinoAtualSalvo.lat(), window.destinoAtualSalvo.lng());
+                    if (distFinal < 25) { 
+                        if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath([]);
+                        if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath([]);
+                        window.destinoAtualSalvo = null; 
+                        window.ultimaLocalizacaoRecalculo = null;
+                        document.getElementById('texto-endereco').innerText = "🏁 FIM DE LINHA KKK!";
+                        localStorage.removeItem('severino_destino_lat');
+                        localStorage.removeItem('severino_destino_lng');
+                        localStorage.removeItem('severino_texto_endereco');
                     }
                 }
 
-                if (destinoAtualSalvo && ultimaLocalizacaoRecalculo) {
-                    const distanciaDoUltimoPontoDeRota = haversine(latNum, lonNum, ultimaLocalizacaoRecalculo.lat, ultimaLocalizacaoRecalculo.lng);
-                    if (distanciaDoUltimoPontoDeRota > 35) {
-                        calcularEDesenharRota(destinoAtualSalvo);
+                if (window.destinoAtualSalvo && window.ultimaLocalizacaoRecalculo) {
+                    const distanciaDoUltimoPontoDeRota = haversine(latNum, lonNum, window.ultimaLocalizacaoRecalculo.lat, window.ultimaLocalizacaoRecalculo.lng);
+                    if (distanciaDoUltimoPontoDeRota > 15) {
+                        window.calcularEDesenharRota(window.destinoAtualSalvo);
                     }
                 }
             }
@@ -1344,26 +1576,6 @@
                     Math.sin(dLon / 2) * Math.sin(dLon / 2);
           const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
           return R * c;
-        }
-
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(
-                (position) => {
-                    const velocidadeMps = position.coords.speed !== null && position.coords.speed >= 0 ? position.coords.speed : 0;
-                    window.atualizarVelocidade(
-                        velocidadeMps * 3.6,
-                        position.coords.latitude,
-                        position.coords.longitude,
-                        position.coords.heading,
-                        position.coords.altitude
-                    );
-                },
-                (error) => {
-                    console.error(error);
-                    if (gpsWarning) gpsWarning.innerText = "⚠️ Procurando sinal de GPS...";
-                },
-                { enableHighAccuracy: true, timeout: 1000, maximumAge: 0 }
-            );
         }
 
         // ========== VELOCÍMETRO ANALÓGICO ==========
@@ -1437,7 +1649,6 @@
                   ctx.fillText(i.toString(), cx + Math.cos(angle) * (radius - 32), cy + Math.sin(angle) * (radius - 32));
                 }
                 
-                // ===== PONTEIRO ALINHADO NO ZERO =====
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(progressAngle);
@@ -1482,57 +1693,29 @@
             renderGauge();
         }
 
-       /* ========== CORREÇÃO CIRÚRGICA DO STREET VIEW (VER RUA) ========== */
         window.toggleStreetView = function() {
             let posicaoAlvo = null;
-            let rumoAlvo = rumoAtualVeiculo;
-            
-            if (destinoAtualSalvo) { 
-                posicaoAlvo = { lat: destinoAtualSalvo.lat(), lng: destinoAtualSalvo.lng() }; 
-                rumoAlvo = 0; 
-            } else if (lastCoord) { 
-                posicaoAlvo = { lat: lastCoord.lat, lng: lastCoord.lon }; 
-                rumoAlvo = rumoAtualVeiculo; 
-            } else { 
-                alert("🔍 Aguardando sinal de GPS!"); 
-                return; 
-            }
+            let rumoAlvo = ultimoRumoFiltrado;
+            if (window.destinoAtualSalvo) { posicaoAlvo = { lat: window.destinoAtualSalvo.lat(), lng: window.destinoAtualSalvo.lng() }; rumoAlvo = 0; }
+            else if (lastCoord) { posicaoAlvo = { lat: lastCoord.lat, lng: lastCoord.lon }; rumoAlvo = ultimoRumoFiltrado; }
+            else { alert("🔍 Aguardando sinal de GPS!"); return; }
 
-            const telaStreet = document.getElementById('tela-streetview');
             const containerPanorama = document.getElementById('container-panorama');
-            
-            // PRIMEIRO: Abre a tela preenchendo o espaço do app
-            telaStreet.style.display = 'flex';
+            document.getElementById('tela-streetview').style.display = 'block';
 
-            // SEGUNDO: Força o Google a recalcular o tamanho correto para não encolher no canto
-            setTimeout(() => {
-                if (!panoramaObjeto) {
-                    panoramaObjeto = new google.maps.StreetViewPanorama(containerPanorama, {
-                        position: posicaoAlvo,
-                        pov: { heading: rumoAlvo, pitch: 0 },
-                        visible: true,
-                        motionTracking: false,
-                        motionTrackingControl: false,
-                        disableDefaultUI: true 
-                    });
-                } else {
-                    panoramaObjeto.setPosition(posicaoAlvo);
-                    panoramaObjeto.setPov({ heading: rumoAlvo, pitch: 0 });
-                }
-                
-                // Dispara o gatilho de correção de tamanho oficial da API do Google
-                google.maps.event.trigger(panoramaObjeto, 'resize');
-            }, 300); // Aguarda 300 milissegundos para a tela abrir antes de desenhar a imagem
+            if (!panoramaObjeto) {
+                panoramaObjeto = new google.maps.StreetViewPanorama(containerPanorama, {
+                    position: posicaoAlvo, pov: { heading: rumoAlvo, pitch: 0 }, visible: true, motionTracking: true, motionTrackingControl: false, disableDefaultUI: true 
+                });
+            } else {
+                panoramaObjeto.setPosition(posicaoAlvo);
+                panoramaObjeto.setPov({ heading: rumoAlvo, pitch: 0 });
+            }
         };
 
-        window.fecharStreetView = function() { 
-            document.getElementById('tela-streetview').style.display = 'none'; 
-        };
+        window.fecharStreetView = function() { document.getElementById('tela-streetview').style.display = 'none'; };
 
-/* ========== FUNÇÃO DE COMPARTILHAMENTO BLINDADA (SEM VOZ E SEM ERRO) ========== */
-     /* ========== ENVIO SEGURO VIA WEBVIEWSTRING PARA O KODULAR ========== */
         window.salvarRotaAtual = function() {
-            // CORTA QUALQUER TENTATIVA DE LEITURA DE TEXTO IMEDIATAMENTE
             try {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
@@ -1552,7 +1735,7 @@
                 textoOrigem = `${lastCoord.lat.toFixed(5)}, ${lastCoord.lon.toFixed(5)}`;
             }
             
-            const linkGoogleMaps = `https://www.google.com/maps/dir/?api=1&origin=${origemParam}&destination=${encodeURIComponent(destinoTexto)}&travelmode=driving`;
+            const linkGoogleMaps = `https://maps.google.com/?saddr=${origemParam}&daddr=${encodeURIComponent(destinoTexto)}&travelmode=driving`;
             
             const mensagemBruta = `🗺️ *SEVERINO-LC – COMPROVANTE DE ROTA*\n` +
                                   `📅 *Data:* ${dataString}  |  🕒 *Hora:* ${horaString}\n\n` +
@@ -1560,14 +1743,13 @@
                                   `🏁 *Destino:* ${destinoTexto}\n\n` +
                                   `🛣️ *Link do Traçado Oficial:*\n${linkGoogleMaps}`;
             
-            // DISPARA PARA O KODULAR E SÓ! SEM LINKS QUE TRAVAM A WEBVIEW
             if (window.AppInventor && typeof window.AppInventor.setWebViewString === 'function') {
                 window.AppInventor.setWebViewString(mensagemBruta);
             } else {
-                // Se testar direto no navegador do PC/Celular fora do APK, ele abre o Zap Web normal
                 window.open(`https://wa.me/?text=${encodeURIComponent(mensagemBruta)}`, '_blank');
             }
         };
-  </script>
+    })();
+</script>
 </body>
 </html>
