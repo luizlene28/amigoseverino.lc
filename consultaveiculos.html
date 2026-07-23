@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SeverinoCar-LC | Consulta FIPE 3D</title>
+    
+    <style>
+        :root {
+            --primary: #ff1a1a;
+            --primary-dark: #cc0000;
+            --primary-light: #ff4d4d;
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --bg-card-hover: #222222;
+            --text: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-muted: #808080;
+            --success: #00c853;
+            --warning: #ffab00;
+            --border: #333333;
+            --shadow-3d: 0 10px 30px -10px rgba(255, 0, 0, 0.3);
+            --shadow-card: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            --glass: rgba(26, 26, 26, 0.8);
+            --gradient-primary: linear-gradient(135deg, #FFFF00 0%, #cc0000 100%);
+            --gradient-dark: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            --gradient-card: linear-gradient(145deg, #1f1f1f 0%, #696969 100%);
+            --border-radius-sm: 12px;
+            --border-radius-md: 16px;
+            --border-radius-lg: 20px;
+            --border-radius-xl: 24px;
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            perspective: 1000px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Efeito de fundo 3D */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 50%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 20%, rgba(255, 0, 0, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: backgroundMove 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 1%) rotate(1deg); }
+            66% { transform: translate(-1%, -1%) rotate(-1deg); }
+        }
+
+        /* Container Principal */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        /* Header 3D */
+        .header-3d {
+            position: relative;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius-xl);
+            padding: 24px 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-3d);
+            transform-style: preserve-3d;
+            transform: translateZ(20px);
+            overflow: hidden;
+        }
+
+        .header-3d::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            animation: headerShine 3s ease-in-out infinite;
+        }
+
+        @keyframes headerShine {
+            0%, 100% { transform: translateX(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .logo-3d {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            animation: logoFloat 3s ease-in-out infinite;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateY(10deg); }
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Cards 3D */
+        .card-3d {
+            background: var(--gradient-card);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-card);
+            transform-style: preserve-3d;
+            transform: translateZ(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+        }
+
+        .card-3d:hover {
+            transform: translateZ(20px) translateY(-2px);
+            box-shadow: 0 25px 50px -15px rgba(255, 0, 0, 0.2);
+        }
+
+        .card-3d:active {
+            transform: translateZ(10px) scale(0.98);
+        }
+
+        /* Select 3D Customizado */
+        .select-group {
+            margin-bottom: 20px;
+        }
+
+        .select-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            padding-left: 4px;
+        }
+
+        .select-3d {
+            position: relative;
+        }
+
+        .select-3d select {
+            width: 100%;
+            padding: 16px 48px 16px 16px;
+            background: rgba(37, 37, 37, 0.8);
+            border: 2px solid var(--border);
+            border-radius: var(--border-radius-md);
+            color: var(--text);
+            font-size: 16px;
+            font-weight: 500;
+            appearance: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            backdrop-filter: blur(10px);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .select-3d select:hover {
+            border-color: var(--primary);
+            background: rgba(40, 40, 40, 0.9);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.1);
+        }
+
+        .select-3d select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+            background: rgba(45, 45, 45, 0.9);
+        }
+
+        .select-3d::after {
+            content: '▾';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 20px;
+            pointer-events: none;
+            transition: transform var(--transition-fast);
+        }
+
+        .select-3d:hover::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        /* Botão 3D */
+        .btn-3d {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transform: translateZ(15px);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+            transition: all var(--transition-smooth);
+            font-family: inherit;
+        }
+
+        .btn-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-3d:hover::before {
+            left: 100%;
+        }
+
+        .btn-3d:hover {
+            transform: translateZ(25px) translateY(-2px);
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.4);
+            background: linear-gradient(135deg, #ff3333 0%, #e60000 100%);
+        }
+
+        .btn-3d:active {
+            transform: translateZ(10px) scale(0.96);
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.2);
+            transition: all 0.1s;
+        }
+
+        .btn-3d.btn-share {
+            background: var(--gradient-dark);
+            border: 2px solid var(--primary);
+            margin-top: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-3d.btn-share:hover {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border-color: var(--primary-light);
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.2);
+        }
+
+        /* Resultado Card */
+        .resultado-3d {
+            background: var(--gradient-card);
+            border-radius: var(--border-radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 20px 40px -15px rgba(255, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            animation: slideIn3D 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn3D {
+            from {
+                opacity: 0;
+                transform: translateY(20px) rotateX(-10deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(0deg);
+            }
+        }
+
+        .resultado-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .resultado-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .resultado-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .valor-3d {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: var(--border-radius-md);
+            background-color: rgba(255, 0, 0, 0.1);
+            border: 2px solid rgba(255, 0, 0, 0.2);
+            transform: translateZ(5px);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            backdrop-filter: blur(10px);
+        }
+
+        .info-item label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .info-item span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Tabs Container */
+        .tabs-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius-md);
+            padding: 4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            border-radius: var(--border-radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .tab-button.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            transform: translateZ(5px);
+        }
+
+        /* Lista de Itens */
+        .items-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .items-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .items-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .items-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .item-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius-sm);
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .item-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-light);
+        }
+
+        .item-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .btn-small:hover {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: var(--primary);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .loading-screen.active {
+            display: flex;
+        }
+
+        .spinner-3d {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin3D 1s linear infinite;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+        }
+
+        @keyframes spin3D {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 360px) {
+            .app-container {
+                padding: 12px;
+            }
+            
+            .header-title {
+                font-size: 24px;
+            }
+            
+            .valor-3d {
+                font-size: 28px;
+            }
+            
+            .card-3d {
+                padding: 20px;
+            }
+        }
+
+        @media (min-width: 481px) {
+            .app-container {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="spinner-3d"></div>
+    </div>
+
+    <div class="app-container">
+        <header class="header-3d">
+            <div class="header-content">
+                <div class="logo-3d">🚗</div>
+                <h1 class="header-title">SeverinoCar-LC</h1>
+                <p class="header-subtitle">Consulta FIPE Inteligente</p>
+            </div>
+        </header>
+
+        <div class="card-3d">
+            <div class="select-group">
+                <label class="select-label">Tipo de Veículo</label>
+                <div class="select-3d">
+                    <select id="tipoVeiculo">
+                        <option value="carros">🚗 Carros</option>
+                        <option value="motos">🏍️ Motos</option>
+                        <option value="caminhoes">🚚 Caminhões</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="select-group">
+                <label class="select-label">Marca</label>
+                <div class="select-3d">
+                    <select id="marca">
+                        <option value="">Selecione a marca</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="select-group">
+                <label class="select-label">Modelo</label>
+                <div class="select-3d">
+                    <select id="modelo">
+                        <option value="">Selecione o modelo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="select-group">
+                <label class="select-label">Ano/Modelo</label>
+                <div class="select-3d">
+                    <select id="ano">
+                        <option value="">Selecione o ano</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="btn-3d" id="btnConsultar">
+                🔍 Consultar Preço FIPE
+            </button>
+        </div>
+
+        <div id="resultadoContainer"></div>
+
+        <div class="card-3d">
+            <div class="tabs-container">
+                <button class="tab-button active" data-tab="favoritos">⭐ Favoritos</button>
+                <button class="tab-button" data-tab="historico">📋 Recentes</button>
+            </div>
+
+            <div class="items-list" id="itemsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const CONFIG = {
+            API_BASE: 'https://parallelum.com.br/fipe/api/v1',
+            MAX_HISTORICO: 10,
+            STORAGE_KEYS: {
+                FAVORITOS: 'severinocar_favoritos',
+                HISTORICO: 'severinocar_historico'
+            }
+        };
+
+        // Elementos DOM
+        const elements = {
+            tipoVeiculo: document.getElementById('tipoVeiculo'),
+            marca: document.getElementById('marca'),
+            modelo: document.getElementById('modelo'),
+            ano: document.getElementById('ano'),
+            btnConsultar: document.getElementById('btnConsultar'),
+            resultadoContainer: document.getElementById('resultadoContainer'),
+            itemsContainer: document.getElementById('itemsContainer'),
+            loadingScreen: document.getElementById('loadingScreen'),
+            tabButtons: document.querySelectorAll('.tab-button')
+        };
+
+        // Estado da aplicação
+        let appState = {
+            tabAtiva: 'favoritos',
+            audioContext: null
+        };
+
+        // Inicialização
+        function init() {
+            setupAudioContext();
+            setupEventListeners();
+            carregarMarcas();
+            atualizarListas();
+        }
+
+        // Audio Context para feedback sonoro
+        function setupAudioContext() {
+            try {
+                appState.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.warn('AudioContext não suportado');
+            }
+        }
+
+        function playSound(type) {
+            if (!appState.audioContext) return;
+            
+            if (appState.audioContext.state === 'suspended') {
+                appState.audioContext.resume();
+            }
+
+            const oscillator = appState.audioContext.createOscillator();
+            const gainNode = appState.audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(appState.audioContext.destination);
+
+            const now = appState.audioContext.currentTime;
+
+            switch(type) {
+                case 'click':
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(600, now);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                    gainNode.gain.setValueAtTime(0.1, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.08);
+                    break;
+                
+                case 'success':
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(523, now);
+                    oscillator.frequency.setValueAtTime(659, now + 0.1);
+                    oscillator.frequency.setValueAtTime(784, now + 0.2);
+                    gainNode.gain.setValueAtTime(0.15, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.3);
+                    break;
+                
+                case 'error':
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(200, now);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                    gainNode.gain.setValueAtTime(0.08, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    oscillator.start(now);
+                    oscillator.stop(now + 0.2);
+                    break;
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            elements.tipoVeiculo.addEventListener('change', () => {
+                playSound('click');
+                carregarMarcas();
+            });
+
+            elements.marca.addEventListener('change', () => {
+                if (elements.marca.value) {
+                    playSound('click');
+                    carregarModelos();
+                }
+            });
+
+            elements.modelo.addEventListener('change', () => {
+                if (elements.modelo.value) {
+                    playSound('click');
+                    carregarAnos();
+                }
+            });
+
+            elements.btnConsultar.addEventListener('click', consultarPreco);
+
+            elements.tabButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    playSound('click');
+                    elements.tabButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                    appState.tabAtiva = e.target.dataset.tab;
+                    atualizarListas();
+                });
+            });
+
+            document.addEventListener('touchstart', function() {}, {passive: true});
+        }
+
+        // API Calls
+        async function fetchAPI(endpoint) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE}/${endpoint}`);
+                if (!response.ok) throw new Error('API request failed');
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        async function carregarMarcas() {
+            showLoading();
+            try {
+                const data = await fetchAPI(`${elements.tipoVeiculo.value}/marcas`);
+                
+                elements.marca.innerHTML = '<option value="">Selecione a marca</option>';
+                elements.modelo.innerHTML = '<option value="">Selecione o modelo</option>';
+                elements.ano.innerHTML = '<option value="">Selecione o ano</option>';
+
+                data.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(item => {
+                    elements.marca.innerHTML += `<option value="${item.codigo}">${item.nome}</option>`;
+                });
+            } catch (error) {
+                showError('Erro ao carregar marcas');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function carregarModelos() {
+            showLoading();
+            try {
+                const data = await fetchAPI(
+                    `${elements.tipoVeiculo.value}/marcas/${elements.marca.value}/modelos`
+                );
+                
+                elements.modelo.innerHTML = '<option value="">Selecione o modelo</option>';
+                elements.ano.innerHTML = '<option value="">Selecione o ano</option>';
+
+                data.modelos.sort((a, b) => a.nome.localeCompare(b.nome)).forEach(item => {
+                    elements.modelo.innerHTML += `<option value="${item.codigo}">${item.nome}</option>`;
+                });
+            } catch (error) {
+                showError('Erro ao carregar modelos');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function carregarAnos() {
+            showLoading();
+            try {
+                const data = await fetchAPI(
+                    `${elements.tipoVeiculo.value}/marcas/${elements.marca.value}/modelos/${elements.modelo.value}/anos`
+                );
+                
+                elements.ano.innerHTML = '<option value="">Selecione o ano</option>';
+
+                data.forEach(item => {
+                    elements.ano.innerHTML += `<option value="${item.codigo}">${item.nome}</option>`;
+                });
+            } catch (error) {
+                showError('Erro ao carregar anos');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function consultarPreco() {
+            if (!elements.ano.value) {
+                showError('Selecione todas as opções');
+                playSound('error');
+                return;
+            }
+
+            playSound('click');
+            showLoading();
+
+            try {
+                const data = await fetchAPI(
+                    `${elements.tipoVeiculo.value}/marcas/${elements.marca.value}/modelos/${elements.modelo.value}/anos/${elements.ano.value}`
+                );
+
+                playSound('success');
+                exibirResultado(data);
+                data.CodigoAnoOriginal = elements.ano.value;
+                salvarNoHistorico(data);
+            } catch (error) {
+                showError('Erro ao consultar preço');
+                playSound('error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // UI Functions
+        function exibirResultado(data) {
+            elements.resultadoContainer.innerHTML = `
+                <div class="resultado-3d">
+                    <div class="resultado-header">
+                        <h2>${data.Modelo}</h2>
+                        <p>${data.Marca}</p>
+                    </div>
+                    
+                    <div class="valor-3d">${data.Valor}</div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Combustível</label>
+                            <span>${data.Combustivel}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Código FIPE</label>
+                            <span>${data.CodigoFipe}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Mês Referência</label>
+                            <span>${data.MesReferencia}</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Tipo</label>
+                            <span>${data.TipoVeiculo}</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-3d" onclick="adicionarAosFavoritos()">
+                        ⭐ Salvar nos Favoritos
+                    </button>
+                    <button class="btn-3d btn-share" onclick="compartilharResultado()">
+                        📤 Compartilhar Dados
+                    </button>
+                </div>
+            `;
+
+            elements.resultadoContainer.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+
+            window.currentResult = data;
+        }
+
+        function showLoading() {
+            elements.loadingScreen.classList.add('active');
+        }
+
+        function hideLoading() {
+            elements.loadingScreen.classList.remove('active');
+        }
+
+        function showError(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(255, 0, 0, 0.9);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 12px;
+                font-weight: 600;
+                z-index: 10000;
+                backdrop-filter: blur(10px);
+                animation: slideDown 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.3s ease-in';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // Storage Functions
+        function salvarNoHistorico(data) {
+            let historico = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.HISTORICO)) || [];
+            historico = historico.filter(item => item.CodigoFipe !== data.CodigoFipe);
+            historico.unshift(data);
+            
+            if (historico.length > CONFIG.MAX_HISTORICO) {
+                historico = historico.slice(0, CONFIG.MAX_HISTORICO);
+            }
+            
+            localStorage.setItem(CONFIG.STORAGE_KEYS.HISTORICO, JSON.stringify(historico));
+            atualizarListas();
+        }
+
+        function adicionarAosFavoritos() {
+            if (!window.currentResult) return;
+            
+            playSound('click');
+            let favoritos = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.FAVORITOS)) || [];
+            const exists = favoritos.some(f => f.CodigoFipe === window.currentResult.CodigoFipe);
+            
+            if (exists) {
+                showError('Veículo já está nos favoritos!');
+                playSound('error');
+                return;
+            }
+            
+            favoritos.push(window.currentResult);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.FAVORITOS, JSON.stringify(favoritos));
+            playSound('success');
+            atualizarListas();
+            
+            const btn = document.querySelector('.btn-3d');
+            if (btn) {
+                btn.textContent = '✅ Salvo!';
+                btn.style.background = 'var(--gradient-dark)';
+                setTimeout(() => {
+                    btn.textContent = '⭐ Salvar nos Favoritos';
+                    btn.style.background = 'var(--gradient-primary)';
+                }, 2000);
+            }
+        }
+
+        function removerFavorito(index) {
+            playSound('click');
+            let favoritos = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.FAVORITOS)) || [];
+            favoritos.splice(index, 1);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.FAVORITOS, JSON.stringify(favoritos));
+            atualizarListas();
+        }
+
+        function atualizarListas() {
+            const container = elements.itemsContainer;
+            let items = [];
+            
+            if (appState.tabAtiva === 'favoritos') {
+                items = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.FAVORITOS)) || [];
+                
+                if (items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">⭐</div>
+                            <p>Nenhum favorito ainda</p>
+                            <p style="font-size: 12px; margin-top: 8px;">Consulte um veículo e salve-o aqui!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = items.map((item, index) => `
+                    <div class="item-card">
+                        <h4>${item.Modelo}</h4>
+                        <p>${item.Marca} • ${item.Valor}</p>
+                        <p style="font-size: 12px; color: var(--text-muted);">${item.Combustivel} • ${item.MesReferencia}</p>
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="btn-small" onclick="removerFavorito(${index})">
+                                🗑️ Remover
+                            </button>
+                            <button class="btn-small" onclick="reconsultarFavorito('${item.CodigoFipe}')">
+                                🔄 Reconsultar
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                items = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.HISTORICO)) || [];
+                
+                if (items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="icon">📋</div>
+                            <p>Nenhuma consulta recente</p>
+                            <p style="font-size: 12px; margin-top: 8px;">Seu histórico aparecerá aqui!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = items.map(item => `
+                    <div class="item-card">
+                        <h4>${item.Modelo}</h4>
+                        <p>${item.Marca} • ${item.Valor}</p>
+                        <p style="font-size: 12px; color: var(--text-muted);">Código FIPE: ${item.CodigoFipe} • ${item.MesReferencia}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function compartilharResultado() {
+            if (!window.currentResult) return;
+            
+            playSound('click');
+            const data = window.currentResult;
+            
+            const messageWhats = `🚗 *SeverinoCar-LC - Consulta FIPE*\n\n` +
+                                 `*${data.Modelo}*\n` +
+                                 `• *Marca:* ${data.Marca}\n` +
+                                 `• *Valor:* ${data.Valor}\n` +
+                                 `• *Combustível:* ${data.Combustivel}\n` +
+                                 `• *Mês Ref.:* ${data.MesReferencia}\n` +
+                                 `• *Código FIPE:* ${data.CodigoFipe}`;
+
+            const messageEmail = `SeverinoCar-LC - Consulta FIPE\n\n` +
+                                 `Modelo: ${data.Modelo}\n` +
+                                 `Marca: ${data.Marca}\n` +
+                                 `Valor: ${data.Valor}\n` +
+                                 `Combustível: ${data.Combustivel}\n` +
+                                 `Mês de Referência: ${data.MesReferencia}\n` +
+                                 `Código FIPE: ${data.CodigoFipe}`;
+            
+            abrirMenuAlternativoCompartilhar(messageWhats, messageEmail);
+        }
+
+        function abrirMenuAlternativoCompartilhar(textoWhats, textoEmail) {
+            const antigo = document.getElementById('modalCompartilhar');
+            if (antigo) antigo.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'modalCompartilhar';
+            modal.style.cssText = `
+                position: fixed;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%) translateY(100%);
+                width: 100%;
+                max-width: 480px;
+                background: var(--gradient-card);
+                border-top: 3px solid var(--primary);
+                border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+                padding: 24px;
+                z-index: 10001;
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(20px);
+            `;
+
+            modal.innerHTML = `
+                <h3 style="margin-bottom: 8px; text-align: center; font-size: 18px; color: #fff;">Compartilhar Resultado</h3>
+                <p style="font-size: 13px; text-align: center; color: var(--text-secondary); margin-bottom: 20px; padding: 0 10px;">
+                    Selecione para onde deseja enviar. O aplicativo copiará os dados formatados para você colar!
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button class="btn-3d" style="background: linear-gradient(135deg, #25D366 0%, #075E54 100%); border: none; font-size: 15px;" id="btnCopiarWhats">
+                        📋 Copiar Dados para o WhatsApp
+                    </button>
+
+                    <button class="btn-3d" style="background: linear-gradient(135deg, #ea4335 0%, #c5221f 100%); border: none; font-size: 15px;" id="btnCopiarEmail">
+                        ✉️ Copiar Dados para o E-mail
+                    </button>
+
+                    <button class="btn-small" style="margin-top: 8px; background: rgba(255,255,255,0.08); color: #fff; border: none; padding: 12px; font-weight: bold; font-size: 14px;" onclick="fecharModalCompartilhar()">
+                        Cancelar
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            setTimeout(() => {
+                modal.style.transform = 'translateX(-50%) translateY(0)';
+            }, 50);
+
+            document.getElementById('btnCopiarWhats').addEventListener('click', () => {
+                realizarCopiaSegura(textoWhats, 'WhatsApp');
+            });
+
+            document.getElementById('btnCopiarEmail').addEventListener('click', () => {
+                realizarCopiaSegura(textoEmail, 'E-mail');
+            });
+        }
+
+        function fecharModalCompartilhar() {
+            const modal = document.getElementById('modalCompartilhar');
+            if (modal) {
+                modal.style.transform = 'translateX(-50%) translateY(100%)';
+                setTimeout(() => modal.remove(), 300);
+            }
+        }
+
+        function realizarCopiaSegura(texto, tipoDestino) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    notificarSucessoCopia(tipoDestino);
+                }).catch(() => {
+                    executarCopiaFallbackFinal(texto, tipoDestino);
+                });
+            } else {
+                executarCopiaFallbackFinal(texto, tipoDestino);
+            }
+        }
+
+        function executarCopiaFallbackFinal(texto, tipoDestino) {
+            const textarea = document.createElement('textarea');
+            textarea.value = texto;
+            textarea.style.position = 'fixed'; 
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                notificarSucessoCopia(tipoDestino);
+            } catch (err) {
+                showError('Erro ao copiar dados. Por favor, tente novamente.');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function notificarSucessoCopia(tipoDestino) {
+            playSound('success');
+            fecharModalCompartilhar();
+            if (tipoDestino === 'WhatsApp') {
+                showError('Dados Copiados! Agora abra seu WhatsApp e cole na conversa.');
+            } else {
+                showError('Dados Copiados! Agora abra seu E-mail e cole no corpo da mensagem.');
+            }
+        }
+
+        async function reconsultarFavorito(codigoFipe) {
+            playSound('click');
+            showLoading();
+
+            try {
+                let favoritos = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.FAVORITOS)) || [];
+                const index = favoritos.findIndex(f => f.CodigoFipe === codigoFipe);
+                
+                if (index === -1) {
+                    showError('Veículo não encontrado nos favoritos.');
+                    hideLoading();
+                    return;
+                }
+
+                const favorito = favoritos[index];
+
+                let tipoUrl = 'carros';
+                if (favorito.TipoVeiculo === 2 || favorito.TipoVeiculo === 'Moto') tipoUrl = 'motos';
+                if (favorito.TipoVeiculo === 3 || favorito.TipoVeiculo === 'Caminhão') tipoUrl = 'caminhoes';
+
+                let codigoAno = favorito.CodigoAnoOriginal;
+                if (!codigoAno) {
+                    const letraCombustivel = favorito.Combustivel.substring(0, 1).toUpperCase();
+                    const sufixo = letraCombustivel === 'D' ? '3' : (letraCombustivel === 'A' ? '2' : '1');
+                    codigoAno = `${favorito.AnoModelo}-${sufixo}`;
+                }
+
+                const endpointDireto = `${tipoUrl}/veiculo/${codigoFipe}/${codigoAno}`;
+                const data = await fetchAPI(endpointDireto);
+
+                if (data && data.Valor) {
+                    favoritos[index].Valor = data.Valor;
+                    favoritos[index].MesReferencia = data.MesReferencia;
+                    
+                    localStorage.setItem(CONFIG.STORAGE_KEYS.FAVORITOS, JSON.stringify(favoritos));
+                    
+                    playSound('success');
+                    showError(`Preço atualizado para o mês: ${data.MesReferencia}!`);
+                    
+                    window.currentResult = favoritos[index];
+                    exibirResultado(favoritos[index]);
+                    atualizarListas();
+                } else {
+                    throw new Error('Retorno inválido da API');
+                }
+
+            } catch (error) {
+                console.error('Erro na reconsulta direta:', error);
+                showError('Não foi possível atualizar este veículo no momento.');
+                playSound('error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+            @keyframes slideDown {
+                from { transform: translate(-50%, -100%); opacity: 0; }
+                to { transform: translate(-50%, 0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translate(-50%, 0); opacity: 1; }
+                to { transform: translate(-50%, -100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(additionalStyles);
+
+        init();
+
+        window.adicionarAosFavoritos = adicionarAosFavoritos;
+        window.compartilharResultado = compartilharResultado;
+        window.removerFavorito = removerFavorito;
+        window.reconsultarFavorito = reconsultarFavorito;
+        window.fecharModalCompartilhar = fecharModalCompartilhar;
+</script>
+</body>
+</html>

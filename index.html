@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEVERINO-LC</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at center, #2c5364, #203a43, #0f2027);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            /* Evita rolagem lateral indesejada */
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .container {
+            display: grid;
+            /* MANTÉM 2 COLUNAS SEMPRE (Estrutura Original) */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            /* Reduzi um pouco o gap para telas pequenas */
+            padding: 10px;
+            max-width: 100%;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
+            border-radius: 20px;
+            padding: 15px 10px;
+            /* Padding mais enxuto para caber no celular */
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            /* Fonte levemente menor para não quebrar linha */
+            
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            border-right: 1px solid rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+            
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4),
+                inset 2px 2px 5px rgba(255, 255, 255, 0.05);
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-3px);
+        }
+        
+        /* Ajuste Responsivo das Mídias */
+        .video-severino {
+            width: 340px;
+            max-width: 90%;
+            /* Se a tela for menor que 340px, ele encolhe */
+            height: auto;
+            display: block;
+            margin: 0 auto 20px auto;
+            border-radius: 15px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.6);
+        }
+        
+        .card video,
+        .card img {
+            /* As imagens agora se adaptam ao tamanho do card */
+            width: 100%;
+            max-width: 80px;
+            height: auto;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none;
+            background: white;
+            z-index: 999;
+        }
+        
+        .closeBtn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <header>Amigo SEVERINO - LC</header>
+    
+    <div style="text-align: center; width: 100%;">
+        <img class="video-severino" src="app_severino.jpeg" style="max-width: 100%; height: auto; display: block; margin: 0 auto 20px auto; border-radius: 10px;">
+    </div>
+    
+    <div class="container">
+        <div class="card" onclick="window.location.href='biblia.html'">
+            <img src="1-biblia_img.jpeg" alt="Biblia">
+            <div style="margin-top: 10px;">Bíblia Sagrada</div>
+        </div>
+
+        <div class="card" onclick="window.location.href='velocimetro-4V.html'">
+            <img src="velozmapa1_img.jpeg" alt="velocimetro">
+            <div style="margin-top: 10px;">VELOZMAPA</div>
+        </div>
+
+        <div class="card" onclick="window.location.href='veloznet.html'">
+            <img src="logoveloznet.jpeg" alt="rota facil">
+            <div style="margin-top: 10px;">VelozNet-LC</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='rota.html'">
+            <img src="rotafacil-final_img.jpeg" alt="rota facil">
+            <div style="margin-top: 10px;">Rota Fácil</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='conversor_moeda.html'">
+            <img src="conversormoeda-img.jpeg" alt="conversor moeda">
+            <div style="margin-top: 10px;">Conversor Moeda</div>
+        </div>     
+       
+        <div class="card" onclick="window.location.href='consultaveiculos.html'">
+            <img src="logaconsultaveiculo.jpeg" alt="velocimetro">
+            <div style="margin-top: 10px;">Consulta Veículos Severino-LC</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='agendaeletronica.html'">
+            <img src="agendaeltronica_Image_.jpeg" alt="velocimetro">
+            <div style="margin-top: 10px;">Agenda Eletrônica</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='cotacaodemetais.html'">
+            <img src="cotacaodemetais_img.jpeg" alt="velocimetro">
+            <div style="margin-top: 10px;">Cotação de Metais</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='calculadora.html'">
+            <img src="calculadora_img.jpeg" alt="calculadora">
+            <div style="margin-top: 10px;">Calculadora</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='calendario.html'">
+            <img src="calendario-img.jpeg" alt="calculadora">
+            <div style="margin-top: 10px;">Calendário</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='bussola.html'">
+            <img src="bussola-img.jpeg" alt="bussóla">
+            <div style="margin-top: 10px;">Bússola</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='calculadora_IMC.html'">
+            <img src="calculadoraIMC_img.jpeg" alt="calculadora IMC">
+            <div style="margin-top: 10px;">Calculadora IMC</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='checklist.html'">
+            <img src="cheklistmanutencao-img.jpeg" alt="checklist manutencao">
+            <div style="margin-top: 10px;">Checklist Manutenção</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='saverinooffGrid_1.html'">
+            <img src="OffgridSeverino_img.jpeg" alt="severino offgrid bitola">
+            <div style="margin-top: 10px;">Severino Off-Grid Bitola Fio</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='codigoresitor_1.html'">
+            <img src="codigo_cores_resistores.jpeg" alt="codigo resistores">
+            <div style="margin-top: 10px;">Código Cores Resistores</div>
+        </div>
+        
+        <div class="card" onclick="window.location.href='codigocoresfio.html'">
+            <img src="1-codigofio_img.jpeg" alt="codigo Cores Fio">
+            <div style="margin-top: 10px;">Código Cores Fio</div>
+        </div> 
+                     
+    </div>
+    
+    <iframe id="frame"></iframe>
+    <button class="closeBtn" onclick="closeFrame()">X</button>
+    
+    <script>
+        function openLocal(file) {
+            document.getElementById('frame').src = file;
+            document.getElementById('frame').style.display = 'block';
+            document.querySelector('.closeBtn').style.display = 'block';
+        }
+        
+        function openLink(url) { window.open(url, '_blank'); }
+        
+        function closeFrame() {
+            document.getElementById('frame').style.display = 'none';
+            document.getElementById('frame').src = "";
+            document.querySelector('.closeBtn').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

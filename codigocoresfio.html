@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Unificado de Cores de Fios Elétricos</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #1a1a2e;
+            --gold: #f0c060;
+            --gold-dark: #c79a2c;
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --success: #10b981;
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --border-color: #2a2a4a;
+            --glass-bg: rgba(30, 30, 60, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(240, 192, 96, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            perspective: 1000px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: visible;
+            transform-style: preserve-3d;
+            transform: rotateX(2deg) rotateY(-1deg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .container:hover {
+            transform: rotateX(0deg) rotateY(0deg) translateY(-5px);
+            box-shadow: 0 30px 60px -12px rgba(240, 192, 96, 0.2);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gold), #f59e0b, var(--gold-dark));
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* Melhoria na responsividade do Logo */
+        .logo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            animation: logoFloat 3s ease-in-out infinite;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        @media (max-width: 480px) {
+            .logo-container {
+                width: 90px;
+                height: 90px;
+                margin-bottom: 15px;
+            }
+            .logo-face {
+                width: 90px !important;
+                height: 90px !important;
+                font-size: 35px !important;
+            }
+            .logo-face-front { transform: translateZ(45px) !important; }
+            .logo-face-back { transform: rotateY(180deg) translateZ(45px) !important; }
+            .logo-face-right { transform: rotateY(90deg) translateZ(45px) !important; }
+            .logo-face-left { transform: rotateY(-90deg) translateZ(45px) !important; }
+            .logo-face-top { transform: rotateX(90deg) translateZ(45px) !important; }
+            .logo-face-bottom { transform: rotateX(-90deg) translateZ(45px) !important; }
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotateY(0deg); }
+            25% { transform: translateY(-15px) rotateY(10deg); }
+            75% { transform: translateY(-5px) rotateY(-10deg); }
+        }
+
+        .logo-3d {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(-45deg);
+            transition: transform 0.5s ease;
+        }
+
+        .logo-face {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            border: 2px solid rgba(240, 192, 96, 0.3);
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(30, 30, 60, 0.9), rgba(20, 20, 40, 0.9));
+            box-shadow: 0 0 30px rgba(240, 192, 96, 0.2), inset 0 0 20px rgba(240, 192, 96, 0.1);
+        }
+
+        .logo-face-front { transform: translateZ(60px); border-color: rgba(240, 192, 96, 0.6); }
+        .logo-face-back { transform: rotateY(180deg) translateZ(60px); }
+        .logo-face-right { transform: rotateY(90deg) translateZ(60px); }
+        .logo-face-left { transform: rotateY(-90deg) translateZ(60px); }
+        .logo-face-top { transform: rotateX(90deg) translateZ(60px); }
+        .logo-face-bottom { transform: rotateX(-90deg) translateZ(60px); }
+
+        .orbital-ring {
+            position: absolute;
+            width: 140%; height: 140%;
+            top: -20%; left: -20%;
+            border: 1px solid transparent;
+            border-top-color: rgba(240, 192, 96, 0.2);
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 25px;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 10px rgba(240, 192, 96, 0.3);
+        }
+
+        .field-group { margin-bottom: 20px; }
+
+        label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .select-wrapper { position: relative; }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 15px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 10px;
+            pointer-events: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: rgba(20, 20, 40, 0.8);
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(30, 30, 60, 0.95);
+        }
+
+        .info-box {
+            display: none;
+            background: linear-gradient(135deg, rgba(25, 25, 50, 0.9), rgba(30, 30, 60, 0.9));
+            border-left: 5px solid var(--gold);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .obs-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(252, 211, 77, 0.1);
+            border: 1px solid rgba(252, 211, 77, 0.3);
+            border-radius: 10px;
+            font-size: 13px;
+            color: #fcd34d;
+            display: none;
+        }
+
+        /* Footer e Aviso Legal */
+        .footer-note {
+            font-size: 12px;
+            color: #6a6a8a;
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .legal-disclaimer {
+            font-size: 10px;
+            color: #4a4a6a;
+            margin-top: 15px;
+            text-align: center;
+            line-height: 1.4;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container" id="mainLogo">
+        <div class="orbital-ring"></div>
+        <div class="logo-3d">
+            <div class="logo-face logo-face-front">⚡</div>
+            <div class="logo-face logo-face-back">🔌</div>
+            <div class="logo-face logo-face-right">🎨</div>
+            <div class="logo-face logo-face-left">🔧</div>
+            <div class="logo-face logo-face-top">⚙️</div>
+            <div class="logo-face logo-face-bottom">💡</div>
+        </div>
+    </div>
+    
+    <h2>🔌 Consulta de Fiação</h2>
+    
+    <div class="field-group">
+        <label>🏗️ 1. Tipo de Instalação</label>
+        <div class="select-wrapper">
+            <select id="norma" onchange="atualizarCores()">
+                <option value="residencial">🏠 Residencial (NBR 5410)</option>
+                <option value="industrial">🏭 Industrial (NR-10 / IEC)</option>
+                <option value="automotivo">🚗 Automotivo Geral</option>
+                <option value="som">🔊 Som Automotivo</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="field-group">
+        <label>🎨 2. Cor do Fio</label>
+        <div class="select-wrapper">
+            <select id="corFio" onchange="exibirResultado()"></select>
+        </div>
+    </div>
+
+    <div id="resultado" class="info-box"></div>
+    <div id="obsGeral" class="obs-box"></div>
+
+    <div class="footer-note">
+        <strong>⚠️ Segurança:</strong> Use sempre multímetro. Cores podem variar em sistemas antigos.
+    </div>
+
+    <div class="legal-disclaimer">
+        Este aplicativo é uma ferramenta de auxílio informativo e educativo. 
+        As informações aqui contidas <strong>não substituem</strong> o projeto elaborado por um engenheiro eletricista qualificado nem a consulta direta às normas técnicas vigentes (como NBR 5410, NR-10 ou normas DIN/ISO).
+    </div>
+</div>
+
+<script>
+    const baseDados = {
+        residencial: {
+            obs: "💡 <b>Dica:</b> O azul claro (Neutro) e o verde (Terra) são cores exclusivas. Nunca use para fase!",
+            cores: {
+                "azul_claro": { titulo: "Azul Claro", funcao: "Condutor Neutro", detalhes: "Retorno de corrente, referência 0V.", icone: "🔵" },
+                "verde_amarelo": { titulo: "Verde ou Verde-Amarelo", funcao: "Terra", detalhes: "Proteção contra choques e surtos.", icone: "🟢" },
+                "vermelho_preto": { titulo: "Vermelho, Preto ou Marrom", funcao: "Condutor Fase", detalhes: "Fio energizado (127V ou 220V).", icone: "🔴" },
+                "branco_cinza": { titulo: "Branco ou Cinza", funcao: "Condutor de Retorno", detalhes: "Liga o interruptor à lâmpada. Facilita a identificação no eletroduto.", icone: "⚪" }
+            }
+        },
+        industrial: {
+            obs: "⚡ <b>Atenção:</b> Fios laranjas podem estar energizados mesmo com a chave geral desligada!",
+            cores: {
+                "preto": { titulo: "Preto", funcao: "Potência (AC/DC)", detalhes: "Alimentação principal de motores e cargas pesadas.", icone: "⚫" },
+                "vermelho": { titulo: "Vermelho", funcao: "Comando AC", detalhes: "Circuitos de relés e contatores em corrente alternada.", icone: "🔴" },
+                "azul_escuro": { titulo: "Azul Escuro", funcao: "Comando DC", detalhes: "Tensão contínua (24V DC), comum em CLPs.", icone: "🔵" },
+                "laranja": { titulo: "Laranja", funcao: "Intertravamentos", detalhes: "Circuitos externos que vêm de outros painéis.", icone: "🟠" }
+            }
+        },
+        automotivo: {
+            obs: "🚗 <b>DIN 72551:</b> Marrom é sempre massa (GND) na linha alemã.",
+            cores: {
+                "marrom": { titulo: "Marrom", funcao: "Massa (GND)", detalhes: "Negativo conectado ao chassi.", icone: "🟤" },
+                "vermelho": { titulo: "Vermelho", funcao: "Positivo Direto (+30)", detalhes: "Alimentação constante da bateria.", icone: "🔴" },
+                "preto": { titulo: "Preto", funcao: "Pós-Chave (+15)", detalhes: "Energia apenas com a ignição ligada.", icone: "⚫" }
+            }
+        },
+        som: {
+            obs: "🔊 <b>Memória:</b> O fio Amarelo deve ir no 12V direto para não apagar as configurações.",
+            cores: {
+                "amarelo": { titulo: "Amarelo", funcao: "Bateria (Memória)", detalhes: "Mantém as configurações e relógio.", icone: "🟡" },
+                "vermelho": { titulo: "Vermelho", funcao: "Ignição (ACC)", detalhes: "Liga/desliga o rádio com a chave.", icone: "🔴" },
+                "preto": { titulo: "Preto", funcao: "Terra (GND)", detalhes: "Negativo do rádio.", icone: "⚫" },
+                "azul_branco": { titulo: "Azul / Branco", funcao: "Remoto (REM)", detalhes: "Liga o amplificador ou antena elétrica.", icone: "🔵" }
+            }
+        }
+    };
+
+    function atualizarCores() {
+        const norma = document.getElementById('norma').value;
+        const selectCores = document.getElementById('corFio');
+        selectCores.innerHTML = '<option value="">-- Selecione a Cor --</option>';
+        
+        for (const chave in baseDados[norma].cores) {
+            let opt = document.createElement('option');
+            opt.value = chave;
+            opt.innerText = `${baseDados[norma].cores[chave].icone} ${baseDados[norma].cores[chave].titulo}`;
+            selectCores.appendChild(opt);
+        }
+        document.getElementById('resultado').style.display = 'none';
+        document.getElementById('obsGeral').style.display = 'none';
+    }
+
+    function exibirResultado() {
+        const norma = document.getElementById('norma').value;
+        const cor = document.getElementById('corFio').value;
+        const resBox = document.getElementById('resultado');
+        const obsBox = document.getElementById('obsGeral');
+
+        if (cor && baseDados[norma].cores[cor]) {
+            const d = baseDados[norma].cores[cor];
+            resBox.innerHTML = `<b>${d.icone} ${d.titulo}</b><div style="color:var(--gold);margin:5px 0">${d.funcao}</div><small>${d.detalhes}</small>`;
+            resBox.style.display = 'block';
+            obsBox.innerHTML = baseDados[norma].obs;
+            obsBox.style.display = 'block';
+        }
+    }
+
+    window.onload = atualizarCores;
+
+    // Efeito de movimento 3D no card
+    document.querySelector('.container').addEventListener('mousemove', (e) => {
+        let rect = e.currentTarget.getBoundingClientRect();
+        let x = (e.clientX - rect.left) / rect.width - 0.5;
+        let y = (e.clientY - rect.top) / rect.height - 0.5;
+        e.currentTarget.style.transform = `rotateY(${x * 10}deg) rotateX(${y * -10}deg)`;
+    });
+    
+    document.querySelector('.container').addEventListener('mouseleave', (e) => {
+        e.currentTarget.style.transform = `rotateX(2deg) rotateY(-1deg)`;
+    });
+</script>
+</body>
+</html

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Severino Off-Grid - Checklist</title>
+    <style>
+        :root {
+            --primary: #f39c12;
+            --primary-glow: #ffb347;
+            --accent: #00d4ff;
+            --accent2: #a855f7;
+            --dark: #0a0a0f;
+            --card-bg: rgba(20, 20, 35, 0.65);
+            --glass: rgba(255, 255, 255, 0.04);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text: #e0e0e0;
+            --text-secondary: #b0b0c0;
+            --shadow-3d: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            --shadow-glow: 0 0 30px rgba(243, 156, 18, 0.15);
+            --radius: 18px;
+            --radius-sm: 12px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(ellipse at 20% 20%, #1a1040 0%, #0a0a18 40%, #050510 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        /* Overlay com textura sutil */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 80% 10%, rgba(0, 212, 255, 0.04) 0%, transparent 50%),
+                radial-gradient(circle at 10% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(243, 156, 18, 0.02) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ========== HEADER COM CUBO 3D ========== */
+        .header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 18px;
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-3d), var(--shadow-glow);
+            overflow: visible;
+            transition: var(--transition);
+        }
+
+        .header:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(243, 156, 18, 0.2);
+        }
+
+        /* Container do cubo 3D */
+        .cube-wrapper {
+            perspective: 500px;
+            width: 56px;
+            height: 56px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cube {
+            width: 56px;
+            height: 56px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 8s infinite linear;
+            cursor: pointer;
+        }
+
+        .cube:hover {
+            animation-play-state: paused;
+        }
+
+        .cube:active {
+            animation: rotateCubeFast 0.6s infinite linear;
+        }
+
+        @keyframes rotateCube {
+            0% {
+                transform: rotateX(-25deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(-25deg) rotateY(360deg);
+            }
+        }
+
+        @keyframes rotateCubeFast {
+            0% {
+                transform: rotateX(-25deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(-25deg) rotateY(360deg);
+            }
+        }
+
+        .face {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 22px;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1), 0 8px 20px rgba(0, 0, 0, 0.5);
+            backface-visibility: visible;
+        }
+
+        .front {
+            background: linear-gradient(135deg, #1e1e3a 0%, #2d2d5e 100%);
+            transform: translateZ(28px);
+        }
+        .back {
+            background: linear-gradient(135deg, #2d2d5e 0%, #1e1e3a 100%);
+            transform: rotateY(180deg) translateZ(28px);
+        }
+        .right {
+            background: linear-gradient(135deg, #23234a 0%, #32326b 100%);
+            transform: rotateY(90deg) translateZ(28px);
+        }
+        .left {
+            background: linear-gradient(135deg, #32326b 0%, #23234a 100%);
+            transform: rotateY(-90deg) translateZ(28px);
+        }
+        .top {
+            background: linear-gradient(135deg, #2a2a55 0%, #3a3a75 100%);
+            transform: rotateX(90deg) translateZ(28px);
+        }
+        .bottom {
+            background: linear-gradient(135deg, #3a3a75 0%, #2a2a55 100%);
+            transform: rotateX(-90deg) translateZ(28px);
+        }
+
+        /* Brilho nas bordas do cubo */
+        .face::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 7px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+        }
+
+        /* Texto do header */
+        .header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-text h2 {
+            margin: 0;
+            font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #f39c12, #ffb347, #f39c12);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+
+        .header-text .subtitle {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* ========== CATEGORIAS (CARDS 3D) ========== */
+        .category {
+            background: var(--card-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            box-shadow: var(--shadow-3d);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.1) 20%,
+                    rgba(255, 255, 255, 0.25) 50%,
+                    rgba(255, 255, 255, 0.1) 80%,
+                    transparent);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .category:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 30px 55px -18px rgba(0, 0, 0, 0.7), 0 0 35px rgba(243, 156, 18, 0.1);
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            margin-bottom: 14px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .category-title .icon {
+            font-size: 1.3rem;
+            filter: drop-shadow(0 0 8px rgba(243, 156, 18, 0.6));
+            animation: pulseIcon 2.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.18);
+            }
+        }
+
+        .category:nth-child(2) .category-title .icon {
+            animation-delay: 0.3s;
+        }
+        .category:nth-child(3) .category-title .icon {
+            animation-delay: 0.6s;
+        }
+        .category:nth-child(4) .category-title .icon {
+            animation-delay: 0.9s;
+        }
+
+        /* Itens */
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 11px 8px;
+            gap: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .item:hover {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .item:last-child {
+            border: none;
+        }
+
+        /* Checkbox customizado 3D */
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            outline: none;
+        }
+
+        input[type="checkbox"]:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 18px rgba(243, 156, 18, 0.35), 0 4px 12px rgba(0, 0, 0, 0.4);
+            background: rgba(243, 156, 18, 0.08);
+        }
+
+        input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            border-color: #f39c12;
+            box-shadow: 0 0 22px rgba(243, 156, 18, 0.55), 0 6px 16px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            animation: checkPop 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            width: 7px;
+            height: 13px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg);
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+        }
+
+        @keyframes checkPop {
+            0% {
+                transform: scale(0.8);
+            }
+            60% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        label {
+            font-size: 0.93rem;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+            color: #d8d8e8;
+            letter-spacing: 0.15px;
+            transition: var(--transition);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="checkbox"]:checked+label {
+            color: #c0c0d0;
+            text-decoration: line-through;
+            text-decoration-color: rgba(243, 156, 18, 0.5);
+            text-decoration-thickness: 2px;
+            opacity: 0.7;
+        }
+
+        /* ========== BOTÃO 3D ========== */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #2d2d40 0%, #1a1a2e 100%);
+            color: #d0d0e0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-reset:hover {
+            background: linear-gradient(135deg, #3d3d55 0%, #25253d 100%);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
+        .btn-reset:active {
+            transform: translateY(1px) scale(0.97);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            transition: 0.1s;
+        }
+
+        /* Efeito ripple simples */
+        button::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+
+        button:hover::after {
+            opacity: 1;
+        }
+
+        /* Status */
+        .status {
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            letter-spacing: 0.3px;
+            font-weight: 500;
+            opacity: 0.7;
+            transition: all 0.4s;
+            padding: 6px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.015);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .status.updated {
+            color: #ffb347;
+            opacity: 1;
+            text-shadow: 0 0 12px rgba(243, 156, 18, 0.5);
+        }
+
+        /* ========== RESPONSIVIDADE ========== */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .app-container {
+                gap: 12px;
+            }
+
+            .header {
+                padding: 12px 14px;
+                gap: 12px;
+                border-radius: var(--radius-sm);
+            }
+
+            .cube-wrapper {
+                width: 46px;
+                height: 46px;
+                perspective: 400px;
+            }
+
+            .cube {
+                width: 46px;
+                height: 46px;
+            }
+
+            .face {
+                width: 46px;
+                height: 46px;
+                font-size: 18px;
+                border-radius: 8px;
+            }
+
+            .front {
+                transform: translateZ(23px);
+            }
+            .back {
+                transform: rotateY(180deg) translateZ(23px);
+            }
+            .right {
+                transform: rotateY(90deg) translateZ(23px);
+            }
+            .left {
+                transform: rotateY(-90deg) translateZ(23px);
+            }
+            .top {
+                transform: rotateX(90deg) translateZ(23px);
+            }
+            .bottom {
+                transform: rotateX(-90deg) translateZ(23px);
+            }
+
+            .header-text h2 {
+                font-size: 1.1rem;
+            }
+            .header-text .subtitle {
+                font-size: 0.65rem;
+            }
+
+            .category {
+                padding: 14px 12px;
+                border-radius: var(--radius-sm);
+            }
+
+            .category-title {
+                font-size: 0.85rem;
+                gap: 8px;
+            }
+
+            .item {
+                padding: 10px 4px;
+                gap: 10px;
+            }
+
+            label {
+                font-size: 0.82rem;
+            }
+
+            input[type="checkbox"] {
+                width: 24px;
+                height: 24px;
+                border-radius: 6px;
+            }
+
+            input[type="checkbox"]:checked::after {
+                left: 7px;
+                top: 3px;
+                width: 6px;
+                height: 11px;
+            }
+
+            button {
+                padding: 13px 16px;
+                font-size: 0.8rem;
+                border-radius: 10px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 580px;
+            }
+
+            body {
+                padding: 30px;
+                align-items: center;
+                min-height: 100vh;
+            }
+
+            .category {
+                padding: 20px 22px;
+            }
+
+            .item {
+                padding: 13px 10px;
+                gap: 16px;
+            }
+
+            label {
+                font-size: 0.98rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .app-container {
+                max-width: 620px;
+            }
+
+            body {
+                padding: 40px;
+            }
+        }
+
+        /* Scrollbar estilizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- ========== HEADER COM CUBO 3D ========== -->
+        <div class="header">
+            <div class="cube-wrapper" title="Severino Off-Grid - LC">
+                <div class="cube">
+                    <div class="face front">LC</div>
+                    <div class="face back">⚡</div>
+                    <div class="face right">🔋</div>
+                    <div class="face left">☀️</div>
+                    <div class="face top">S</div>
+                    <div class="face bottom">O</div>
+                </div>
+            </div>
+            <div class="header-text">
+                <h2>Severino: Checklist ✅</h2>
+                <p class="subtitle">Manutenção Preventiva Off-Grid</p>
+            </div>
+        </div>
+
+        <!-- ========== CATEGORIAS ========== -->
+        <div class="category">
+            <div class="category-title"><span class="icon">☀️</span> Painéis Solares</div>
+            <div class="item">
+                <input type="checkbox" id="item1" class="check">
+                <label for="item1">Limpeza física (água/esponja)</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="item2" class="check">
+                <label for="item2">Verificar trincas/vidro</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="item3" class="check">
+                <label for="item3">Fixação dos suportes/parafusos</label>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title"><span class="icon">🔋</span> Banco de Baterias</div>
+            <div class="item">
+                <input type="checkbox" id="item4" class="check">
+                <label for="item4">Reaperto de terminais</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="item5" class="check">
+                <label for="item5">Limpar oxidação (zinabre)</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="item6" class="check">
+                <label for="item6">Conferir tensões individuais</label>
+            </div>
+        </div>
+
+        <div class="category">
+            <div class="category-title"><span class="icon">⚡</span> Elétrica e Inversor</div>
+            <div class="item">
+                <input type="checkbox" id="item7" class="check">
+                <label for="item7">Limpeza de coolers/ventilação</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="item8" class="check">
+                <label for="item8">Teste de proteção (Disjuntores)</label>
+            </div>
+            <div class="item">
+                <input type="checkbox" id="item9" class="check">
+                <label for="item9">Verificar aquecimento em cabos</label>
+            </div>
+        </div>
+
+        <!-- ========== BOTÃO ========== -->
+        <div class="btn-group">
+            <button class="btn-reset" onclick="resetar()">🔄 Limpar Tudo</button>
+        </div>
+
+        <div class="status" id="status">Salvo automaticamente no celular</div>
+    </div>
+
+    <script>
+        const checkboxes = document.querySelectorAll('.check');
+        const statusEl = document.getElementById('status');
+
+        // Carregar dados salvos
+        window.onload = () => {
+            checkboxes.forEach(cb => {
+                const savedValue = localStorage.getItem(cb.id);
+                if (savedValue === 'true') {
+                    cb.checked = true;
+                }
+
+                // Adicionar evento de salvar ao clicar
+                cb.addEventListener('change', () => {
+                    localStorage.setItem(cb.id, cb.checked);
+                    statusEl.innerText = "✅ Status atualizado!";
+                    statusEl.classList.add('updated');
+                    setTimeout(() => {
+                        statusEl.innerText = "Salvo automaticamente no celular";
+                        statusEl.classList.remove('updated');
+                    }, 2000);
+                });
+            });
+        };
+
+        function resetar() {
+            if (confirm("Deseja desmarcar todos os itens?")) {
+                checkboxes.forEach(cb => {
+                    cb.checked = false;
+                    localStorage.removeItem(cb.id);
+                });
+                statusEl.innerText = "🔄 Lista reiniciada!";
+                statusEl.classList.add('updated');
+                setTimeout(() => {
+                    statusEl.innerText = "Salvo automaticamente no celular";
+                    statusEl.classList.remove('updated');
+                }, 2000);
+            }
+        }
+    </script>
+
+</body>
+</html>

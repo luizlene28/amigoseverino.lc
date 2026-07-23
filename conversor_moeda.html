@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Conversor de Moedas 3D - App Store</title>
+
+    <!-- Flag Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@6.6.6/css/flag-icons.min.css">
+
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --secondary: #00b894;
+            --accent: #fdcb6e;
+            --accent2: #ff6b6b;
+            --bg-dark: #0c0c1d;
+            --bg-card: #151530;
+            --gold: #f0c060;
+            --gold-light: #ffeaa7;
+            --text: #f0f0f8;
+            --text-muted: #b0b0cc;
+            --shadow-3d: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --border-glow: rgba(255, 255, 255, 0.08);
+            --border-gold: rgba(240, 192, 96, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            perspective: 1200px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo animado com gradiente radial pulsante */
+        .bg-ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(108, 92, 231, 0.2) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 70%, rgba(0, 184, 148, 0.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 50%, rgba(253, 203, 110, 0.08) 0%, transparent 60%);
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%,
+            100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Grade decorativa de fundo */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.6;
+        }
+
+        /* ============ CUBO 3D NO TOPO ESQUERDO ============ */
+        .cube-container {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            width: 70px;
+            height: 70px;
+            z-index: 100;
+            perspective: 800px;
+            pointer-events: none;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 10s linear infinite;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.15);
+            backface-visibility: hidden;
+        }
+
+        .cube-face.front {
+            background: linear-gradient(135deg, #6c5ce7, #4834d4);
+            transform: translateZ(35px);
+        }
+        .cube-face.back {
+            background: linear-gradient(135deg, #00b894, #009975);
+            transform: rotateY(180deg) translateZ(35px);
+        }
+        .cube-face.right {
+            background: linear-gradient(135deg, #fdcb6e, #f0a500);
+            transform: rotateY(90deg) translateZ(35px);
+        }
+        .cube-face.left {
+            background: linear-gradient(135deg, #ff6b6b, #d63031);
+            transform: rotateY(-90deg) translateZ(35px);
+        }
+        .cube-face.top {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            transform: rotateX(90deg) translateZ(35px);
+        }
+        .cube-face.bottom {
+            background: linear-gradient(135deg, #636e72, #2d3436);
+            transform: rotateX(-90deg) translateZ(35px);
+        }
+
+        @keyframes rotateCube {
+            0% {
+                transform: rotateX(0deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(360deg) rotateY(360deg);
+            }
+        }
+
+        /* ============ HEADER ============ */
+        .app-header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .app-header .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 10px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .app-header h1 {
+            font-size: clamp(1.6rem, 5vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e, #f0a500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: none;
+            filter: drop-shadow(0 4px 10px rgba(240, 192, 96, 0.5));
+            margin: 0;
+        }
+
+        /* ============ CARD PRINCIPAL ============ */
+        .main-card {
+            position: relative;
+            z-index: 10;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            padding: 28px 22px;
+            border-radius: 28px;
+            max-width: 460px;
+            width: 100%;
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.6),
+                0 0 0 1px var(--border-glow),
+                0 0 80px rgba(108, 92, 231, 0.12);
+            transform: rotateX(2.5deg) rotateY(-1.5deg);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.2),
+                box-shadow 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+
+        .main-card:hover {
+            transform: rotateX(0.5deg) rotateY(-0.5deg) translateY(-3px);
+            box-shadow:
+                0 40px 70px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 255, 255, 0.12),
+                0 0 100px rgba(108, 92, 231, 0.2);
+        }
+
+        /* Marca d'água do Brasão do Brasil */
+        .main-card::after {
+            content: "";
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 110px;
+            height: 110px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Ccircle cx='60' cy='60' r='55' fill='%231c7c34' stroke='%23f5c542' stroke-width='2' /%3E%3Ccircle cx='60' cy='60' r='48' fill='%232b8c3e' stroke='%23f5d742' stroke-width='1.5' /%3E%3Cpath d='M60 20 L70 40 L90 45 L75 60 L80 80 L60 70 L40 80 L45 60 L30 45 L50 40 Z' fill='%23f5d742' stroke='%23c59b1a' stroke-width='1' /%3E%3Ccircle cx='60' cy='60' r='14' fill='%23335f8a' stroke='%23ffffff' stroke-width='1' /%3E%3Ctext x='60' y='66' font-size='14' text-anchor='middle' fill='%23ffffff' font-weight='bold'%3E★%3C/text%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+            filter: grayscale(30%);
+        }
+
+        /* Garantir que conteúdo fique sobre a marca d'água */
+        .main-card>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============ INPUTS ============ */
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .input-3d-wrapper {
+            position: relative;
+            perspective: 600px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 10, 30, 0.7);
+            color: #fff;
+            font-size: 1.4rem;
+            font-weight: 700;
+            outline: none;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:
+                inset 0 4px 12px rgba(0, 0, 0, 0.5),
+                0 8px 20px rgba(0, 0, 0, 0.3);
+            text-align: right;
+            letter-spacing: 1px;
+            transform: rotateX(2deg);
+            transform-style: preserve-3d;
+            font-variant-numeric: tabular-nums;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+            box-shadow:
+                inset 0 4px 12px rgba(0, 0, 0, 0.6),
+                0 0 30px rgba(240, 192, 96, 0.4),
+                0 8px 25px rgba(0, 0, 0, 0.4);
+            transform: rotateX(0deg) translateZ(5px);
+            background: rgba(15, 15, 35, 0.85);
+            border-width: 2px;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ============ SELECTS COM BANDEIRAS ============ */
+        .select-3d-wrapper {
+            position: relative;
+            margin-bottom: 14px;
+            perspective: 600px;
+        }
+
+        .select-3d-inner {
+            position: relative;
+            transform: rotateX(1.5deg);
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .select-3d-inner:focus-within {
+            transform: rotateX(0deg) translateZ(4px);
+        }
+
+        select {
+            width: 100%;
+            padding: 14px 18px 14px 58px;
+            border-radius: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 10, 30, 0.7);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            box-shadow:
+                inset 0 4px 12px rgba(0, 0, 0, 0.5),
+                0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24"><path fill="%23fdcb6e" d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 28px;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+            box-shadow:
+                inset 0 4px 12px rgba(0, 0, 0, 0.6),
+                0 0 30px rgba(240, 192, 96, 0.4),
+                0 8px 25px rgba(0, 0, 0, 0.4);
+            border-width: 2px;
+        }
+
+        select option {
+            background: #1a1a35;
+            color: #fff;
+            padding: 12px;
+        }
+
+        .flag-badge {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8rem;
+            width: 1.4em;
+            line-height: 1em;
+            border-radius: 8px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.45);
+            pointer-events: none;
+            z-index: 3;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        select:focus~.flag-badge {
+            box-shadow: 0 6px 20px rgba(240, 192, 96, 0.5);
+            border-color: rgba(240, 192, 96, 0.6);
+        }
+
+        .fi {
+            border-radius: 6px;
+        }
+
+        /* ============ BOTÃO 3D ============ */
+        .btn-3d-wrapper {
+            perspective: 800px;
+            margin: 20px 0 12px;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(145deg, #00c853, #009624);
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            box-shadow:
+                0 18px 30px rgba(0, 0, 0, 0.5),
+                0 5px 0 #005a18,
+                inset 0 2px 12px rgba(255, 255, 255, 0.35);
+            transform: rotateX(3deg) translateY(0);
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: -40%;
+            left: -60%;
+            width: 60%;
+            height: 180%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.25),
+                    transparent);
+            transform: rotate(25deg);
+            transition: left 0.6s ease;
+            pointer-events: none;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #00e676, #00b248);
+            box-shadow:
+                0 14px 28px rgba(0, 0, 0, 0.5),
+                0 3px 0 #005a18,
+                inset 0 2px 18px rgba(255, 255, 255, 0.5);
+            transform: rotateX(1.5deg) translateY(2px);
+        }
+
+        button:hover::after {
+            left: 120%;
+        }
+
+        button:active {
+            transform: rotateX(0deg) translateY(5px);
+            box-shadow:
+                0 6px 15px rgba(0, 0, 0, 0.5),
+                0 1px 0 #005a18,
+                inset 0 2px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        /* ============ RESULTADO ============ */
+        .result-display {
+            margin-top: 18px;
+            padding: 18px;
+            font-size: clamp(1.3rem, 4vw, 1.9rem);
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 18px;
+            border-left: 4px solid var(--accent);
+            box-shadow:
+                inset 0 4px 12px rgba(0, 0, 0, 0.5),
+                0 8px 20px rgba(0, 0, 0, 0.35);
+            color: #ffeaa7;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            word-break: break-word;
+            transform: translateZ(8px);
+            backdrop-filter: blur(8px);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .result-display:empty::before {
+            content: "💱";
+            font-size: 2rem;
+            opacity: 0.5;
+        }
+
+        /* ============ RESPONSIVIDADE ============ */
+        @media (max-width: 600px) {
+            .cube-container {
+                top: 15px;
+                left: 15px;
+                width: 50px;
+                height: 50px;
+            }
+            .cube-face {
+                width: 50px;
+                height: 50px;
+                font-size: 22px;
+                border-radius: 8px;
+            }
+            .cube-face.front {
+                transform: translateZ(25px);
+            }
+            .cube-face.back {
+                transform: rotateY(180deg) translateZ(25px);
+            }
+            .cube-face.right {
+                transform: rotateY(90deg) translateZ(25px);
+            }
+            .cube-face.left {
+                transform: rotateY(-90deg) translateZ(25px);
+            }
+            .cube-face.top {
+                transform: rotateX(90deg) translateZ(25px);
+            }
+            .cube-face.bottom {
+                transform: rotateX(-90deg) translateZ(25px);
+            }
+
+            .main-card {
+                padding: 20px 14px;
+                border-radius: 22px;
+                transform: rotateX(1deg) rotateY(0deg);
+                max-width: 100%;
+            }
+            .main-card:hover {
+                transform: rotateX(0deg) rotateY(0deg) translateY(-2px);
+            }
+            .main-card::after {
+                width: 70px;
+                height: 70px;
+                bottom: 5px;
+                right: 5px;
+                opacity: 0.13;
+            }
+
+            input {
+                font-size: 1.2rem;
+                padding: 13px 14px;
+                border-radius: 14px;
+            }
+            select {
+                font-size: 1rem;
+                padding: 12px 14px 12px 50px;
+                border-radius: 14px;
+            }
+            .flag-badge {
+                font-size: 1.5rem;
+                left: 12px;
+            }
+            button {
+                font-size: 1.1rem;
+                padding: 14px;
+                letter-spacing: 2px;
+            }
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+            .app-header .badge {
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+
+            .bg-ambient {
+                opacity: 0.5;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .cube-container {
+                top: 10px;
+                left: 8px;
+                width: 40px;
+                height: 40px;
+            }
+            .cube-face {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+                border-radius: 6px;
+            }
+            .cube-face.front {
+                transform: translateZ(20px);
+            }
+            .cube-face.back {
+                transform: rotateY(180deg) translateZ(20px);
+            }
+            .cube-face.right {
+                transform: rotateY(90deg) translateZ(20px);
+            }
+            .cube-face.left {
+                transform: rotateY(-90deg) translateZ(20px);
+            }
+            .cube-face.top {
+                transform: rotateX(90deg) translateZ(20px);
+            }
+            .cube-face.bottom {
+                transform: rotateX(-90deg) translateZ(20px);
+            }
+
+            .main-card {
+                padding: 16px 10px;
+                border-radius: 18px;
+            }
+            input {
+                font-size: 1rem;
+                padding: 11px 12px;
+            }
+            select {
+                font-size: 0.9rem;
+                padding-left: 44px;
+            }
+            .flag-badge {
+                font-size: 1.3rem;
+                left: 10px;
+            }
+            .result-display {
+                font-size: 1.1rem;
+                padding: 14px;
+                min-height: 60px;
+            }
+        }
+
+        /* Scroll customizado */
+        select::-webkit-scrollbar {
+            width: 7px;
+        }
+        select::-webkit-scrollbar-track {
+            background: #0a0a1f;
+            border-radius: 10px;
+        }
+        select::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        /* Animação de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) rotateX(5deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotateX(2.5deg) rotateY(-1.5deg);
+            }
+        }
+        .main-card {
+            animation: fadeInUp 0.8s cubic-bezier(0.25, 0.8, 0.25, 1.2) forwards;
+        }
+
+        /* Tooltip do cubo */
+        .cube-tooltip {
+            position: fixed;
+            top: 30px;
+            left: 100px;
+            z-index: 101;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+            pointer-events: none;
+            text-transform: uppercase;
+            animation: fadeTooltip 3s ease-in-out infinite;
+        }
+        @keyframes fadeTooltip {
+            0%,
+            100% {
+                opacity: 0.35;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+        @media (max-width: 600px) {
+            .cube-tooltip {
+                left: 70px;
+                top: 22px;
+                font-size: 0.6rem;
+            }
+        }
+        @media (max-width: 380px) {
+            .cube-tooltip {
+                left: 55px;
+                top: 16px;
+                font-size: 0.55rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Fundo animado -->
+    <div class="bg-ambient"></div>
+    <div class="grid-bg"></div>
+
+    <!-- Cubo 3D no topo esquerdo -->
+    <div class="cube-container">
+        <div class="cube">
+            <div class="cube-face front">$</div>
+            <div class="cube-face back">€</div>
+            <div class="cube-face right">£</div>
+            <div class="cube-face left">¥</div>
+            <div class="cube-face top">₿</div>
+            <div class="cube-face bottom">R$</div>
+        </div>
+    </div>
+    <div class="cube-tooltip" aria-hidden="true">Moedas do Mundo</div>
+
+    <!-- Header estilo app -->
+    <div class="app-header">
+        <div class="badge">🌍 App Finance</div>
+        <h1>Conversor de Moedas 3D</h1>
+    </div>
+
+    <!-- Card principal -->
+    <div class="main-card">
+        <div class="input-group">
+            <label>💰 Valor</label>
+            <div class="input-3d-wrapper">
+                <input type="text" id="valor" placeholder="R$ 0,00" inputmode="decimal" />
+            </div>
+        </div>
+
+        <div class="select-3d-wrapper">
+            <div class="select-3d-inner">
+                <span class="flag-badge" id="flagDe"></span>
+                <select id="de"></select>
+            </div>
+        </div>
+
+        <div class="select-3d-wrapper">
+            <div class="select-3d-inner">
+                <span class="flag-badge" id="flagPara"></span>
+                <select id="para"></select>
+            </div>
+        </div>
+
+        <div class="btn-3d-wrapper">
+            <button onclick="converter()">Converter Agora</button>
+        </div>
+
+        <div class="result-display" id="resultado"></div>
+    </div>
+
+    <script>
+        // --------------------------------------------------------------
+        // LISTA GLOBAL COM MAIS DE 160 MOEDAS (ISO 4217)
+        // --------------------------------------------------------------
+        const todasMoedas = [
+            "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN",
+            "BAM", "BBD", "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL",
+            "BSD", "BTN", "BWP", "BYN", "BZD", "CAD", "CDF", "CHF", "CLP", "CNY",
+            "COP", "CRC", "CUP", "CVE", "CZK", "DJF", "DKK", "DOP", "DZD", "EGP",
+            "ERN", "ETB", "EUR", "FJD", "FKP", "FOK", "GBP", "GEL", "GGP", "GHS",
+            "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF",
+            "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD",
+            "JPY", "KES", "KGS", "KHR", "KID", "KMF", "KRW", "KWD", "KYD", "KZT",
+            "LAK", "LBP", "LKR", "LRD", "LSL", "LYD", "MAD", "MDL", "MGA", "MKD",
+            "MMK", "MNT", "MOP", "MRU", "MUR", "MVR", "MWK", "MXN", "MYR", "MZN",
+            "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB", "PEN", "PGK",
+            "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR",
+            "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLL", "SOS", "SRD", "SSP",
+            "STN", "SYP", "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD",
+            "TVD", "TWD", "TZS", "UAH", "UGX", "USD", "UYU", "UZS", "VES", "VND",
+            "VUV", "WST", "XAF", "XCD", "XDR", "XOF", "XPF", "YER", "ZAR", "ZMW",
+            "ZWL"
+        ];
+
+        // Mapeamento para bandeiras
+        const moedaParaPais = {
+            "USD": "us",
+            "BRL": "br",
+            "EUR": "eu",
+            "GBP": "gb",
+            "JPY": "jp",
+            "ARS": "ar",
+            "CAD": "ca",
+            "AUD": "au",
+            "CNY": "cn",
+            "INR": "in",
+            "MXN": "mx",
+            "ZAR": "za",
+            "RUB": "ru",
+            "CHF": "ch",
+            "KRW": "kr",
+            "TRY": "tr",
+            "NZD": "nz",
+            "SEK": "se",
+            "NOK": "no",
+            "DKK": "dk",
+            "AED": "ae",
+            "AFN": "af",
+            "ALL": "al",
+            "AMD": "am",
+            "ANG": "an",
+            "AOA": "ao",
+            "AWG": "aw",
+            "AZN": "az",
+            "BAM": "ba",
+            "BBD": "bb",
+            "BDT": "bd",
+            "BGN": "bg",
+            "BHD": "bh",
+            "BIF": "bi",
+            "BMD": "bm",
+            "BND": "bn",
+            "BOB": "bo",
+            "BSD": "bs",
+            "BTN": "bt",
+            "BWP": "bw",
+            "BYN": "by",
+            "BZD": "bz",
+            "CDF": "cd",
+            "CLP": "cl",
+            "COP": "co",
+            "CRC": "cr",
+            "CUP": "cu",
+            "CVE": "cv",
+            "CZK": "cz",
+            "DJF": "dj",
+            "DOP": "do",
+            "DZD": "dz",
+            "EGP": "eg",
+            "ERN": "er",
+            "ETB": "et",
+            "FJD": "fj",
+            "FKP": "fk",
+            "FOK": "fo",
+            "GEL": "ge",
+            "GGP": "gg",
+            "GHS": "gh",
+            "GIP": "gi",
+            "GMD": "gm",
+            "GNF": "gn",
+            "GTQ": "gt",
+            "GYD": "gy",
+            "HKD": "hk",
+            "HNL": "hn",
+            "HRK": "hr",
+            "HTG": "ht",
+            "HUF": "hu",
+            "IDR": "id",
+            "ILS": "il",
+            "IMP": "im",
+            "IQD": "iq",
+            "IRR": "ir",
+            "ISK": "is",
+            "JEP": "je",
+            "JMD": "jm",
+            "JOD": "jo",
+            "KES": "ke",
+            "KGS": "kg",
+            "KHR": "kh",
+            "KID": "ki",
+            "KMF": "km",
+            "KWD": "kw",
+            "KYD": "ky",
+            "KZT": "kz",
+            "LAK": "la",
+            "LBP": "lb",
+            "LKR": "lk",
+            "LRD": "lr",
+            "LSL": "ls",
+            "LYD": "ly",
+            "MAD": "ma",
+            "MDL": "md",
+            "MGA": "mg",
+            "MKD": "mk",
+            "MMK": "mm",
+            "MNT": "mn",
+            "MOP": "mo",
+            "MRU": "mr",
+            "MUR": "mu",
+            "MVR": "mv",
+            "MWK": "mw",
+            "MYR": "my",
+            "MZN": "mz",
+            "NAD": "na",
+            "NGN": "ng",
+            "NIO": "ni",
+            "NPR": "np",
+            "OMR": "om",
+            "PAB": "pa",
+            "PEN": "pe",
+            "PGK": "pg",
+            "PHP": "ph",
+            "PKR": "pk",
+            "PLN": "pl",
+            "PYG": "py",
+            "QAR": "qa",
+            "RON": "ro",
+            "RSD": "rs",
+            "RWF": "rw",
+            "SAR": "sa",
+            "SBD": "sb",
+            "SCR": "sc",
+            "SDG": "sd",
+            "SGD": "sg",
+            "SHP": "sh",
+            "SLL": "sl",
+            "SOS": "so",
+            "SRD": "sr",
+            "SSP": "ss",
+            "STN": "st",
+            "SYP": "sy",
+            "SZL": "sz",
+            "THB": "th",
+            "TJS": "tj",
+            "TMT": "tm",
+            "TND": "tn",
+            "TOP": "to",
+            "TTD": "tt",
+            "TVD": "tv",
+            "TWD": "tw",
+            "TZS": "tz",
+            "UAH": "ua",
+            "UGX": "ug",
+            "UYU": "uy",
+            "UZS": "uz",
+            "VES": "ve",
+            "VND": "vn",
+            "VUV": "vu",
+            "WST": "ws",
+            "XAF": "cm",
+            "XCD": "ag",
+            "XDR": "un",
+            "XOF": "sn",
+            "XPF": "pf",
+            "YER": "ye",
+            "ZMW": "zm",
+            "ZWL": "zw"
+        };
+
+        const moedas = todasMoedas;
+        const selectDe = document.getElementById("de");
+        const selectPara = document.getElementById("para");
+        const flagDe = document.getElementById("flagDe");
+        const flagPara = document.getElementById("flagPara");
+        const valorInput = document.getElementById("valor");
+
+        // Função para formatar como moeda brasileira enquanto digita
+        function formatarMoedaInput(valor) {
+            let numero = valor.replace(/\D/g, '');
+            if (numero === '') return '';
+            numero = (parseInt(numero, 10) / 100).toFixed(2);
+            return numero.replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+        }
+
+        valorInput.addEventListener('input', function(e) {
+            let valor = e.target.value;
+            valor = valor.replace(/[^\d,]/g, '');
+            let partes = valor.split(',');
+            if (partes.length > 2) valor = partes[0] + ',' + partes.slice(1).join('');
+
+            let numeroLimpo = valor.replace(/\./g, '').replace(',', '.');
+            if (numeroLimpo && !isNaN(numeroLimpo)) {
+                e.target.value = formatarMoedaInput(numeroLimpo.replace('.', ''));
+            } else {
+                e.target.value = valor;
+            }
+        });
+
+        // Preencher selects com todas as moedas ordenadas
+        function popularSelects() {
+            const sortedMoedas = [...moedas].sort((a, b) => a.localeCompare(b));
+            for (let moeda of sortedMoedas) {
+                let opt1 = document.createElement("option");
+                let opt2 = document.createElement("option");
+                opt1.value = opt1.text = moeda;
+                opt2.value = opt2.text = moeda;
+                selectDe.appendChild(opt1);
+                selectPara.appendChild(opt2);
+            }
+        }
+
+        popularSelects();
+
+        // Atualizar bandeira
+        function atualizarBandeira(selectElement, flagElement) {
+            const moeda = selectElement.value;
+            let pais = moedaParaPais[moeda];
+            if (!pais) {
+                if (moeda === "XDR") pais = "un";
+                else if (moeda === "XAF" || moeda === "XOF" || moeda === "XPF") pais = "un";
+                else pais = "un";
+            }
+            flagElement.className = `flag-badge fi fi-${pais}`;
+        }
+
+        // Valores padrão: BRL para USD
+        selectDe.value = "BRL";
+        selectPara.value = "USD";
+        atualizarBandeira(selectDe, flagDe);
+        atualizarBandeira(selectPara, flagPara);
+
+        selectDe.addEventListener('change', () => atualizarBandeira(selectDe, flagDe));
+        selectPara.addEventListener('change', () => atualizarBandeira(selectPara, flagPara));
+
+        // Obter valor numérico
+        function obterValorNumerico() {
+            let valor = valorInput.value;
+            if (!valor) return null;
+            valor = valor.replace(/\./g, '').replace(',', '.');
+            return parseFloat(valor);
+        }
+
+        // Função principal de conversão
+        async function converter() {
+            const valorNumerico = obterValorNumerico();
+            const de = selectDe.value;
+            const para = selectPara.value;
+            const resultadoDiv = document.getElementById("resultado");
+
+            if (isNaN(valorNumerico) || valorNumerico <= 0) {
+                resultadoDiv.innerHTML = "⚠️ Digite um valor válido!";
+                resultadoDiv.style.color = "#ff6b6b";
+                setTimeout(() => {
+                    resultadoDiv.style.color = "#ffeaa7";
+                }, 2000);
+                return;
+            }
+
+            // Feedback visual de carregamento
+            resultadoDiv.innerHTML = "🔄 Convertendo...";
+            resultadoDiv.style.color = "#fdcb6e";
+
+            try {
+                const url = `https://api.exchangerate-api.com/v4/latest/${de}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Falha na rede");
+                const data = await res.json();
+
+                if (!data.rates || !data.rates[para]) {
+                    throw new Error("Moeda não suportada");
+                }
+
+                const taxa = data.rates[para];
+                const resultado = valorNumerico * taxa;
+
+                // Formatação robusta
+                const formatadorOrigem = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: de,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                const formatadorDestino = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: para,
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                let valorFormatadoOrigem, valorFormatadoDestino;
+                try {
+                    valorFormatadoOrigem = formatadorOrigem.format(valorNumerico);
+                    valorFormatadoDestino = formatadorDestino.format(resultado);
+                } catch (e) {
+                    valorFormatadoOrigem = `${de} ${valorNumerico.toFixed(2)}`;
+                    valorFormatadoDestino = `${para} ${resultado.toFixed(2)}`;
+                }
+
+                resultadoDiv.innerHTML = `${valorFormatadoOrigem} = ${valorFormatadoDestino}`;
+                resultadoDiv.style.color = "#ffeaa7";
+
+                // Efeito sutil de pulse no resultado
+                resultadoDiv.style.transform = "translateZ(8px) scale(1.02)";
+                setTimeout(() => {
+                    resultadoDiv.style.transform = "translateZ(8px) scale(1)";
+                }, 150);
+
+            } catch (erro) {
+                console.error(erro);
+                resultadoDiv.innerHTML = "❌ Erro na conversão. Verifique a rede.";
+                resultadoDiv.style.color = "#ff6b6b";
+                setTimeout(() => {
+                    resultadoDiv.style.color = "#ffeaa7";
+                }, 3000);
+            }
+        }
+
+        // Converter ao pressionar Enter
+        valorInput.addEventListener("keypress", function(e) {
+            if (e.key === "Enter") converter();
+        });
+
+        // Placeholder elegante
+        valorInput.placeholder = "R$ 0,00";
+
+        // Adiciona tooltip no card (marca d'água Brasil)
+        const mainCard = document.querySelector('.main-card');
+        if (mainCard) {
+            mainCard.setAttribute('title', 'Brasão do Brasil - Marca d\'água oficial');
+        }
+
+        console.log("🌍 Conversor de Moedas 3D - App Store Edition pronto!");
+        console.log("💱 Mais de 160 moedas mundiais disponíveis.");
+        console.log("🧊 Cubo 3D decorativo no topo esquerdo.");
+    </script>
+</body>
+</html>

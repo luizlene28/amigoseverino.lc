@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Severino Off-Grid | Calculadora de Bitola 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 30%, #0d1b2a 60%, #020210 100%);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0c0;
+            --accent-orange: #f7931e;
+            --accent-orange-glow: #ffb347;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(255, 255, 255, 0.15);
+            --input-focus-border: rgba(247, 147, 30, 0.6);
+            --btn-gradient: linear-gradient(180deg, #ff9f43 0%, #f7931e 40%, #e67e22 100%);
+            --btn-shadow: 0 8px 25px rgba(247, 147, 30, 0.35), 0 3px 0 #c06010, 0 4px 10px rgba(0, 0, 0, 0.3);
+            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+            --cubo-size: 44px;
+            --cubo-size-mobile: 32px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            background: var(--card-bg);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 28px 24px 20px;
+            max-width: 430px;
+            width: 100%;
+            box-shadow: var(--card-shadow);
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            gap: 15px;
+        }
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .header-icon { font-size: 2rem; filter: drop-shadow(0 3px 8px rgba(247, 147, 30, 0.5)); }
+        .header-title {
+            font-size: 1.25rem; font-weight: 800;
+            background: linear-gradient(135deg, #ffb347, #f7931e);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .header-subtitle { font-size: 0.7rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; }
+
+        .cubo-wrapper { perspective: 500px; width: var(--cubo-size); height: var(--cubo-size); cursor: pointer; }
+        .cubo-inner {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            animation: girarCubo 8s linear infinite;
+        }
+        @keyframes girarCubo { 0% { transform: rotateX(-25deg) rotateY(0deg); } 100% { transform: rotateX(-25deg) rotateY(360deg); } }
+        .cubo-face { position: absolute; width: 100%; height: 100%; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15); opacity: 0.9; }
+        .cubo-face.frente { background: linear-gradient(135deg, #ff9f43, #f7931e); transform: translateZ(calc(var(--cubo-size) / 2)); }
+        .cubo-face.tras { background: #e67e22; transform: rotateY(180deg) translateZ(calc(var(--cubo-size) / 2)); }
+        .cubo-face.direita { background: #ffb347; transform: rotateY(90deg) translateZ(calc(var(--cubo-size) / 2)); }
+        .cubo-face.esquerda { background: #d4740e; transform: rotateY(-90deg) translateZ(calc(var(--cubo-size) / 2)); }
+        .cubo-face.cima { background: #ffcc80; transform: rotateX(90deg) translateZ(calc(var(--cubo-size) / 2)); }
+        .cubo-face.baixo { background: #5c2d06; transform: rotateX(-90deg) translateZ(calc(var(--cubo-size) / 2)); }
+
+        .input-group { margin-bottom: 14px; position: relative; }
+        .input-group label { display: block; font-weight: 600; font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; }
+        .input-group input {
+            width: 100%; padding: 13px 14px; background: var(--input-bg); border: 1.5px solid var(--input-border);
+            border-radius: 12px; color: #f0f0f8; font-size: 1rem; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: var(--input-focus-border); background: rgba(255,255,255,0.07); }
+        .input-icon-hint { position: absolute; right: 14px; top: 34px; font-size: 0.8rem; color: rgba(255,255,255,0.2); }
+
+        button {
+            width: 100%; padding: 16px; background: var(--btn-gradient); color: #fff; border: none;
+            border-radius: 14px; font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            box-shadow: var(--btn-shadow); text-transform: uppercase; margin-top: 6px; transition: 0.2s;
+        }
+        button:active { transform: translateY(2px); }
+
+        #resultado {
+            margin-top: 15px; padding: 15px; border-radius: 14px; display: none; text-align: center;
+            border: 1px solid rgba(255,255,255,0.08); animation: fadeInUp 0.4s ease-out;
+        }
+        .status-badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; margin-top: 5px; }
+        .excelente { background: rgba(46, 204, 113, 0.1); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); }
+        .aceitavel { background: rgba(254, 202, 87, 0.1); color: #feca57; border: 1px solid rgba(254,202,87,0.3); }
+        .critico { background: rgba(255, 77, 90, 0.1); color: #ff4d5a; border: 1px solid rgba(255,77,90,0.3); }
+
+        .alerta-didatico {
+            margin-top: 15px; padding: 8px 12px; font-size: 0.62rem; color: rgba(255, 255, 255, 0.4);
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 10px; line-height: 1.3;
+        }
+
+        .aviso-norma { font-size: 0.65rem; color: rgba(255,255,255,0.2); text-align: center; margin-top: 12px; font-weight: 500; }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px 16px; }
+            .cubo-wrapper { width: var(--cubo-size-mobile); height: var(--cubo-size-mobile); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <span class="header-icon">☀️</span>
+                <div>
+                    <div class="header-title">Severino Off-Grid</div>
+                    <div class="header-subtitle">Bitola DC & AC Monofásico</div>
+                </div>
+            </div>
+            <div class="cubo-wrapper">
+                <div class="cubo-inner" id="cuboInner">
+                    <div class="cubo-face frente"></div>
+                    <div class="cubo-face tras"></div>
+                    <div class="cubo-face direita"></div>
+                    <div class="cubo-face esquerda"></div>
+                    <div class="cubo-face cima"></div>
+                    <div class="cubo-face baixo"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>⚡ Tensão (V)</label>
+            <input type="number" id="tensao" placeholder="Ex: 12, 24, 127, 220">
+            <span class="input-icon-hint">V</span>
+        </div>
+        <div class="input-group">
+            <label>🔌 Corrente (A)</label>
+            <input type="number" id="corrente" placeholder="Ex: 30">
+            <span class="input-icon-hint">A</span>
+        </div>
+        <div class="input-group">
+            <label>📏 Distância do Cabo (m)</label>
+            <input type="number" id="distancia" placeholder="Ex: 10">
+            <span class="input-icon-hint">m</span>
+        </div>
+        <div class="input-group">
+            <label>🪢 Bitola do Fio (mm²)</label>
+            <input type="number" id="bitola" placeholder="Ex: 6, 10, 16">
+            <span class="input-icon-hint">mm²</span>
+        </div>
+
+        <button onclick="calcular()">⚡ Calcular Perda</button>
+
+        <div id="resultado"></div>
+
+        <div class="alerta-didatico">
+            Uso exclusivamente didático para sistemas DC (Baterias/Solar) e AC Monofásico. 
+            Não substitui o projeto de um profissional qualificado.
+        </div>
+
+        <p class="aviso-norma">Fórmula: ΔV = (2 · L · I · ρ) / S | ρ Cobre: 0,0172</p>
+    </div>
+
+    <script>
+        function calcular() {
+            const V = parseFloat(document.getElementById('tensao').value);
+            const I = parseFloat(document.getElementById('corrente').value);
+            const L = parseFloat(document.getElementById('distancia').value);
+            const S = parseFloat(document.getElementById('bitola').value);
+            const res = document.getElementById('resultado');
+
+            if (!V || !I || !L || !S) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            // Cálculo da Queda de Tensão (Considerando Ida e Volta para DC/Monofásico)
+            const quedaV = (2 * L * I * 0.0172) / S;
+            const quedaP = (quedaV / V) * 100;
+            
+            // Lógica de Status (Rigorosa para Off-Grid)
+            let status = quedaP <= 2 ? 'excelente' : quedaP <= 4 ? 'aceitavel' : 'critico';
+            let label = quedaP <= 2 ? 'EXCELENTE' : quedaP <= 4 ? 'ACEITÁVEL' : 'CRÍTICO';
+
+            res.innerHTML = `<div style="color:#fff;font-weight:700;font-size:1.1rem;">Perda: ${quedaV.toFixed(2)}V (${quedaP.toFixed(2)}%)</div>
+                             <span class="status-badge ${status}">${label}</span>`;
+            res.className = status;
+            res.style.display = 'block';
+        }
+
+        // Efeito ao clicar no cubo
+        document.getElementById('cuboInner').parentElement.onclick = function() {
+            const inner = this.children[0];
+            inner.style.animationDuration = '0.8s';
+            setTimeout(() => inner.style.animationDuration = '8s', 1500);
+        };
+    </script>
+</body>
+</html>

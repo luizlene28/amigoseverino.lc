@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rota Fácil! - Brasil Completo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --bg-primary: #0a0e27; --bg-secondary: #131835; --bg-card: #1a1f3a;
+            --accent: #00d4aa; --text-primary: #e8e8f0; --text-secondary: #9098b0;
+            --border: #252d4a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); overflow: hidden; }
+        .header { background: #0f1430; padding: 15px; border-bottom: 2px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .container { display: flex; height: calc(100vh - 70px); }
+        .sidebar { width: 400px; background: var(--bg-secondary); padding: 20px; overflow-y: auto; z-index: 10; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .card { background: var(--bg-card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; }
+        label { font-size: 0.8em; color: var(--text-secondary); text-transform: uppercase; font-weight: bold; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; background: #0a0e27; color: white; border: 1px solid var(--border); font-size: 16px; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: var(--accent); color: #0a0e27; font-size: 16px; transition: 0.3s; margin-top: 10px; }
+        .btn:active { transform: scale(0.98); }
+        .results-card { display: none; }
+        .dist-box { text-align: center; padding: 15px; background: rgba(0,212,170,0.1); border-radius: 10px; margin-bottom: 15px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .mini-card { background: #0a0e27; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+        #map { flex: 1; background: #0a0e27; }
+        @media (max-width: 800px) { .container { flex-direction: column; } .sidebar { width: 100%; height: 50%; } #map { height: 50%; } }
+        .loading { display: none; text-align: center; color: var(--accent); margin: 10px 0; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="color: var(--accent)">Rota Fácil! 🗺️ <span style="font-size: 0.6em; color: var(--text-secondary)">BRASIL TOTAL</span></h2>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <div class="card">
+                <label>Cidade de Origem</label>
+                <input type="text" id="origem" placeholder="Ex: Macapa AP ou Sao Paulo">
+                
+                <label>Cidade de Destino</label>
+                <input type="text" id="destino" placeholder="Ex: Goiobal, Belem PA, Rio de Janeiro">
+                
+                <div id="loader" class="loading">Calculando rota nacional... ⏳</div>
+                
+                <button class="btn" onclick="calc()">Calcular Viagem</button>
+            </div>
+            <div id="res" class="results-card">
+                <div class="dist-box">
+                    <span id="km" style="font-size: 2.5em; font-weight: bold; color: var(--accent)">0</span> km
+                </div>
+                <div class="grid-2">
+                    <div class="mini-card">🚗 Carro<br><b id="t-car">--</b></div>
+                    <div class="mini-card">🚌 Ônibus<br><b id="t-bus">--</b></div>
+                </div>
+                <div class="card" style="margin-top:15px">
+                    <label>Seu Consumo (km/L)</label>
+                    <input type="number" id="cons" value="12" oninput="upCosts()">
+                    <div class="grid-2" style="margin-top:10px">
+                        <div>
+                            <label style="font-size:0.7em;">Preço Gasolina (R$)</label>
+                            <input type="number" id="pGas" value="5.80" step="0.01" oninput="upCosts()">
+                        </div>
+                        <div>
+                            <label style="font-size:0.7em;">Preço Etanol (R$)</label>
+                            <input type="number" id="pEta" value="4.10" step="0.01" oninput="upCosts()">
+                        </div>
+                    </div>
+                    <div class="grid-2" style="margin-top:10px">
+                        <div class="mini-card" style="border-color: #ff6b6b">Gasolina<br><span id="v-gas">R$ 0</span></div>
+                        <div class="mini-card" style="border-color: #4ecdc4">Etanol<br><span id="v-eta">R$ 0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, route, distKm = 0;
+
+        function init() {
+            map = L.map('map').setView([-14.235, -51.925], 4);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        }
+
+        // NOVO BUSCADOR SEGURO: Não causa conflito de CORS com o seu Nginx
+        async function buscarCoordenadas(local) {
+            let termo = local.replace(/-/g, ' ');
+            try {
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(termo)},Brasil&limit=1`;
+                const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    return { lat: data[0].lat, lon: data[0].lon };
+                }
+            } catch (err) {
+                console.error("Erro busca secundária", err);
+            }
+            return null;
+        }
+
+        async function calc() {
+            const txtOrigem = document.getElementById('origem').value.trim();
+            const txtDestino = document.getElementById('destino').value.trim();
+            const loader = document.getElementById('loader');
+
+            if (!txtOrigem || !txtDestino) return alert("Por favor, digite a origem e o destino!");
+
+            loader.style.display = 'block';
+
+            try {
+                const de = await buscarCoordenadas(txtOrigem);
+                const para = await buscarCoordenadas(txtDestino);
+
+                if (!de || !para) {
+                    loader.style.display = 'none';
+                    return alert("Localidade não encontrada. Verifique se digitou o nome correto.");
+                }
+                
+                // Puxa a rota da sua VPS com o mapa do Brasil inteiro completo
+                const res = await fetch(`https://amigoseverino.com.br/osrm-api/route/v1/driving/${de.lon},${de.lat};${para.lon},${para.lat}?overview=full&geometries=geojson`);
+                
+                if(!res.ok) {
+                    throw new Error("Servidor OSRM recusou o cálculo.");
+                }
+
+                const data = await res.json();
+                
+                if(!data.routes || data.routes.length === 0) {
+                    loader.style.display = 'none';
+                    return alert("Não há estradas registradas entre esses pontos.");
+                }
+
+                distKm = data.routes[0].distance / 1000;
+                plot(data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]));
+                show();
+            } catch(e) {
+                console.error(e);
+                alert("Erro ao traçar rota. Verifique a grafia ou tente novamente.");
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function plot(coords) {
+            if(route) map.removeLayer(route);
+            route = L.polyline(coords, {color: '#00d4aa', weight: 6}).addTo(map);
+            map.fitBounds(route.getBounds());
+        }
+
+        function show() {
+            document.getElementById('res').style.display = 'block';
+            document.getElementById('km').textContent = distKm.toFixed(1);
+            document.getElementById('t-car').textContent = Math.round(distKm / 85) + "h";
+            document.getElementById('t-bus').textContent = Math.round(distKm / 70) + "h";
+            upCosts();
+        }
+
+        function upCosts() {
+            const gas = parseFloat(document.getElementById('pGas').value);
+            const eta = parseFloat(document.getElementById('pEta').value);
+            const c = parseFloat(document.getElementById('cons').value);
+            document.getElementById('v-gas').textContent = "R$ " + ((distKm/c)*gas).toFixed(2);
+            document.getElementById('v-eta').textContent = "R$ " + ((distKm/c)*eta).toFixed(2);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Severino-LC | Resistor 3D Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b0b12;
+            --card-bg: rgba(22, 22, 38, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-strong: rgba(255, 255, 255, 0.15);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b8;
+            --accent: #4caf50;
+            --accent-glow: rgba(76, 175, 80, 0.5);
+            --accent-soft: rgba(76, 175, 80, 0.15);
+            --radius-sm: 10px;
+            --radius-md: 18px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --shadow-card: 0 25px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+            --shadow-card-hover: 0 35px 75px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.07) inset;
+            --transition-smooth: 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(ellipse at 25% 10%, rgba(72, 72, 120, 0.25) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 85%, rgba(30, 80, 50, 0.2) 0%, transparent 55%),
+                radial-gradient(ellipse at 50% 50%, rgba(20, 20, 45, 0.6) 0%, transparent 80%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            perspective: 1500px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .bg-particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.45;
+        }
+        .bg-particles::before,
+        .bg-particles::after {
+            content: '';
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: floatParticle 18s ease-in-out infinite;
+        }
+        .bg-particles::before {
+            background: rgba(100, 140, 255, 0.18);
+            top: -60px;
+            left: -40px;
+            animation-delay: 0s;
+        }
+        .bg-particles::after {
+            background: rgba(76, 175, 80, 0.15);
+            bottom: -70px;
+            right: -30px;
+            animation-delay: -9s;
+        }
+        @keyframes floatParticle {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(40px, -50px) scale(1.3); }
+            50% { transform: translate(-20px, 30px) scale(0.9); }
+            75% { transform: translate(-50px, -20px) scale(1.15); }
+        }
+
+        .app-shell {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeInUp 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(35px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cabeçalho com cubo pequeno à esquerda */
+        .header-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 18px 22px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: var(--transition-smooth);
+        }
+        .header-card:hover {
+            box-shadow: var(--shadow-card-hover);
+            border-color: var(--glass-border-strong);
+        }
+
+        /* Cubo menor */
+        .cube-scene {
+            width: 70px;
+            height: 70px;
+            perspective: 500px;
+            flex-shrink: 0;
+        }
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 14s linear infinite;
+            cursor: pointer;
+            transition: animation-duration 0.5s ease;
+        }
+        .cube:hover { animation-duration: 5s; }
+        .cube:active { animation-duration: 2.5s; }
+        @keyframes rotateCube {
+            0% { transform: rotateX(-25deg) rotateY(0deg); }
+            100% { transform: rotateX(-25deg) rotateY(360deg); }
+        }
+        .cube-face {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4), 0 0 18px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: #fff;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.5px;
+            backface-visibility: visible;
+            transition: background-color 0.5s ease;
+        }
+        .cube-face.front  { transform: translateZ(35px); background: var(--face-front, #1a1a2e); }
+        .cube-face.back   { transform: rotateY(180deg) translateZ(35px); background: var(--face-back, #16213e); }
+        .cube-face.right  { transform: rotateY(90deg) translateZ(35px); background: var(--face-right, #0f3460); }
+        .cube-face.left   { transform: rotateY(-90deg) translateZ(35px); background: var(--face-left, #1a1a2e); }
+        .cube-face.top    { transform: rotateX(90deg) translateZ(35px); background: var(--face-top, #1e3a5f); }
+        .cube-face.bottom { transform: rotateX(-90deg) translateZ(35px); background: var(--face-bottom, #0d1b2a); }
+        .cube-label {
+            font-size: 0.6em;
+            opacity: 0.8;
+            text-align: center;
+            line-height: 1.2;
+            pointer-events: none;
+        }
+
+        .title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .app-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.5em;
+            letter-spacing: -0.3px;
+            color: #fff;
+            line-height: 1.1;
+        }
+        .app-title .highlight {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px rgba(76, 175, 80, 0.5));
+        }
+        .app-subtitle {
+            font-size: 0.65em;
+            font-weight: 500;
+            letter-spacing: 2px;
+            color: #4caf50;
+            text-transform: uppercase;
+            opacity: 0.85;
+        }
+
+        /* Card da calculadora */
+        .calculator-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px 24px;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: var(--transition-smooth);
+        }
+        .calculator-card:hover {
+            box-shadow: var(--shadow-card-hover);
+            border-color: var(--glass-border-strong);
+        }
+
+        /* Resistor 3D */
+        .resistor-scene {
+            perspective: 900px;
+            display: flex;
+            justify-content: center;
+            margin: 5px 0 8px;
+        }
+        .resistor-3d {
+            width: 250px;
+            height: 62px;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(16deg) rotateY(-20deg);
+            transition: transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .resistor-3d:hover { transform: rotateX(8deg) rotateY(-10deg) scale(1.04); }
+        .resistor-3d:active { transform: rotateX(22deg) rotateY(-28deg) scale(0.96); }
+        .lead {
+            position: absolute;
+            width: 30px;
+            height: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 5px;
+            background: linear-gradient(180deg, #d5d8dc 0%, #a0a5ad 30%, #6e737a 60%, #4a4f55 100%);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+            z-index: 0;
+        }
+        .lead-left { left: -24px; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+        .lead-right { right: -24px; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+        .body-res {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg,
+                    #f5ede0 0%, #e8d5b8 15%, #d9c29a 35%,
+                    #c8ad7e 50%, #b89968 65%, #a58554 85%, #8f7044 100%);
+            border-radius: 30px;
+            box-shadow: inset 0 6px 16px rgba(0, 0, 0, 0.5), inset 0 -6px 14px rgba(255, 255, 255, 0.12), 0 12px 30px rgba(0, 0, 0, 0.55);
+            overflow: hidden;
+            z-index: 1;
+            transform-style: preserve-3d;
+        }
+        .body-res::after {
+            content: '';
+            position: absolute;
+            top: 7%; left: 4%;
+            width: 92%; height: 28%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.04) 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .band-visual {
+            position: absolute;
+            height: 100%;
+            width: 16px;
+            top: 0;
+            border-radius: 0;
+            transition: background-color 0.4s ease, left 0.4s ease, opacity 0.3s ease, width 0.3s ease;
+            box-shadow: inset 0 2px 7px rgba(0, 0, 0, 0.35), inset 0 -2px 6px rgba(255, 255, 255, 0.18);
+            z-index: 5;
+        }
+        .resistor-3d.mode-5 #vband1 { left: 36px; }
+        .resistor-3d.mode-5 #vband2 { left: 62px; }
+        .resistor-3d.mode-5 #vband3 { left: 88px; }
+        .resistor-3d.mode-5 #vmult  { left: 118px; }
+        .resistor-3d.mode-5 #vtol   { left: 152px; }
+        .resistor-3d.mode-4 #vband1 { left: 46px; }
+        .resistor-3d.mode-4 #vband2 { left: 78px; }
+        .resistor-3d.mode-4 #vband3 { left: 62px; opacity: 0; width: 0; }
+        .resistor-3d.mode-4 #vmult  { left: 116px; }
+        .resistor-3d.mode-4 #vtol   { left: 158px; }
+
+        .mode-switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 20px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        .mode-label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #888;
+            letter-spacing: 0.4px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .mode-label.active {
+            color: #4caf50;
+            text-shadow: 0 0 14px rgba(76, 175, 80, 0.55);
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 54px;
+            height: 28px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: linear-gradient(180deg, #3a3a4e 0%, #1e1e2a 100%);
+            border-radius: 28px;
+            box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            transition: 0.3s ease;
+        }
+        .slider::before {
+            content: "";
+            position: absolute;
+            height: 22px; width: 22px;
+            left: 3px; bottom: 3px;
+            background: radial-gradient(circle at 38% 38%, #f5f5f5, #bdbdbd);
+            border-radius: 50%;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+            transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        input:checked+.slider {
+            background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+            box-shadow: inset 0 3px 7px rgba(0, 0, 0, 0.4), 0 0 18px rgba(76, 175, 80, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+        input:checked+.slider::before {
+            transform: translateX(26px);
+            background: radial-gradient(circle at 38% 38%, #ffffff, #d0d0d0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .input-row label {
+            font-size: 0.7em;
+            font-weight: 700;
+            color: #9e9eae;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .select-wrapper select {
+            width: 100%;
+            padding: 12px 44px 12px 16px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.055);
+            color: #f0f0f5;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-size: 0.9em;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.35);
+        }
+        .select-wrapper select:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.09);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4), 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        .select-wrapper select:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 18px rgba(76, 175, 80, 0.3), inset 0 2px 6px rgba(0, 0, 0, 0.35);
+        }
+        .select-wrapper option { background: #1a1a26; color: #f0f0f5; }
+        .color-dot {
+            position: absolute;
+            right: 38px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            transition: background-color 0.4s ease;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+        .hidden { display: none; }
+
+        .result-panel {
+            margin-top: 6px;
+            padding: 18px 16px;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid rgba(76, 175, 80, 0.25);
+            box-shadow: inset 0 0 30px rgba(76, 175, 80, 0.06), 0 10px 25px rgba(0, 0, 0, 0.5);
+            transition: all 0.35s ease;
+        }
+        .result-panel:hover {
+            border-color: rgba(76, 175, 80, 0.45);
+            box-shadow: inset 0 0 40px rgba(76, 175, 80, 0.1), 0 14px 30px rgba(0, 0, 0, 0.6);
+        }
+        .res-value {
+            font-family: 'JetBrains Mono', 'Inter', monospace;
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #ffffff;
+            display: block;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+        .res-tol {
+            color: #4caf50;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-top: 7px;
+            display: block;
+            letter-spacing: 0.4px;
+            text-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+        }
+
+        .legal-notice {
+            text-align: center;
+            font-size: 0.6em;
+            color: rgba(255, 255, 255, 0.15);
+            padding: 0 20px;
+            line-height: 1.4;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .app-footer {
+            text-align: center;
+            font-size: 0.65em;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 1px;
+            margin-top: -10px;
+            font-weight: 400;
+        }
+
+        /* Responsivo */
+        @media (max-width: 520px) {
+            .app-shell { max-width: 100%; gap: 18px; }
+            .header-card { padding: 14px 16px; gap: 12px; }
+            .cube-scene { width: 55px; height: 55px; }
+            .cube-face { width: 55px; height: 55px; border-radius: 8px; font-size: 0.7em; }
+            .cube-face.front  { transform: translateZ(27px); }
+            .cube-face.back   { transform: rotateY(180deg) translateZ(27px); }
+            .cube-face.right  { transform: rotateY(90deg) translateZ(27px); }
+            .cube-face.left   { transform: rotateY(-90deg) translateZ(27px); }
+            .cube-face.top    { transform: rotateX(90deg) translateZ(27px); }
+            .cube-face.bottom { transform: rotateX(-90deg) translateZ(27px); }
+            .app-title { font-size: 1.2em; }
+            .app-subtitle { font-size: 0.6em; }
+            .calculator-card { padding: 20px 16px 18px; border-radius: var(--radius-md); }
+            .resistor-3d { width: 190px; height: 48px; }
+            .band-visual { width: 11px; }
+            .resistor-3d.mode-5 #vband1 { left: 24px; }
+            .resistor-3d.mode-5 #vband2 { left: 44px; }
+            .resistor-3d.mode-5 #vband3 { left: 64px; }
+            .resistor-3d.mode-5 #vmult  { left: 86px; }
+            .resistor-3d.mode-5 #vtol   { left: 112px; }
+            .resistor-3d.mode-4 #vband1 { left: 30px; }
+            .resistor-3d.mode-4 #vband2 { left: 54px; }
+            .resistor-3d.mode-4 #vband3 { left: 42px; opacity: 0; width: 0; }
+            .resistor-3d.mode-4 #vmult  { left: 84px; }
+            .resistor-3d.mode-4 #vtol   { left: 118px; }
+            .lead { width: 20px; height: 7px; }
+            .lead-left { left: -16px; }
+            .lead-right { right: -16px; }
+            .res-value { font-size: 1.9em; }
+            .select-wrapper select { padding: 10px 38px 10px 12px; font-size: 0.8em; }
+            .color-dot { width: 11px; height: 11px; right: 34px; }
+            .mode-switch-row { padding: 10px 14px; gap: 10px; }
+            .mode-label { font-size: 0.75em; }
+        }
+
+        @media (min-width: 1200px) {
+            .app-shell { max-width: 550px; }
+            .resistor-3d { width: 290px; height: 72px; }
+            .band-visual { width: 18px; }
+            .resistor-3d.mode-5 #vband1 { left: 42px; }
+            .resistor-3d.mode-5 #vband2 { left: 72px; }
+            .resistor-3d.mode-5 #vband3 { left: 102px; }
+            .resistor-3d.mode-5 #vmult  { left: 138px; }
+            .resistor-3d.mode-5 #vtol   { left: 178px; }
+            .resistor-3d.mode-4 #vband1 { left: 52px; }
+            .resistor-3d.mode-4 #vband2 { left: 88px; }
+            .resistor-3d.mode-4 #vband3 { left: 74px; }
+            .resistor-3d.mode-4 #vmult  { left: 136px; }
+            .resistor-3d.mode-4 #vtol   { left: 184px; }
+            .lead { width: 36px; height: 12px; }
+            .lead-left { left: -28px; }
+            .lead-right { right: -28px; }
+            .cube-scene { width: 80px; height: 80px; }
+            .cube-face { width: 80px; height: 80px; border-radius: 12px; font-size: 1em; }
+            .cube-face.front  { transform: translateZ(40px); }
+            .cube-face.back   { transform: rotateY(180deg) translateZ(40px); }
+            .cube-face.right  { transform: rotateY(90deg) translateZ(40px); }
+            .cube-face.left   { transform: rotateY(-90deg) translateZ(40px); }
+            .cube-face.top    { transform: rotateX(90deg) translateZ(40px); }
+            .cube-face.bottom { transform: rotateX(-90deg) translateZ(40px); }
+            .header-card { padding: 20px 28px; gap: 22px; }
+            .app-title { font-size: 1.7em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-particles"></div>
+
+    <div class="app-shell">
+        <div class="header-card">
+            <div class="cube-scene">
+                <div class="cube" id="cube3d">
+                    <div class="cube-face front" id="face-front"><span class="cube-label">B1</span></div>
+                    <div class="cube-face back" id="face-back"><span class="cube-label">B2</span></div>
+                    <div class="cube-face right" id="face-right"><span class="cube-label">M</span></div>
+                    <div class="cube-face left" id="face-left"><span class="cube-label">T</span></div>
+                    <div class="cube-face top" id="face-top"><span class="cube-label">Ω</span></div>
+                    <div class="cube-face bottom" id="face-bottom"><span class="cube-label">LC</span></div>
+                </div>
+            </div>
+            <div class="title-block">
+                <h1 class="app-title">Severino-<span class="highlight">LC</span></h1>
+                <span class="app-subtitle">Resistor 3D Pro</span>
+            </div>
+        </div>
+
+        <div class="calculator-card">
+            <div class="resistor-scene">
+                <div class="resistor-3d mode-4" id="resistorModel">
+                    <div class="lead lead-left"></div>
+                    <div class="body-res">
+                        <span class="band-visual" id="vband1"></span>
+                        <span class="band-visual" id="vband2"></span>
+                        <span class="band-visual" id="vband3"></span>
+                        <span class="band-visual" id="vmult"></span>
+                        <span class="band-visual" id="vtol"></span>
+                    </div>
+                    <div class="lead lead-right"></div>
+                </div>
+            </div>
+
+            <div class="mode-switch-row">
+                <span class="mode-label active" id="label4">4 Faixas</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
+                    <span class="slider"></span>
+                </label>
+                <span class="mode-label" id="label5">5 Faixas</span>
+            </div>
+
+            <div class="input-row">
+                <label>1ª Faixa (Dígito 1)</label>
+                <div class="select-wrapper">
+                    <select id="band1" onchange="calculate()"></select>
+                    <span class="color-dot" id="dot-band1"></span>
+                </div>
+            </div>
+            <div class="input-row">
+                <label>2ª Faixa (Dígito 2)</label>
+                <div class="select-wrapper">
+                    <select id="band2" onchange="calculate()"></select>
+                    <span class="color-dot" id="dot-band2"></span>
+                </div>
+            </div>
+            <div class="input-row hidden" id="group-band3">
+                <label>3ª Faixa (Dígito 3)</label>
+                <div class="select-wrapper">
+                    <select id="band3" onchange="calculate()"></select>
+                    <span class="color-dot" id="dot-band3"></span>
+                </div>
+            </div>
+            <div class="input-row">
+                <label>Multiplicador</label>
+                <div class="select-wrapper">
+                    <select id="multiplier" onchange="calculate()"></select>
+                    <span class="color-dot" id="dot-mult"></span>
+                </div>
+            </div>
+            <div class="input-row">
+                <label>Tolerância</label>
+                <div class="select-wrapper">
+                    <select id="tolerance" onchange="calculate()"></select>
+                    <span class="color-dot" id="dot-tol"></span>
+                </div>
+            </div>
+
+            <div class="result-panel" id="result-display">
+                <span class="res-value" id="res-value">0 Ω</span>
+                <span class="res-tol" id="res-tol">Tolerância: ± 0%</span>
+            </div>
+        </div>
+
+        <div class="legal-notice">
+            Este aplicativo possui finalidade estritamente instrutiva e didática. Os cálculos apresentados não substituem a análise e o projeto de um profissional qualificado.
+        </div>
+
+        <div class="app-footer">ENGINEERED WITH PRECISION · SEVERINO-LC</div>
+    </div>
+
+    <script>
+        (function() {
+            const colors = [
+                { name: "Preto", val: 0, mult: 1, tol: null, hex: "#1a1a1a" },
+                { name: "Marrom", val: 1, mult: 10, tol: 1, hex: "#8B4513" },
+                { name: "Vermelho", val: 2, mult: 100, tol: 2, hex: "#e53935" },
+                { name: "Laranja", val: 3, mult: 1000, tol: null, hex: "#FB8C00" },
+                { name: "Amarelo", val: 4, mult: 10000, tol: null, hex: "#FDD835" },
+                { name: "Verde", val: 5, mult: 100000, tol: 0.5, hex: "#43A047" },
+                { name: "Azul", val: 6, mult: 1000000, tol: 0.25, hex: "#1E88E5" },
+                { name: "Violeta", val: 7, mult: 10000000, tol: 0.1, hex: "#8E24AA" },
+                { name: "Cinza", val: 8, mult: null, tol: 0.05, hex: "#757575" },
+                { name: "Branco", val: 9, mult: null, tol: null, hex: "#F0F0F0" },
+                { name: "Dourado", val: null, mult: 0.1, tol: 5, hex: "#FFD700" },
+                { name: "Prateado", val: null, mult: 0.01, tol: 10, hex: "#C0C0C0" }
+            ];
+
+            const colorHexMap = {};
+            colors.forEach(c => { colorHexMap[c.name] = c.hex; });
+
+            const band1Select = document.getElementById('band1');
+            const band2Select = document.getElementById('band2');
+            const band3Select = document.getElementById('band3');
+            const multiplierSelect = document.getElementById('multiplier');
+            const toleranceSelect = document.getElementById('tolerance');
+            const modeToggle = document.getElementById('mode-toggle');
+            const band3Group = document.getElementById('group-band3');
+            const resistorModel = document.getElementById('resistorModel');
+            const label4 = document.getElementById('label4');
+            const label5 = document.getElementById('label5');
+
+            const vband1 = document.getElementById('vband1');
+            const vband2 = document.getElementById('vband2');
+            const vband3 = document.getElementById('vband3');
+            const vmult = document.getElementById('vmult');
+            const vtol = document.getElementById('vtol');
+
+            const dotBand1 = document.getElementById('dot-band1');
+            const dotBand2 = document.getElementById('dot-band2');
+            const dotBand3 = document.getElementById('dot-band3');
+            const dotMult = document.getElementById('dot-mult');
+            const dotTol = document.getElementById('dot-tol');
+
+            const faceFront = document.getElementById('face-front');
+            const faceBack = document.getElementById('face-back');
+            const faceRight = document.getElementById('face-right');
+            const faceLeft = document.getElementById('face-left');
+            const faceTop = document.getElementById('face-top');
+            const faceBottom = document.getElementById('face-bottom');
+
+            function getHexFromSelect(selectEl) {
+                if (!selectEl || selectEl.selectedIndex < 0) return '#333';
+                const text = selectEl.options[selectEl.selectedIndex]?.text || '';
+                const colorName = text.split(' ')[0].split('(')[0].trim();
+                return colorHexMap[colorName] || '#333333';
+            }
+
+            function updateAllVisuals() {
+                const h1 = getHexFromSelect(band1Select);
+                const h2 = getHexFromSelect(band2Select);
+                const h3 = getHexFromSelect(band3Select);
+                const hm = getHexFromSelect(multiplierSelect);
+                const ht = getHexFromSelect(toleranceSelect);
+                const is5 = modeToggle.checked;
+
+                vband1.style.backgroundColor = h1;
+                vband2.style.backgroundColor = h2;
+                if (is5) {
+                    vband3.style.backgroundColor = h3;
+                    vband3.style.opacity = '1';
+                    vband3.style.width = '';
+                } else {
+                    vband3.style.backgroundColor = 'transparent';
+                    vband3.style.opacity = '0';
+                    vband3.style.width = '0';
+                }
+                vmult.style.backgroundColor = hm;
+                vtol.style.backgroundColor = ht;
+
+                dotBand1.style.backgroundColor = h1;
+                dotBand2.style.backgroundColor = h2;
+                dotBand3.style.backgroundColor = is5 ? h3 : 'transparent';
+                dotBand3.style.borderColor = is5 ? 'rgba(255,255,255,0.4)' : 'transparent';
+                dotMult.style.backgroundColor = hm;
+                dotTol.style.backgroundColor = ht;
+
+                faceFront.style.setProperty('--face-front', h1);
+                faceFront.style.backgroundColor = h1;
+                faceBack.style.setProperty('--face-back', h2);
+                faceBack.style.backgroundColor = h2;
+                faceRight.style.setProperty('--face-right', hm);
+                faceRight.style.backgroundColor = hm;
+                faceLeft.style.setProperty('--face-left', ht);
+                faceLeft.style.backgroundColor = ht;
+                faceTop.style.setProperty('--face-top', is5 ? h3 : h1);
+                faceTop.style.backgroundColor = is5 ? h3 : h1;
+                faceBottom.style.backgroundColor = '#0d1b2a';
+            }
+
+            function calculate() {
+                const is5 = modeToggle.checked;
+                const b1 = parseInt(band1Select.value) || 0;
+                const b2 = parseInt(band2Select.value) || 0;
+                const b3 = parseInt(band3Select.value) || 0;
+                const m = parseFloat(multiplierSelect.value) || 1;
+                const t = toleranceSelect.value || '0';
+
+                let resistance;
+                if (is5) {
+                    resistance = (b1 * 100 + b2 * 10 + b3) * m;
+                } else {
+                    resistance = (b1 * 10 + b2) * m;
+                }
+
+                let formatted;
+                if (resistance >= 1e6) {
+                    formatted = (resistance / 1e6).toFixed(2).replace(/\.?0+$/, '') + ' MΩ';
+                } else if (resistance >= 1e3) {
+                    formatted = (resistance / 1e3).toFixed(2).replace(/\.?0+$/, '') + ' KΩ';
+                } else if (resistance >= 1) {
+                    formatted = resistance.toFixed(1).replace(/\.0+$/, '') + ' Ω';
+                } else {
+                    formatted = resistance.toFixed(2).replace(/\.?0+$/, '') + ' Ω';
+                }
+
+                document.getElementById('res-value').innerText = formatted;
+                document.getElementById('res-tol').innerText = 'Tolerância: ± ' + t + '%';
+                updateAllVisuals();
+            }
+
+            window.calculate = calculate;
+            window.toggleMode = function() {
+                const is5 = modeToggle.checked;
+                if (is5) {
+                    band3Group.classList.remove('hidden');
+                    resistorModel.classList.remove('mode-4');
+                    resistorModel.classList.add('mode-5');
+                    label4.classList.remove('active');
+                    label5.classList.add('active');
+                } else {
+                    band3Group.classList.add('hidden');
+                    resistorModel.classList.remove('mode-5');
+                    resistorModel.classList.add('mode-4');
+                    label5.classList.remove('active');
+                    label4.classList.add('active');
+                }
+                calculate();
+            };
+
+            function populateSelects() {
+                colors.forEach(c => {
+                    if (c.val !== null) {
+                        const opt = new Option(c.name, c.val);
+                        band1Select.options.add(opt.cloneNode(true));
+                        band2Select.options.add(opt.cloneNode(true));
+                        band3Select.options.add(opt.cloneNode(true));
+                    }
+                    if (c.mult !== null) {
+                        multiplierSelect.options.add(new Option(c.name, c.mult));
+                    }
+                    if (c.tol !== null) {
+                        toleranceSelect.options.add(new Option(`${c.name} (±${c.tol}%)`, c.tol));
+                    }
+                });
+                band1Select.value = '1';
+                band2Select.value = '0';
+                band3Select.value = '0';
+                multiplierSelect.value = '100';
+                toleranceSelect.value = '5';
+            }
+
+            function init() {
+                populateSelects();
+                modeToggle.checked = false;
+                band3Group.classList.add('hidden');
+                resistorModel.classList.add('mode-4');
+                resistorModel.classList.remove('mode-5');
+                label5.classList.remove('active');
+                label4.classList.add('active');
+                calculate();
+            }
+
+            window.onload = init;
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>SEVERINO-LC – AutoVelox Pro & Rota Inteligente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet" />
+  
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-5064995654489535" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg-deep: #06060c;
+      --card-bg: rgba(18, 18, 28, 0.92);
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --accent-red: #e0243f;
+      --accent-amber: #f5a623;
+      --accent-green: #00ff88;
+      --font-digital: 'Orbitron', 'Segoe UI', monospace;
+      --font-ui: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+      --text-painel: #00ff88;
+    }
+    
+    body.light-mode {
+      --bg-deep: #f0f2f5;
+      --card-bg: rgba(240, 242, 245, 0.95);
+      --border-subtle: rgba(0, 0, 0, 0.15);
+      --text-painel: #007744;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: var(--font-ui);
+      background: radial-gradient(ellipse at 50% 20%, #0f0f1a 0%, #030308 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px 10px 80px 10px; 
+      overflow-x: hidden;
+      position: relative;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    
+    body.light-mode {
+      background: #f0f2f5 !important;
+    }
+    
+    /* ========== CABEÇALHO ========== */
+    .app-header {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      background: rgba(22, 22, 34, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+    
+    body.light-mode .app-header {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .header-top-row {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-digital);
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 0.5px;
+    }
+    
+    body.light-mode .app-logo {
+      color: #333333;
+    }
+    
+    .app-logo .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-red);
+      box-shadow: 0 0 8px var(--accent-red);
+    }
+    
+    .digital-clock {
+      font-family: var(--font-digital);
+      font-size: 1.8rem;
+      color: #ffffff;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+      background: rgba(0, 0, 0, 0.5);
+      width: 100%;
+      text-align: center;
+      padding: 4px 0;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 2px;
+    }
+    
+    body.light-mode .digital-clock {
+      color: #222222;
+      background: #e4e7eb;
+      text-shadow: none;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .app-badge {
+      background: rgba(0, 255, 136, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.6rem;
+      letter-spacing: 1.5px;
+      color: var(--accent-green);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    
+    body.light-mode .app-badge {
+      background: rgba(0, 119, 68, 0.1);
+      color: #007744;
+    }
+    
+    /* ========== HUD PRINCIPAL ========== */
+    .hud-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      padding: 14px 12px;
+      border-radius: 24px;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--border-subtle);
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .speed-stage {
+      width: 100%;
+      height: 350px;
+      border-radius: 20px;
+      background: rgba(10, 10, 18, 0.85);
+      border: 2px solid rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 4px 24px rgba(0, 0, 0, 0.95);
+      margin-bottom: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    body.light-mode .speed-stage {
+      background: #ffffff;
+      border: 2px solid rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    #panel-digital, #panel-analog {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      position: absolute;
+      padding: 12px 0;
+      box-sizing: border-box;
+    }
+    
+    .speed-number-container {
+      width: 94% !important;
+      flex: 1;
+      background: #000000 !important;
+      border: 1.5px solid #ffffff;
+      border-radius: 16px;
+      box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.1), 0 8px 25px rgba(0, 0, 0, 0.5);
+      margin-bottom: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    body.light-mode .speed-number-container {
+      background: #f8f9fa !important;
+      border: 1.5px solid #cccccc;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .speed-svg-display {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+    
+    .speed-number-text {
+      font-family: var(--font-digital) !important;
+      font-weight: 500 !important;
+      fill: var(--text-painel);
+      letter-spacing: -3px;
+    }
+    
+    .canvas-container {
+      width: 250px;
+      height: 250px;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: 0 auto;
+    }
+    
+    #gaugeCanvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    .escondido {
+      display: none !important;
+    }
+    
+    /* ========== FITAS DIGITAIS ========== */
+    .speed-tape-container {
+      width: 94%;
+      height: 48px;
+      background: linear-gradient(180deg, #f4f4f4 0%, #ffffff 20%, #ffffff 80%, #e0e0e0 100%);
+      border-top: 2px solid #ccc;
+      border-bottom: 2px solid #aaa;
+      box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.25), 0 6px 12px rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      z-index: 5;
+    }
+    
+    .speed-tape-container::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 100%;
+      height: 24px;
+      background: linear-gradient(180deg,
+          rgba(0, 180, 90, 0.3) 0%,
+          rgba(0, 255, 136, 0.5) 50%,
+          rgba(0, 180, 90, 0.3) 100%);
+      border-top: 2px solid rgba(0, 255, 136, 0.8);
+      border-bottom: 2px solid rgba(0, 150, 80, 0.7);
+      box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .speed-tape-track {
+      display: flex;
+      position: absolute;
+      height: 100%;
+      align-items: center;
+      left: 50%;
+      margin-left: -30px;
+      transform: translateX(0px);
+      will-change: transform;
+      z-index: 2;
+    }
+    
+    .tape-mark {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 100%;
+      flex-shrink: 0;
+      position: relative;
+    }
+    
+    .tape-number {
+      font-family: var(--font-ui);
+      font-size: 1.15rem;
+      color: #222;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9);
+    }
+    
+    .tape-tick {
+      width: 2px;
+      height: 12px;
+      background: #333;
+      margin-top: 2px;
+    }
+    
+    .tape-pointer {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(90deg, #b01020, #ff2a40, #b01020);
+      box-shadow: 0 0 14px rgba(255, 0, 0, 0.8);
+      transform: translateX(-50%);
+      z-index: 6;
+      border-radius: 3px;
+    }
+    
+    .progress-container {
+      width: 100%;
+      height: 6px;
+      background: #12121c;
+      border-radius: 20px;
+      margin: 4px 0 10px 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4a90d9, #e0243f);
+      border-radius: 20px;
+    }
+    
+    .gps-warning {
+      text-align: center;
+      color: var(--accent-amber);
+      font-size: 0.75rem;
+      margin-bottom: 8px;
+      display: block;
+      font-weight: 500;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin: 2px 0 12px;
+      width: 100%;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 10px 2px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    body.light-mode .card {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .card span {
+      display: block;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: #ffffff;
+      margin-top: 4px;
+      font-family: var(--font-digital);
+      letter-spacing: 0.5px;
+    }
+    
+    body.light-mode .card span {
+      color: #222222;
+    }
+    
+    .card label {
+      font-size: 0.58rem;
+      letter-spacing: 1.5px;
+      color: #888;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    
+    .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px auto 0;
+      padding: 0;
+    }
+    
+    body.light-mode .theme-toggle-btn {
+      background: rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      color: #333;
+    }
+    
+    .caixa-botoes-rodape {
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0 4px !important;
+      margin-top: 4px !important;
+      z-index: 5;
+    }
+    
+    .btn-rodape-acao {
+      flex: 1 !important;
+      width: 33% !important;
+      padding: 16px 4px !important;
+      border-radius: 40px !important;
+      font-family: var(--font-digital) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      font-size: 0.65rem !important;
+      cursor: pointer !important;
+      text-align: center !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+    
+    .btn-rodape-vermelho {
+      background: #c91a30 !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    .btn-rodape-escuro {
+      background: #14141a !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+    
+    body.light-mode .btn-rodape-escuro {
+      background: #d4d7dc !important;
+      color: #222222 !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* ========== DESIGN DO MAPA TELA CHEIA ========== */
+    #tela-mapa {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: #0f0f1a !important;
+      z-index: 9999 !important;
+      display: none;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+    
+    #painel-superior-mapa {
+      background: rgba(20, 20, 30, 0.97) !important;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 75px 14px 12px 14px !important; 
+      color: #fff !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      z-index: 120 !important;
+    }
+    
+    #texto-endereco {
+      color: #00ff88 !important;
+      font-size: 0.85rem !important;
+      font-weight: 500 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      max-width: 50% !important;
+    }
+    
+    .caixa-botoes-topo-mapa {
+      display: flex !important;
+      gap: 6px !important;
+      align-items: center;
+    }
+    
+    .btn-salvar {
+      background: #f5a623 !important;
+      color: #000 !important;
+      border: none !important;
+      padding: 8px 14px !important;
+      border-radius: 20px !important;
+      font-weight: 700 !important;
+      font-size: 0.75rem !important;
+      cursor: pointer !important;
+      text-transform: uppercase !important;
+    }
+    
+    .btn-voltar-mapa {
+      padding: 8px 16px !important;
+      background: #c91a30 !important;
+      color: #fff !important;
+      border: none !important;
+      border-radius: 20px !important;
+      font-weight: bold !important;
+      cursor: pointer !important;
+    }
+    
+    #meu-mapa-container {
+      width: 100% !important;
+      flex: 1 !important;
+      position: relative !important;
+      z-index: 1 !important;
+      overflow: hidden !important;
+    }
+    
+    #mapa {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    .caixa-controles-laterais {
+      position: absolute !important;
+      top: 15px !important;
+      right: 10px !important;
+      z-index: 105 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+    }
+
+    .btn-satelite {
+      background: rgba(20, 20, 30, 0.9) !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      padding: 10px 12px !important;
+      border-radius: 12px !important;
+      font-size: 0.75rem !important;
+      font-weight: bold !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+      width: 130px !important;
+      justify-content: center !important;
+    }
+    
+    .btn-streetview {
+      background: rgba(15, 15, 25, 0.98) !important; 
+      color: #ffffff !important; 
+      border: 1px solid rgba(255, 255, 255, 0.18) !important; 
+      padding: 10px 12px !important;
+      border-radius: 12px !important;
+      font-size: 0.75rem !important;
+      font-weight: bold !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6) !important;
+      width: 130px !important;
+      justify-content: center !important;
+    }
+    
+    #btn-recentralizar {
+      position: absolute !important;
+      bottom: 30px !important;
+      left: 20px !important;
+      z-index: 105 !important;
+      background: #e0243f !important;
+      color: #fff !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      padding: 12px !important;
+      border-radius: 50% !important;
+      width: 52px !important;
+      height: 52px !important;
+      font-size: 20px !important;
+      font-weight: bold !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    /* ========== MINI VELOCÍMETRO & ALTITUDE ========== */
+    .mini-velocimetro-mapa {
+      position: absolute !important;
+      bottom: 95px !important;
+      left: 20px !important;
+      z-index: 105 !important;
+      background: rgba(20, 20, 30, 0.85) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 6px 12px !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      pointer-events: none;
+      min-width: 75px !important;
+    }
+    
+    .mini-velocimetro-mapa .num {
+      font-family: var(--font-digital) !important;
+      font-size: 1.5rem !important;
+      font-weight: 700 !important;
+      color: #00ff88 !important;
+      line-height: 1 !important;
+    }
+    
+    .mini-velocimetro-mapa .unidade {
+      font-size: 0.5rem !important;
+      color: #888 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      margin-top: 2px !important;
+    }
+    
+    .container-topo-info {
+      display: flex;
+      width: 100%;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    
+    .container-topo-info .digital-clock {
+      flex: 1;
+      margin-top: 0 !important;
+      font-size: 1.4rem !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .altitude-display {
+      color: var(--accent-amber) !important;
+      text-shadow: 0 0 15px rgba(245, 166, 35, 0.4) !important;
+    }
+    
+    body.light-mode .altitude-display {
+      color: #b37400 !important;
+      text-shadow: none !important;
+    }
+    
+    .unidade-alt {
+      font-size: 0.7rem;
+      margin-left: 4px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    
+    body.light-mode .unidade-alt {
+      color: #666666;
+    }
+    
+    .mini-altitude-mapa {
+      position: absolute !important;
+      bottom: 165px !important;
+      left: 20px !important;
+      z-index: 105 !important;
+      background: rgba(20, 20, 30, 0.85) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 6px 12px !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      pointer-events: none;
+      min-width: 75px !important;
+    }
+    
+    .mini-altitude-mapa .num {
+      font-family: var(--font-digital) !important;
+      font-size: 1.2rem !important;
+      font-weight: 700 !important;
+      color: var(--accent-amber) !important;
+      line-height: 1 !important;
+    }
+    
+    .mini-altitude-mapa .unidade {
+      font-size: 0.5rem !important;
+      color: #888 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      margin-top: 2px !important;
+    }
+
+    .container-busca-profissional {
+      position: absolute !important;
+      top: 15px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 150 !important; 
+      width: 85% !important;
+      max-width: 420px !important;
+    }
+
+    #input-busca {
+      width: 100% !important;
+      padding: 12px 20px !important;
+      font-size: 15px !important;
+      font-weight: 500 !important;
+      color: #333333 !important;
+      background-color: #ffffff !important;
+      border: none !important;
+      border-radius: 25px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+      outline: none !important;
+    }
+
+    .pac-container {
+      border-radius: 12px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+      border-top: none !important;
+      z-index: 99999 !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+
+    /* ========== STREET VIEW BLINDADO ========== */
+    #tela-streetview {
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      background: #000 !important;
+      z-index: 10000 !important;
+      display: none;
+      flex-direction: column !important;
+    }
+
+    #painel-superior-street {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 60px !important;
+      background: rgba(10, 10, 18, 0.98) !important;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 0 14px !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      z-index: 10005 !important; 
+    }
+
+    #container-panorama {
+      width: 100% !important;
+      height: 100% !important;
+      margin-top: 60px !important;
+      flex: 1 !important;
+    }
+
+    /* ========== ADMOB ========== */
+    .container-admob-velozmapa {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 50px !important;
+      min-height: 50px !important;
+      background: var(--bg-deep);
+      border-top: 1px solid var(--border-subtle);
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      margin: 0 !important;
+      z-index: 9998 !important; 
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-header">
+    <div class="header-top-row">
+      <div class="app-logo"><span class="dot"></span>SEVERINO-LC</div>
+      <div class="app-badge">PRO</div>
+    </div>
+    <div class="container-topo-info">
+      <div class="digital-clock" id="topClock">00:00:00</div>
+      <div class="digital-clock altitude-display" id="altitude-val">0 <span class="unidade-alt">m</span></div>
+    </div>
+  </div>
+  
+  <div class="hud-container">
+    <div class="speed-stage" id="speedStage">
+      <div id="panel-digital">
+        <div class="speed-number-container">
+          <svg class="speed-svg-display" viewBox="0 0 100 55" preserveAspectRatio="none">
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="52" class="speed-number-text" id="speed-val">00</text>
+          </svg>
+        </div>
+        <div class="speed-tape-container" id="tape-digital">
+          <div class="tape-pointer"></div>
+          <div class="speed-tape-track" id="tape-track-digital"></div>
+        </div>
+      </div>
+      
+      <div id="panel-analog" class="escondido">
+        <div class="canvas-container">
+          <canvas id="gaugeCanvas" width="500" height="500" aria-label="Velocímetro analógico"></canvas>
+        </div>
+        <div class="speed-tape-container" id="tape-analog">
+          <div class="tape-pointer"></div>
+          <div class="speed-tape-track" id="tape-track-analog"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="gps-warning" id="gpsWarning">🔍 Buscando sinal GPS de alta precisão...</div>
+    <div class="progress-container"><div class="progress-bar" id="p-bar"></div></div>
+    
+    <div class="grid">
+      <div class="card"><label>Distância</label><span id="dist-val">0.00 km</span></div>
+      <div class="card"><label>Média</label><span id="avg-val">0.0</span></div>
+      <div class="card" style="flex-direction: row; align-items: center; justify-content: center; gap: 8px; padding: 8px 4px;">
+        <div style="text-align: center;"><label>Rumo</label><span id="dir-val">-</span></div>
+        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Alternar tema">🌙</button>
+      </div>
+    </div>
+    
+    <div class="caixa-botoes-rodape">
+      <button class="btn-rodape-vermelho btn-rodape-acao" onclick="window.zerarHodometro()">Zerar Dist.</button>
+      <button class="btn-rodape-escuro btn-rodape-acao" onclick="window.switchPanel()">Painel</button>
+      <button class="btn-rodape-escuro btn-rodape-acao" onclick="abrirMapa()" style="background:#007744 !important; color:#fff !important;">Ver Mapa</button>
+    </div>
+  </div>
+  
+  <div id="tela-mapa">
+    <div class="container-busca-profissional">
+      <input id="input-busca" type="text" placeholder="Para onde vamos hoje? 🔍">
+    </div>
+
+    <div id="painel-superior-mapa">
+      <span id="texto-endereco">📍 Aguardando GPS fixar...</span>
+      <div class="caixa-botoes-topo-mapa">
+        <button class="btn-salvar" onclick="salvarRotaAtual()"> 📲 Enviar p/ Zap</button>
+        <button class="btn-voltar-mapa" onclick="fecharMapa()">Voltar</button>
+      </div>
+    </div>
+    <div id="meu-mapa-container">
+      <div class="caixa-controles-laterais">
+        <button class="btn-satelite" onclick="alternarCamadaMapa()">🚀 <span id="txt-btn-satelite">Modo Satélite</span></button>
+        <button class="btn-streetview" onclick="window.toggleStreetView()">🚶 <span>Ver Rua</span></button>
+      </div>
+      
+      <button id="btn-recentralizar" onclick="recentralizarMapaManual()">🎯</button>
+      
+      <div class="mini-velocimetro-mapa"><span class="num" id="mini-speed-val">0</span><span class="unidade">km/h</span></div>
+      <div class="mini-altitude-mapa"><span class="num" id="mini-altitude-val">0</span><span class="unidade">ALT (m)</span></div>
+      
+      <div id="mapa"></div>
+    </div>
+
+    <div id="tela-streetview">
+      <div id="painel-superior-street">
+        <span style="color: #00ff88; font-weight: bold; font-size: 0.85rem;">👀 Olhando ao Redor (360°)</span>
+        <button class="btn-voltar-mapa" onclick="window.fecharStreetView()">Voltar p/ Rota</button>
+      </div>
+      <div id="container-panorama"></div>
+    </div>
+  </div>
+
+  <div class="container-admob-velozmapa">
+    <ins class="adsbygoogle"
+         style="display:inline-block;width:320px;height:50px"
+         data-ad-client="ca-app-pub-5064995654489535"
+         data-ad-slot="4227987790"></ins>
+    <script>
+         (window.adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
+  <script>
+    (function() {
+        const GOOGLE_API_KEY = "AIzaSyD0PRpZXpBUEea4IA7o8HLXoxYUgIhhsw4";
+        
+        let totalDistance = parseFloat(localStorage.getItem('severino_distancia')) || 0;
+        let lastCoord = null;
+        window.velocidadeAlvoGPS = 0;
+        let totalSomaVelocidades = 0;
+        window.totalLeiturasGpsContador = 0;
+        window.isLightMode = false;
+        let rumoAtualVeiculo = 0;
+        let ultimoRumoFiltrado = 0;
+        
+        let mapaObjeto = null;
+        let mapaEmModoSatelite = false; 
+        let marcadorUsuario = null;
+        let circuloRadar = null;
+        let mapaBloqueadoAoCarro = true;
+        let destinoJaAvisado = false;
+
+        let panoramaObjeto = null;
+        let directionsService = null;
+        let directionsRenderer = null;
+        let destinoAtualSalvo = null; 
+        let ultimaLocalizacaoRecalculo = null;
+        let timestampUltimoRecalculo = 0; 
+        
+        const distVal = document.getElementById('dist-val');
+        const avgVal = document.getElementById('avg-val');
+        const dirVal = document.getElementById('dir-val');
+        const gpsWarning = document.getElementById('gpsWarning');
+        const topClock = document.getElementById('topClock');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const tapeTrackDigital = document.getElementById('tape-track-digital');
+        const tapeTrackAnalog = document.getElementById('tape-track-analog');
+        
+        if (distVal) distVal.innerText = (totalDistance / 1000).toFixed(2) + " km";
+        
+        window.zerarHodometro = function() {
+            totalDistance = 0;
+            localStorage.setItem('severino_distancia', 0);
+            totalSomaVelocidades = 0;
+            window.totalLeiturasGpsContador = 0;
+            if (distVal) distVal.innerText = "0.00 km";
+            if (avgVal) avgVal.innerText = "0.0";
+        };
+
+        themeToggleBtn.addEventListener('click', () => {
+          document.body.classList.toggle('light-mode');
+          window.isLightMode = document.body.classList.contains('light-mode');
+          themeToggleBtn.textContent = window.isLightMode ? '☀️' : '🌙';
+        });
+        
+        function updateClock() {
+          const now = new Date();
+          if (topClock) {
+            topClock.innerText = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+          }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        generateSpeedTape(tapeTrackDigital);
+        generateSpeedTape(tapeTrackAnalog);
+        
+        function generateSpeedTape(trackElement) {
+          if (!trackElement) return;
+          trackElement.innerHTML = '';
+          const maxSpeed = 200;
+          for (let i = 0; i <= maxSpeed; i += 10) {
+            const mark = document.createElement('div');
+            mark.className = 'tape-mark';
+            mark.innerHTML = `<div class="tape-number">${i}</div> <div class="tape-tick"></div>`;
+            trackElement.appendChild(mark);
+          }
+        }
+
+        function falarDirecaoGPS(texto) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const fala = new SpeechSynthesisUtterance(texto);
+                fala.lang = 'pt-BR';
+                fala.rate = 1.0; 
+                window.speechSynthesis.speak(fala);
+            }
+        }
+
+        function carregarGoogleMapsScript() {
+            if (window.google && window.google.maps) { inicializarMapeamentoOriginal(); return; }
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places&v=weekly&callback=inicializarMapeamentoOriginal`;
+            script.async = true; script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        window.abrirMapa = function() {
+            document.getElementById('tela-mapa').style.display = 'flex';
+            carregarGoogleMapsScript();
+            setTimeout(recentralizarMapaManual, 400);
+        };
+
+        window.fecharMapa = function() { 
+            document.getElementById('tela-mapa').style.display = 'none'; 
+        };
+
+        window.switchPanel = function() {
+            const pDig = document.getElementById('panel-digital');
+            const pAna = document.getElementById('panel-analog');
+            if (pDig && pAna) {
+                pDig.classList.toggle('escondido');
+                pAna.classList.toggle('escondido');
+                
+                if (!pAna.classList.contains('escondido') && typeof resizeCanvas === 'function') {
+                    window.resizeCanvas();
+                }
+            }
+        };
+
+       window.inicializarMapeamentoOriginal = function() {
+            if (mapaObjeto) return;
+            const temGpsValido = (lastCoord && Math.abs(lastCoord.lat) > 0.001);
+            const centroInicial = temGpsValido ? {lat: lastCoord.lat, lng: lastCoord.lon} : {lat: -23.5614, lng: -46.6565};
+            
+            mapaObjeto = new google.maps.Map(document.getElementById('mapa'), {
+                center: centroInicial,
+                zoom: temGpsValido ? 18 : 14,
+                heading: rumoAtualVeiculo,
+                tilt: 45, 
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                renderingType: google.maps.RenderingType.VECTOR, 
+                disableDefaultUI: true,
+                isFractionalZoomEnabled: false,
+                gestureHandling: "greedy",
+                rotateControl: true, 
+                tiltControl: false,
+                mapId: "874c539244460c4f55b04093"
+            }); 
+            
+            directionsService = new google.maps.DirectionsService();
+            
+            directionsRenderer = new google.maps.DirectionsRenderer({
+                map: mapaObjeto,
+                suppressPolylines: true,
+                suppressMarkers: true,
+                preserveViewport: true
+            });
+            
+            window.linhaRotaInquebravel = new google.maps.Polyline({
+                map: mapaObjeto,
+                strokeColor: "#FFD700",
+                strokeOpacity: 0.95,
+                strokeWeight: 14,
+                zIndex: 999999
+            });
+
+            const inputBusca = document.getElementById('input-busca');
+            const autocomplete = new google.maps.places.Autocomplete(inputBusca);
+            autocomplete.bindTo('bounds', mapaObjeto);
+
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                if (!place.geometry || !place.geometry.location) return;
+                
+                destinoAtualSalvo = place.geometry.location;
+                destinoJaAvisado = false;
+                timestampUltimoRecalculo = 0; 
+                
+                if (lastCoord) {
+                    mapaBloqueadoAoCarro = true;
+                    document.getElementById('btn-recentralizar').style.background = '#e0243f';
+                    calcularEDesenharRota(destinoAtualSalvo);
+                    falarDirecaoGPS("Rota iniciada para " + place.name);
+                } else {
+                    mapaObjeto.setCenter(destinoAtualSalvo);
+                    mapaObjeto.setZoom(18);
+                }
+                document.getElementById('texto-endereco').innerText = "🏁 " + place.name;
+            });
+
+            marcadorUsuario = new google.maps.Marker({
+                position: centroInicial,
+                map: mapaObjeto,
+                optimized: false,
+                icon: {
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                    scale: 6,
+                    fillColor: "#00FF7F", 
+                    fillOpacity: 1.0,
+                    strokeColor: "#FFFFFF", 
+                    strokeWeight: 2,
+                    anchor: new google.maps.Point(0, 2.5)
+                }
+            });
+
+            circuloRadar = new google.maps.Circle({
+                map: mapaObjeto,
+                center: centroInicial,
+                strokeColor: "#00FF7F",
+                strokeOpacity: 0.6,
+                strokeWeight: 1.5,
+                fillColor: "#00FF7F",
+                fillOpacity: 0.12,
+                radius: 10
+            });
+
+            let raioRadar = 10;
+            setInterval(() => {
+                raioRadar += 2.5;
+                if (raioRadar > 70) {
+                    raioRadar = 10;
+                }
+                if (circuloRadar && marcadorUsuario) {
+                    circuloRadar.setCenter(marcadorUsuario.getPosition());
+                    circuloRadar.setRadius(raioRadar);
+                    
+                    let opacidadeDinamica = 0.4 * (1 - (raioRadar / 70));
+                    circuloRadar.setOptions({ 
+                        fillOpacity: opacidadeDinamica * 0.3, 
+                        strokeOpacity: opacidadeDinamica 
+                    });
+                }
+            }, 45);
+
+            const liberarCameraManual = () => {
+                if (mapaBloqueadoAoCarro) {
+                    mapaBloqueadoAoCarro = false;
+                    document.getElementById('btn-recentralizar').style.background = '#f5a623';
+                }
+            };
+
+            mapaObjeto.addListener('dragstart', liberarCameraManual);
+            mapaObjeto.addListener('zoom_changed', liberarCameraManual);
+            mapaObjeto.addListener('heading_changed', liberarCameraManual); 
+        };
+
+        function calcularEDesenharRota(destinoLatLng) {
+            if (!directionsService || !lastCoord || !destinoLatLng) return;
+            
+            const agora = Date.now();
+            if (agora - timestampUltimoRecalculo < 12000) return; 
+            timestampUltimoRecalculo = agora;
+
+            const orig = new google.maps.LatLng(lastCoord.lat, lastCoord.lon);
+            
+            directionsService.route({
+                origin: { lat: orig.lat(), lng: orig.lng() },
+                destination: destinoLatLng,
+                travelMode: google.maps.TravelMode.DRIVING,
+                provideRouteAlternatives: false
+            }, (response, status) => {
+                if (status === "OK") {
+                    directionsRenderer.setDirections(response);
+                    ultimaLocalizacaoRecalculo = { lat: orig.lat(), lng: orig.lng() };
+                    
+                    const pontosMilimetricos = [];
+                    const percursoLeg = response.routes[0].legs[0];
+                    for (let i = 0; i < percursoLeg.steps.length; i++) {
+                        const subPassos = percursoLeg.steps[i].path;
+                        for (let j = 0; j < subPassos.length; j++) {
+                            pontosMilimetricos.push(subPassos[j]);
+                        }
+                    }
+
+                    if (window.linhaRotaInquebravel) {
+                        window.linhaRotaInquebravel.setPath(pontosMilimetricos);
+                    }
+
+                    if (mapaBloqueadoAoCarro && mapaObjeto) {
+                        mapaObjeto.setCenter(orig);
+                        mapaObjeto.setZoom(18);
+                        mapaObjeto.setTilt(45);
+                        mapaObjeto.setHeading(ultimoRumoFiltrado);
+                    }
+                }
+            });
+        }
+
+        window.alternarCamadaMapa = function() {
+            if (!mapaObjeto) return;
+            mapaEmModoSatelite = !mapaEmModoSatelite;
+            document.getElementById('txt-btn-satelite').innerText = mapaEmModoSatelite ? "Modo Ruas" : "Modo Satélite";
+            mapaObjeto.setMapTypeId(mapaEmModoSatelite ? google.maps.MapTypeId.HYBRID : google.maps.MapTypeId.ROADMAP);
+            mapaObjeto.setTilt(45);
+        };
+
+        window.recentralizarMapaManual = function() {
+            if (!lastCoord || !mapaObjeto) return;
+            mapaBloqueadoAoCarro = true;
+            document.getElementById('btn-recentralizar').style.background = '#e0243f';
+            mapaObjeto.setCenter({lat: lastCoord.lat, lng: lastCoord.lon});
+            mapaObjeto.setZoom(18);
+            mapaObjeto.setTilt(45);
+            mapaObjeto.setHeading(ultimoRumoFiltrado);
+        };
+
+        /* ========== ATUALIZAÇÃO ULTRA PRECISA DA SETA E GRUDADA NA LINHA ========== */
+        window.atualizarVelocidade = function(velocidadeKmh, lat, lon, bearing, altitude) {
+            if (!lat || !lon) return;
+            
+            let latNum = parseFloat(lat);
+            let lonNum = parseFloat(lon);
+            
+            if (gpsWarning && gpsWarning.style.display !== 'none') gpsWarning.style.display = 'none';
+            window.velocidadeAlvoGPS = velocidadeKmh > 0.5 ? velocidadeKmh : 0;
+            
+            const numVel = Math.round(window.velocidadeAlvoGPS);
+            if (document.getElementById('speed-val')) document.getElementById('speed-val').textContent = String(numVel).padStart(2, '0');
+            if (document.getElementById('mini-speed-val')) document.getElementById('mini-speed-val').innerText = numVel;
+
+            if (window.velocidadeAlvoGPS > 0) {
+                totalSomaVelocidades += window.velocidadeAlvoGPS;
+                window.totalLeiturasGpsContador++;
+                if (avgVal) {
+                    avgVal.innerText = (totalSomaVelocidades / window.totalLeiturasGpsContador).toFixed(1);
+                }
+            }
+
+            if (altitude !== undefined && altitude !== null) {
+                const altFormatada = Math.round(parseFloat(altitude));
+                if (document.getElementById('altitude-val')) document.getElementById('altitude-val').innerHTML = `${altFormatada} <span class="unidade-alt">m</span>`;
+                if (document.getElementById('mini-altitude-val')) document.getElementById('mini-altitude-val').textContent = altFormatada;
+            }
+
+            const deslocamentoFita = -((window.velocidadeAlvoGPS / 10) * 60); 
+            if (tapeTrackDigital) tapeTrackDigital.style.transform = `translateX(${deslocamentoFita}px)`;
+            if (tapeTrackAnalog) tapeTrackAnalog.style.transform = `translateX(${deslocamentoFita}px)`;
+
+            // SNAP TO ROUTE: TRAVA O CARRO EXATAMENTE EM CIMA DO TRAÇADO AMARELO
+            if (window.linhaRotaInquebravel && window.linhaRotaInquebravel.getPath()) {
+                const arr = window.linhaRotaInquebravel.getPath().getArray();
+                if (arr.length > 0) {
+                    let menorD = Infinity, idx = -1;
+                    for (let i = 0; i < Math.min(arr.length, 10); i++) {
+                        let d = haversine(latNum, lonNum, arr[i].lat(), arr[i].lng());
+                        if (d < menorD) { menorD = d; idx = i; }
+                    }
+                    if (menorD < 22) { 
+                        latNum = arr[idx].lat(); 
+                        lonNum = arr[idx].lng(); 
+                        if (idx > 0) window.linhaRotaInquebravel.setPath(arr.slice(idx)); 
+                    }
+                }
+            }
+
+            // FILTRO DE RUMO SUAVE (EVITA SETA GIRAR SE ESTIVER PARADO)
+            if (lastCoord) {
+                const distMovida = haversine(lastCoord.lat, lastCoord.lon, latNum, lonNum);
+                if (distMovida > 1.5) {
+                    const dLon = (lonNum - lastCoord.lon) * Math.PI / 180;
+                    const y = Math.sin(dLon) * Math.cos(latNum * Math.PI / 180);
+                    const x = Math.cos(lastCoord.lat * Math.PI / 180) * Math.sin(latNum * Math.PI / 180) - Math.sin(lastCoord.lat * Math.PI / 180) * Math.cos(latNum * Math.PI / 180) * Math.cos(dLon);
+                    rumoAtualVeiculo = ((Math.atan2(y, x) * 180 / Math.PI) + 360) % 360;
+                    
+                    let diff = rumoAtualVeiculo - ultimoRumoFiltrado;
+                    while (diff < -180) diff += 360;
+                    while (diff > 180) diff -= 360;
+                    ultimoRumoFiltrado += diff * 0.35; 
+                }
+            } else if (bearing !== undefined && bearing !== null) {
+                rumoAtualVeiculo = parseFloat(bearing);
+                ultimoRumoFiltrado = rumoAtualVeiculo;
+            }
+            
+            if (dirVal) dirVal.innerText = Math.round(ultimoRumoFiltrado) + "°";
+            
+            if (lastCoord && window.velocidadeAlvoGPS > 1.2) {
+                let deltaD = haversine(lastCoord.lat, lastCoord.lon, latNum, lonNum);
+                if (deltaD > 0 && deltaD < 500) {
+                    totalDistance += deltaD;
+                    localStorage.setItem('severino_distancia', totalDistance);
+                    if (distVal) distVal.innerText = (totalDistance / 1000).toFixed(2) + " km";
+                }
+            }
+
+            lastCoord = { lat: latNum, lon: lonNum };
+            
+            if (mapaObjeto) {
+                const novaPosGoogle = {lat: latNum, lng: lonNum};
+                
+                if (marcadorUsuario) {
+                    marcadorUsuario.setPosition(novaPosGoogle);
+                    const iconeSeta = marcadorUsuario.getIcon();
+                    if (iconeSeta) {
+                        iconeSeta.rotation = Math.round(ultimoRumoFiltrado);
+                        marcadorUsuario.setIcon(iconeSeta);
+                    }
+                }
+                
+                if (window.velocidadeAlvoGPS > 5 && !mapaBloqueadoAoCarro) {
+                    mapaBloqueadoAoCarro = true;
+                    document.getElementById('btn-recentralizar').style.background = '#e0243f';
+                }
+
+                if (mapaBloqueadoAoCarro) {
+                    mapaObjeto.setCenter(novaPosGoogle);
+                    mapaObjeto.setHeading(Math.round(ultimoRumoFiltrado)); 
+                }
+
+                if (document.getElementById('texto-endereco').innerText.includes("Aguardando")) {
+                    document.getElementById('texto-endereco').innerText = "📍 GPS Conectado";
+                }
+
+                if (destinoAtualSalvo && !destinoJaAvisado) {
+                    const distanciaAteDestino = haversine(latNum, lonNum, destinoAtualSalvo.lat(), destinoAtualSalvo.lng());
+                    if (distanciaAteDestino <= 30) { 
+                        destinoJaAvisado = true;
+                        document.getElementById('texto-endereco').innerText = "🏁 Você chegou ao destino!";
+                        falarDirecaoGPS("Você chegou ao seu destino final!");
+                        destinoAtualSalvo = null; 
+                        ultimaLocalizacaoRecalculo = null;
+                        if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath([]); 
+                    }
+                }
+
+                if (destinoAtualSalvo && ultimaLocalizacaoRecalculo) {
+                    const distanciaDoUltimoPontoDeRota = haversine(latNum, lonNum, ultimaLocalizacaoRecalculo.lat, ultimaLocalizacaoRecalculo.lng);
+                    if (distanciaDoUltimoPontoDeRota > 35) {
+                        calcularEDesenharRota(destinoAtualSalvo);
+                    }
+                }
+            }
+        };
+
+        function haversine(lat1, lon1, lat2, lon2) {
+          const R = 6371000;
+          const dLat = (lat2 - lat1) * Math.PI / 180;
+          const dLon = (lon2 - lon1) * Math.PI / 180;
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          return R * c;
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                (position) => {
+                    const velocidadeMps = position.coords.speed !== null && position.coords.speed >= 0 ? position.coords.speed : 0;
+                    window.atualizarVelocidade(
+                        velocidadeMps * 3.6,
+                        position.coords.latitude,
+                        position.coords.longitude,
+                        position.coords.heading,
+                        position.coords.altitude
+                    );
+                },
+                (error) => {
+                    console.error(error);
+                    if (gpsWarning) gpsWarning.innerText = "⚠️ Procurando sinal de GPS...";
+                },
+                { enableHighAccuracy: true, timeout: 1000, maximumAge: 0 }
+            );
+        }
+
+        // ========== VELOCÍMETRO ANALÓGICO ==========
+        const canvas = document.getElementById('gaugeCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            
+            window.resizeCanvas = function() {
+                const rect = canvas.parentNode.getBoundingClientRect();
+                const size = Math.min(rect.width, rect.height) * 0.99;
+                if (size > 0) {
+                    canvas.width = size;
+                    canvas.height = size;
+                }
+            };
+            
+            function renderGauge() {
+                const w = canvas.width;
+                const w_h = canvas.height;
+                const cx = w / 2;
+                const cy = w_h / 2;
+                const radius = Math.min(w, w_h) * 0.46;
+                const light = window.isLightMode;
+                
+                ctx.clearRect(0, 0, w, w_h);
+                ctx.fillStyle = light ? '#ffffff' : '#06060c';
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius + 14, 0, Math.PI * 2);
+                ctx.fill();
+                
+                const startAngle = Math.PI * 0.75;
+                const endAngleTotal = Math.PI * 2.25;
+                const maxSpeed = 200;
+                const clampedSpeed = Math.min(window.velocidadeAlvoGPS, maxSpeed);
+                const progressAngle = startAngle + (clampedSpeed / maxSpeed) * (endAngleTotal - startAngle);
+                
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, startAngle, endAngleTotal);
+                ctx.strokeStyle = light ? '#e4e7eb' : '#ffffff';
+                ctx.lineWidth = 8; 
+                ctx.stroke();
+                
+                if (window.velocidadeAlvoGPS > 0) {
+                    const arcGrad = ctx.createLinearGradient(0, 0, w, 0);
+                    arcGrad.addColorStop(0, '#c91a30');
+                    arcGrad.addColorStop(1, '#ff3b50');
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, radius, startAngle, progressAngle);
+                    ctx.strokeStyle = arcGrad;
+                    ctx.lineWidth = 9; 
+                    ctx.stroke();
+                }
+                
+                for (let i = 0; i <= maxSpeed; i += 5) {
+                  const angle = startAngle + (i / maxSpeed) * (endAngleTotal - startAngle);
+                  const isMajor = i % 20 === 0;
+                  ctx.beginPath();
+                  ctx.moveTo(cx + Math.cos(angle) * (radius - 6), cy + Math.sin(angle) * (radius - 6));
+                  ctx.lineTo(cx + Math.cos(angle) * (radius - 6 - (isMajor ? 14 : 8)), cy + Math.sin(angle) * (radius - 6 - (isMajor ? 14 : 8)));
+                  ctx.strokeStyle = isMajor ? (light ? '#222222' : '#ffffff') : (light ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.4)');
+                  ctx.lineWidth = isMajor ? 3 : 1;
+                  ctx.stroke();
+                }
+                
+                ctx.font = `bold ${Math.floor(radius * 0.13)}px 'Orbitron', sans-serif`;
+                ctx.fillStyle = light ? '#007744' : '#00ff88';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                for (let i = 0; i <= maxSpeed; i += 20) {
+                  const angle = startAngle + (i / maxSpeed) * (endAngleTotal - startAngle);
+                  ctx.fillText(i.toString(), cx + Math.cos(angle) * (radius - 32), cy + Math.sin(angle) * (radius - 32));
+                }
+                
+                // ===== PONTEIRO ALINHADO NO ZERO =====
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(progressAngle);
+                ctx.beginPath();
+                ctx.moveTo(-15, 0);
+                ctx.lineTo(0, -6);
+                ctx.lineTo(radius - 25, 0);
+                ctx.lineTo(0, 6);
+                ctx.closePath();
+                ctx.fillStyle = '#e0243f';
+                ctx.fill();
+                ctx.restore();
+                
+                ctx.beginPath();
+                ctx.arc(cx, cy, 16, 0, Math.PI * 2);
+                ctx.fillStyle = '#111118';
+                ctx.fill();
+                
+                const dW = radius * 0.88;
+                const dH = radius * 0.38;
+                ctx.fillStyle = light ? '#f8f9fa' : 'rgba(0,0,0,0.92)';
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(cx - dW / 2, cy + radius * 0.38, dW, dH, 8);
+                else ctx.rect(cx - dW / 2, cy + radius * 0.38, dW, dH);
+                ctx.fill();
+                
+                ctx.font = `bold ${Math.floor(dH * 0.36)}px 'Orbitron', monospace`;
+                ctx.fillStyle = light ? '#b37400' : '#f5a623';
+                ctx.fillText(`ODO: ${(totalDistance/1000).toFixed(1)} km`, cx, cy + radius * 0.38 + dH * 0.32);
+                ctx.font = `bold ${Math.floor(dH * 0.52)}px 'Orbitron', monospace`;
+                ctx.fillStyle = light ? '#007744' : '#00ff88';
+                ctx.fillText(`${Math.round(window.velocidadeAlvoGPS)} km/h`, cx, cy + radius * 0.38 + dH * 0.76);
+
+                const pct = Math.min((window.velocidadeAlvoGPS / 200) * 100, 100);
+                if (document.getElementById('p-bar')) document.getElementById('p-bar').style.width = pct + "%";
+
+                requestAnimationFrame(renderGauge);
+            }
+            
+            window.addEventListener('resize', window.resizeCanvas);
+            window.resizeCanvas();
+            renderGauge();
+        }
+
+       /* ========== CORREÇÃO CIRÚRGICA DO STREET VIEW (VER RUA) ========== */
+        window.toggleStreetView = function() {
+            let posicaoAlvo = null;
+            let rumoAlvo = rumoAtualVeiculo;
+            
+            if (destinoAtualSalvo) { 
+                posicaoAlvo = { lat: destinoAtualSalvo.lat(), lng: destinoAtualSalvo.lng() }; 
+                rumoAlvo = 0; 
+            } else if (lastCoord) { 
+                posicaoAlvo = { lat: lastCoord.lat, lng: lastCoord.lon }; 
+                rumoAlvo = rumoAtualVeiculo; 
+            } else { 
+                alert("🔍 Aguardando sinal de GPS!"); 
+                return; 
+            }
+
+            const telaStreet = document.getElementById('tela-streetview');
+            const containerPanorama = document.getElementById('container-panorama');
+            
+            // PRIMEIRO: Abre a tela preenchendo o espaço do app
+            telaStreet.style.display = 'flex';
+
+            // SEGUNDO: Força o Google a recalcular o tamanho correto para não encolher no canto
+            setTimeout(() => {
+                if (!panoramaObjeto) {
+                    panoramaObjeto = new google.maps.StreetViewPanorama(containerPanorama, {
+                        position: posicaoAlvo,
+                        pov: { heading: rumoAlvo, pitch: 0 },
+                        visible: true,
+                        motionTracking: false,
+                        motionTrackingControl: false,
+                        disableDefaultUI: true 
+                    });
+                } else {
+                    panoramaObjeto.setPosition(posicaoAlvo);
+                    panoramaObjeto.setPov({ heading: rumoAlvo, pitch: 0 });
+                }
+                
+                // Dispara o gatilho de correção de tamanho oficial da API do Google
+                google.maps.event.trigger(panoramaObjeto, 'resize');
+            }, 300); // Aguarda 300 milissegundos para a tela abrir antes de desenhar a imagem
+        };
+
+        window.fecharStreetView = function() { 
+            document.getElementById('tela-streetview').style.display = 'none'; 
+        };
+
+/* ========== FUNÇÃO DE COMPARTILHAMENTO BLINDADA (SEM VOZ E SEM ERRO) ========== */
+     /* ========== ENVIO SEGURO VIA WEBVIEWSTRING PARA O KODULAR ========== */
+        window.salvarRotaAtual = function() {
+            // CORTA QUALQUER TENTATIVA DE LEITURA DE TEXTO IMEDIATAMENTE
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            } catch(e) {}
+
+            const inputBusca = document.getElementById('input-busca');
+            const destinoTexto = (inputBusca && inputBusca.value) ? inputBusca.value : "Não Informado";
+            const agora = new Date();
+            const dataString = String(agora.getDate()).padStart(2, '0') + '/' + String(agora.getMonth() + 1).padStart(2, '0') + '/' + agora.getFullYear();
+            const horaString = String(agora.getHours()).padStart(2, '0') + ':' + String(agora.getMinutes()).padStart(2, '0');
+            
+            let origemParam = "-23.5614,-46.6565"; 
+            let textoOrigem = "Não Fixado";
+            if (lastCoord) {
+                origemParam = `${lastCoord.lat},${lastCoord.lon}`;
+                textoOrigem = `${lastCoord.lat.toFixed(5)}, ${lastCoord.lon.toFixed(5)}`;
+            }
+            
+            const linkGoogleMaps = `https://www.google.com/maps/dir/?api=1&origin=${origemParam}&destination=${encodeURIComponent(destinoTexto)}&travelmode=driving`;
+            
+            const mensagemBruta = `🗺️ *SEVERINO-LC – COMPROVANTE DE ROTA*\n` +
+                                  `📅 *Data:* ${dataString}  |  🕒 *Hora:* ${horaString}\n\n` +
+                                  `📍 *Origem:* ${textoOrigem}\n` +
+                                  `🏁 *Destino:* ${destinoTexto}\n\n` +
+                                  `🛣️ *Link do Traçado Oficial:*\n${linkGoogleMaps}`;
+            
+            // DISPARA PARA O KODULAR E SÓ! SEM LINKS QUE TRAVAM A WEBVIEW
+            if (window.AppInventor && typeof window.AppInventor.setWebViewString === 'function') {
+                window.AppInventor.setWebViewString(mensagemBruta);
+            } else {
+                // Se testar direto no navegador do PC/Celular fora do APK, ele abre o Zap Web normal
+                window.open(`https://wa.me/?text=${encodeURIComponent(mensagemBruta)}`, '_blank');
+            }
+        };
+  </script>
+</body>
+</html>

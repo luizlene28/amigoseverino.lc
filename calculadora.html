@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Calculadora Nexus Pro 3D | Offline</title>
+    <style>
+        :root {
+            --bg-deep: #1a1a1f;
+            --bg-calc: #4a4d55;
+            --bg-display: #9aac9a;
+            --text-display: #1a1f1a;
+            --text-expression: #2d332d;
+            --border-calc: #3a3d44;
+            --cube-size: 42px;
+            --cube-half: 21px;
+            --btn-shadow-dark: #2a2d33;
+            --btn-num-bg: #d5d8de;
+            --btn-num-top: #e8eaef;
+            --btn-op-bg: #3b5f80;
+            --btn-op-top: #4f7aa6;
+            --btn-eq-bg: #b84a2a;
+            --btn-eq-top: #d45a3a;
+            --btn-clear-bg: #8b3a3a;
+            --btn-clear-top: #a84848;
+            --btn-sci-bg: #5a5d66;
+            --btn-sci-top: #6e717a;
+            --btn-shadow: #2a2d33;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-deep);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            padding: 12px;
+            margin: 0;
+            overflow-x: hidden;
+            perspective: 1200px;
+            background-image:
+                radial-gradient(ellipse at 30% 20%, rgba(120, 120, 140, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 60%, rgba(80, 90, 110, 0.10) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 80%, rgba(60, 60, 80, 0.08) 0%, transparent 50%);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                radial-gradient(1px 1px at 15% 25%, rgba(255, 255, 255, 0.25), transparent),
+                radial-gradient(1px 1px at 75% 35%, rgba(0, 229, 255, 0.3), transparent),
+                radial-gradient(1.5px 1.5px at 40% 70%, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 60% 15%, rgba(180, 180, 200, 0.3), transparent),
+                radial-gradient(1.5px 1.5px at 85% 55%, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 20% 80%, rgba(0, 229, 255, 0.25), transparent),
+                radial-gradient(1px 1px at 55% 45%, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1.5px 1.5px at 90% 10%, rgba(200, 200, 220, 0.25), transparent);
+            animation: particlesFloat 20s linear infinite;
+        }
+
+        @keyframes particlesFloat {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .calculator-container {
+            position: relative;
+            width: 100%;
+            max-width: 430px;
+            background: var(--bg-calc);
+            border-radius: 18px;
+            padding: 24px 18px 18px;
+            box-shadow:
+                0 30px 50px rgba(0, 0, 0, 0.7),
+                0 0 0 3px var(--border-calc),
+                0 0 0 5px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+            border: 2px solid #5a5d66;
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            z-index: 1;
+            will-change: transform;
+            background: linear-gradient(180deg, #5a5d68 0%, #4a4d55 5%, #3f424a 100%);
+        }
+
+        .calculator-container:hover {
+            box-shadow:
+                0 35px 60px rgba(0, 0, 0, 0.75),
+                0 0 0 3px var(--border-calc),
+                0 0 0 5px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+        }
+
+        /* CONFIGURAÇÃO DO CUBO COM AS CORES DA CALCULADORA */
+        .cube-wrapper {
+            position: absolute;
+            top: -18px;
+            left: -14px;
+            width: var(--cube-size);
+            height: var(--cube-size);
+            z-index: 10;
+            perspective: 200px;
+            filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6));
+            cursor: pointer;
+            transition: filter 0.3s;
+        }
+        .cube-wrapper:hover { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)); }
+
+        .cube-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube3D 8s linear infinite;
+            transition: animation-duration 0.3s;
+        }
+        .cube-wrapper:hover .cube-inner { animation-duration: 3s; }
+
+        @keyframes rotateCube3D {
+            0% { transform: rotateX(-7deg) rotateY(0deg); }
+            100% { transform: rotateX(-7deg) rotateY(240deg); }
+        }
+
+        .cube-face {
+            position: absolute;
+            width: var(--cube-size);
+            height: var(--cube-size);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6em;
+            font-weight: 800;
+            color: #fff;
+            text-align: center;
+            backface-visibility: visible;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            line-height: 1.1;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            user-select: none;
+            overflow: hidden;
+        }
+        .cube-face span { font-size: 0.85em; display: block; text-align: center; }
+
+        /* Cores baseadas nos botões reais da calculadora */
+        .cf-front { background: linear-gradient(135deg, #4f7aa6, #3b5f80); transform: translateZ(var(--cube-half)); } /* Azul dos Operadores */
+        .cf-back { background: linear-gradient(135deg, #d45a3a, #b84a2a); transform: rotateY(180deg) translateZ(var(--cube-half)); } /* Vermelho do Igual */
+        .cf-right { background: linear-gradient(135deg, #a84848, #8b3a3a); transform: rotateY(90deg) translateZ(var(--cube-half)); } /* Vermelho escuro do C */
+        .cf-left { background: linear-gradient(135deg, #e0c080, #c4a040); transform: rotateY(-90deg) translateZ(var(--cube-half)); color: #222 !important; text-shadow: none !important; } /* Dourado da Porcentagem */
+        .cf-top { background: linear-gradient(135deg, #e8eaef, #d5d8de); transform: rotateX(90deg) translateZ(var(--cube-half)); color: #1a1d22 !important; text-shadow: none !important; } /* Claro dos Números */
+        .cf-bottom { background: linear-gradient(135deg, #6e717a, #5a5d66); transform: rotateX(-90deg) translateZ(var(--cube-half)); } /* Cinza do Científica */
+
+        .header {
+            display: table;
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 8px 10px 8px 34px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            position: relative;
+            z-index: 5;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .brand-cell {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        .brand-title {
+            color: #d5d8de;
+            font-weight: 800;
+            font-size: 0.95em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+        }
+
+        .mode-cell {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .mode-selector {
+            display: inline-block;
+        }
+
+        .mode-btn {
+            background: #3a3d44;
+            color: #aaa;
+            border: 1px solid #2a2d33;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: 700;
+            transition: all 0.15s ease;
+            display: inline-block;
+            margin-left: 4px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 3px 0 #2a2d33, 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+        }
+        .mode-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #2a2d33, 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+        .mode-btn.active {
+            background: #5a5f6a;
+            color: #fff;
+            box-shadow: 0 3px 0 #2a2d33, 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .format-selector { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+        .format-btn {
+            background: #3a3d44;
+            color: #999;
+            border: 1px solid #2a2d33;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.7em;
+            font-weight: 700;
+            transition: all 0.12s ease;
+            flex: 1;
+            min-width: 50px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 3px 0 #2a2d33, 0 3px 6px rgba(0, 0, 0, 0.25);
+        }
+        .format-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #2a2d33, 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        .format-btn.active {
+            background: #5a5f6a;
+            color: #fff;
+            box-shadow: 0 3px 0 #2a2d33, 0 3px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            font-weight: 800;
+        }
+
+        .display {
+            background: var(--bg-display);
+            border-radius: 8px;
+            padding: 14px 12px;
+            margin-bottom: 16px;
+            border: 2px solid #6a6d70;
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.5), 0 0 0 2px #2a2d33;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background: linear-gradient(180deg, #b8c8b8 0%, #9aac9a 30%, #8a9d8a 100%);
+        }
+
+        .expression {
+            color: var(--text-expression);
+            font-size: 0.85em;
+            min-height: 20px;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-all;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            max-height: 2.6em;
+            overflow-y: auto;
+            margin-bottom: 4px;
+        }
+
+        .result {
+            color: var(--text-display);
+            text-align: right;
+            font-weight: 700;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+            word-wrap: break-word;
+            word-break: break-all;
+            max-height: 3.3em;
+            overflow-y: auto;
+            font-size: 2.4em;
+        }
+        .result.error-display { color: #8b1a1a; }
+
+        .scientific-panel { display: none; margin-bottom: 12px; }
+        .scientific-panel.show { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+
+        .buttons-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+
+        button {
+            background: var(--btn-num-bg);
+            color: #1a1d22;
+            border: 1.5px solid #9a9da5;
+            padding: 14px 4px;
+            border-radius: 8px;
+            font-size: 1.15em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.06s ease;
+            user-select: none;
+            box-shadow: 0 5px 0 #8a8d94, 0 7px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: linear-gradient(180deg, #e8eaef 0%, #d5d8de 60%, #c5c8d0 100%);
+        }
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #8a8d94, 0 3px 6px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(180deg, #d5d8de 0%, #c5c8d0 60%, #b5b8c0 100%);
+        }
+
+        button[data-action="number"] { background: linear-gradient(180deg, #f0f2f5 0%, #d5d8de 60%, #c5c8d0 100%); }
+        .operator {
+            background: linear-gradient(180deg, #5f85aa 0%, #3b5f80 60%, #2f4f6a 100%) !important;
+            color: #fff !important;
+            border-color: #2a4a60 !important;
+            box-shadow: 0 5px 0 #2a4a60, 0 7px 10px rgba(0, 0, 0, 0.4) !important;
+        }
+        .equals {
+            background: linear-gradient(180deg, #e07050 0%, #b84a2a 60%, #9a3d22 100%) !important;
+            border-color: #7a2d18 !important;
+            color: #fff !important;
+            grid-column: span 2;
+            font-size: 1.4em;
+            box-shadow: 0 5px 0 #7a2d18, 0 7px 12px rgba(0, 0, 0, 0.45) !important;
+        }
+        .clear {
+            background: linear-gradient(180deg, #b86060 0%, #8b3a3a 60%, #6d2d2d 100%) !important;
+            border-color: #5a2020 !important;
+            color: #fff !important;
+            box-shadow: 0 5px 0 #5a2020, 0 7px 10px rgba(0, 0, 0, 0.4) !important;
+        }
+        .scientific {
+            background: linear-gradient(180deg, #7a7d86 0%, #5a5d66 60%, #4a4d55 100%) !important;
+            border-color: #3a3d44 !important;
+            color: #fff !important;
+            box-shadow: 0 4px 0 #3a3d44, 0 6px 9px rgba(0, 0, 0, 0.4) !important;
+        }
+        .percent-btn {
+            background: linear-gradient(180deg, #e0c080 0%, #c4a040 60%, #a88830 100%) !important;
+            border-color: #8a6d20 !important;
+            box-shadow: 0 5px 0 #8a6d20, 0 7px 10px rgba(0, 0, 0, 0.4) !important;
+        }
+        button[data-action="backspace"] {
+            background: linear-gradient(180deg, #e5c5c5 0%, #c49595 60%, #a87878 100%);
+            border-color: #8a6565;
+            box-shadow: 0 5px 0 #8a6565, 0 7px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            :root { --cube-size: 34px; --cube-half: 17px; }
+            .calculator-container { padding: 18px 12px 14px; border-radius: 14px; }
+            .header { padding: 6px 6px 6px 28px; margin-bottom: 12px; }
+            .brand-title { font-size: 0.8em; letter-spacing: 0.5px; }
+            .mode-btn { padding: 5px 7px; font-size: 0.68em; margin-left: 2px; }
+            .format-btn { padding: 5px 4px; font-size: 0.65em; min-width: 42px; }
+            button { padding: 11px 2px; font-size: 1em; box-shadow: 0 4px 0 #8a8d94; }
+            .buttons-grid { gap: 6px; }
+            .scientific-panel.show { gap: 5px; margin-bottom: 10px; }
+            .scientific { font-size: 0.85em; padding: 10px 1px; }
+            .result { font-size: 1.9em; }
+        }
+
+        @media (max-width: 360px) {
+            .brand-title { display: none; }
+            .header { padding-left: 24px; }
+            .mode-cell { text-align: center; display: block; width: 100%; }
+            .mode-btn { font-size: 0.65em; padding: 5px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container" id="calculatorContainer">
+        <div class="cube-wrapper" title="LC Severino">
+            <div class="cube-inner">
+                <div class="cube-face cf-front">LC<span>SEV</span></div>
+                <div class="cube-face cf-back">LC<span>SEV</span></div>
+                <div class="cube-face cf-right">LC<span>SEV</span></div>
+                <div class="cube-face cf-left">LC<span>SEV</span></div>
+                <div class="cube-face cf-top">LC<span>SEV</span></div>
+                <div class="cube-face cf-bottom">LC<span>SEV</span></div>
+            </div>
+        </div>
+
+        <div class="header">
+            <div class="brand-cell">
+                <div class="brand-title">⚡LC_PRO</div>
+            </div>
+            <div class="mode-cell">
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="basicMode">Básica</button>
+                    <button class="mode-btn" id="scientificMode">Científica</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="format-selector">
+            <button class="format-btn active" data-format="normal">Normal</button>
+            <button class="format-btn" data-format="currency">R$</button>
+            <button class="format-btn" data-format="decimal">0.00</button>
+            <button class="format-btn" data-format="scientific">1e+3</button>
+        </div>
+
+        <div class="display">
+            <div class="expression" id="expression"></div>
+            <div class="result" id="result">0</div>
+        </div>
+
+        <div class="scientific-panel" id="scientificPanel">
+            <button class="scientific" data-action="sin">sin</button>
+            <button class="scientific" data-action="cos">cos</button>
+            <button class="scientific" data-action="tan">tan</button>
+            <button class="scientific" data-action="log">log</button>
+            <button class="scientific" data-action="ln">ln</button>
+            <button class="scientific" data-action="sqrt">√</button>
+            <button class="scientific" data-action="pow">x²</button>
+            <button class="scientific" data-action="pow3">x³</button>
+            <button class="scientific" data-action="factorial">n!</button>
+            <button class="scientific" data-action="pi">π</button>
+        </div>
+
+        <div class="buttons-grid">
+            <button class="clear" data-action="clear">C</button>
+            <button class="operator" data-action="parenthesis">( )</button>
+            <button class="percent-btn" data-action="percent">%</button>
+            <button class="operator" data-action="divide">÷</button>
+
+            <button data-action="number" data-value="7">7</button>
+            <button data-action="number" data-value="8">8</button>
+            <button data-action="number" data-value="9">9</button>
+            <button class="operator" data-action="multiply">×</button>
+
+            <button data-action="number" data-value="4">4</button>
+            <button data-action="number" data-value="5">5</button>
+            <button data-action="number" data-value="6">6</button>
+            <button class="operator" data-action="subtract">−</button>
+
+            <button data-action="number" data-value="1">1</button>
+            <button data-action="number" data-value="2">2</button>
+            <button data-action="number" data-value="3">3</button>
+            <button class="operator" data-action="add">+</button>
+
+            <button data-action="number" data-value="0">0</button>
+            <button data-action="decimal">.</button>
+            <button data-action="backspace">⌫</button>
+            <button class="equals" data-action="equals">=</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const expressionEl = document.getElementById('expression');
+            const resultEl = document.getElementById('result');
+            const scientificPanel = document.getElementById('scientificPanel');
+            const calculatorContainer = document.getElementById('calculatorContainer');
+
+            let currentInput = '0';
+            let currentExpression = '';
+            let shouldResetScreen = false;
+            let lastResult = null;
+            let currentFormat = 'normal';
+            let isScientificMode = false;
+            let openParenthesis = 0;
+            let isTouchDevice = false;
+
+            function detectTouch() {
+                isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            }
+            detectTouch();
+
+            function adjustResultFontSize() {
+                const text = resultEl.textContent || '0';
+                const len = text.length;
+                let fontSize = '2.4em';
+                if (len > 7 && len <= 10) fontSize = '1.9em';
+                else if (len > 10 && len <= 14) fontSize = '1.5em';
+                else if (len > 14 && len <= 18) fontSize = '1.2em';
+                else if (len > 18 && len <= 24) fontSize = '0.95em';
+                else if (len > 24) fontSize = '0.78em';
+                resultEl.style.fontSize = fontSize;
+            }
+
+            function sanitizeToPowerOfJS(str) {
+                if (str === 'Erro' || str === '') return '0';
+                let clean = str.trim();
+                if (clean.includes('R$')) clean = clean.replace('R$', '').trim();
+                if (clean.includes('.') && clean.includes(',')) {
+                    clean = clean.replace(/\./g, '').replace(/,/g, '.');
+                } else if (clean.includes(',')) {
+                    clean = clean.replace(/,/g, '.');
+                }
+                return clean;
+            }
+
+            function formatNumber(num, format) {
+                if (isNaN(num) || !isFinite(num)) return 'Erro';
+                if (Math.abs(num) > 1e+15 && format !== 'scientific') {
+                    return num.toExponential(4).replace('.', ',');
+                }
+                switch (format) {
+                    case 'currency':
+                        return 'R$ ' + num.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    case 'decimal':
+                        return num.toFixed(2).replace('.', ',');
+                    case 'scientific':
+                        return num.toExponential(4).replace('.', ',');
+                    default:
+                        if (num.toString().includes('e')) return num.toString().replace('.', ',');
+                        let parts = num.toString().split('.');
+                        if (parts[1]) return parts[0] + ',' + parts[1];
+                        return parts[0];
+                }
+            }
+
+            function updateDisplay() {
+                if (currentInput === 'Erro') {
+                    resultEl.textContent = 'Erro';
+                    resultEl.classList.add('error-display');
+                } else {
+                    let cleanInput = sanitizeToPowerOfJS(currentInput);
+                    let num = parseFloat(cleanInput);
+                    resultEl.textContent = formatNumber(num, currentFormat);
+                    resultEl.classList.remove('error-display');
+                }
+                expressionEl.textContent = currentExpression;
+                adjustResultFontSize();
+            }
+
+            function clearAll() {
+                currentInput = '0'; currentExpression = ''; shouldResetScreen = false;
+                lastResult = null; openParenthesis = 0; resultEl.classList.remove('error-display');
+                updateDisplay();
+            }
+
+            function inputNumber(num) {
+                if (shouldResetScreen || currentInput === 'Erro') {
+                    currentInput = num; shouldResetScreen = false;
+                } else {
+                    if (currentInput === '0' && num !== '0') currentInput = num;
+                    else if (currentInput === '0' && num === '0') currentInput = '0';
+                    else currentInput += num;
+                }
+                updateDisplay();
+            }
+
+            function inputDecimal() {
+                if (shouldResetScreen) { currentInput = '0,'; shouldResetScreen = false; }
+                else if (!currentInput.includes(',') && !currentInput.includes('.')) currentInput += ',';
+                updateDisplay();
+            }
+
+            function inputOperator(op) {
+                if (currentInput === 'Erro') return;
+                const ops = { add: '+', subtract: '−', multiply: '×', divide: '÷', percent: '%' };
+                const opSymbol = ops[op] || op;
+
+                if (shouldResetScreen && lastResult !== null) {
+                    currentExpression = sanitizeToPowerOfJS(lastResult.toString()) + ' ' + opSymbol + ' ';
+                    currentInput = '0'; shouldResetScreen = false; updateDisplay(); return;
+                }
+                if (currentExpression.trim().endsWith(')') && op !== 'percent') {
+                    currentExpression += ' ' + opSymbol + ' ';
+                } else if (currentExpression.trim() === '' && currentInput === '0' && op === 'subtract') {
+                    currentInput = '-'; shouldResetScreen = false; updateDisplay(); return;
+                } else {
+                    currentExpression += sanitizeToPowerOfJS(currentInput) + ' ' + opSymbol + ' ';
+                }
+                shouldResetScreen = true; updateDisplay();
+            }
+
+            function calculate() {
+                try {
+                    let inputToEvaluate = currentExpression + ' ' + currentInput;
+                    let expression = inputToEvaluate.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/%/g, '/100');
+                    expression = expression.replace(/[0-9.,R$\s]+/g, function(match) {
+                        if (/^[+\-*/\s()]+$/.test(match)) return match;
+                        return sanitizeToPowerOfJS(match);
+                    });
+                    expression = expression.trim();
+                    if (/[+\-*/]$/.test(expression)) expression = expression.replace(/[+\-*/]$/, '');
+                    expression = expression.replace(/(\d+)\(/g, '$1*(').replace(/\)\(/g, ')*(');
+                    
+                    const result = eval(expression);
+                    if (!isFinite(result) || isNaN(result)) throw new Error('Invalido');
+                    currentInput = result.toString(); currentExpression = ''; lastResult = result;
+                    shouldResetScreen = true; openParenthesis = 0; updateDisplay();
+                } catch (e) {
+                    currentInput = 'Erro'; currentExpression = ''; shouldResetScreen = true; updateDisplay();
+                }
+            }
+
+            function handleBackspace() {
+                if (shouldResetScreen) { clearAll(); return; }
+                if (currentInput.length > 1) currentInput = currentInput.slice(0, -1);
+                else currentInput = '0';
+                updateDisplay();
+            }
+
+            function handleParenthesis() {
+                if (shouldResetScreen && lastResult !== null) { currentExpression = ''; shouldResetScreen = false; }
+                if (openParenthesis === 0 || /([+−×÷]$)/.test(currentExpression.trim()) || currentExpression.trim().endsWith('(')) {
+                    if (!shouldResetScreen && currentInput !== '0' && currentInput !== '') {
+                        currentExpression += sanitizeToPowerOfJS(currentInput) + ' × (';
+                    } else currentExpression += '(';
+                    openParenthesis++; currentInput = '';
+                } else {
+                    currentExpression += sanitizeToPowerOfJS(currentInput) + ')';
+                    openParenthesis = Math.max(0, openParenthesis - 1); currentInput = '';
+                }
+                shouldResetScreen = false; updateDisplay();
+            }
+
+            function scientificOperation(action) {
+                const num = parseFloat(sanitizeToPowerOfJS(currentInput));
+                if (isNaN(num) && action !== 'pi') return;
+                let result;
+                switch (action) {
+                    case 'sin': result = Math.sin(num * Math.PI / 180); break;
+                    case 'cos': result = Math.cos(num * Math.PI / 180); break;
+                    case 'tan': result = Math.tan(num * Math.PI / 180); break;
+                    case 'log': result = Math.log10(num); break;
+                    case 'ln': result = Math.log(num); break;
+                    case 'sqrt': result = Math.sqrt(num); break;
+                    case 'pow': result = Math.pow(num, 2); break;
+                    case 'pow3': result = Math.pow(num, 3); break;
+                    case 'factorial':
+                        if (num < 0 || !Number.isInteger(num) || num > 170) { currentInput = 'Erro'; updateDisplay(); return; }
+                        result = 1; for (let i = 2; i <= num; i++) result *= i; break;
+                    case 'pi': result = Math.PI; break;
+                    default: return;
+                }
+                if (!isFinite(result) || isNaN(result)) currentInput = 'Erro';
+                else { currentInput = result.toString(); currentExpression = action + '(' + formatNumber(num, 'normal') + ') = '; }
+                shouldResetScreen = true; updateDisplay();
+            }
+
+            document.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.dataset.action; const value = this.dataset.value;
+                    if (action === 'number') inputNumber(value);
+                    else if (action === 'decimal') inputDecimal();
+                    else if (action === 'clear') clearAll();
+                    else if (action === 'backspace') handleBackspace();
+                    else if (action === 'equals') calculate();
+                    else if (action === 'parenthesis') handleParenthesis();
+                    else if (['add', 'subtract', 'multiply', 'divide', 'percent'].includes(action)) inputOperator(action);
+                    else if (action && scientificPanel.contains(this)) scientificOperation(action);
+                });
+                btn.addEventListener('touchstart', function(e) { e.preventDefault(); this.click(); }, { passive: false });
+            });
+
+            document.getElementById('basicMode').addEventListener('click', function() {
+                scientificPanel.classList.remove('show'); this.classList.add('active');
+                document.getElementById('scientificMode').classList.remove('active');
+            });
+
+            document.getElementById('scientificMode').addEventListener('click', function() {
+                scientificPanel.classList.add('show'); this.classList.add('active');
+                document.getElementById('basicMode').classList.remove('active');
+            });
+
+            document.querySelectorAll('.format-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active'); currentFormat = this.dataset.format; updateDisplay();
+                });
+            });
+
+            document.addEventListener('keydown', function(e) {
+                const key = e.key;
+                if (key >= '0' && key <= '9') inputNumber(key);
+                else if (key === '.' || key === ',') inputDecimal();
+                else if (key === '+') inputOperator('add');
+                else if (key === '-') inputOperator('subtract');
+                else if (key === '*') inputOperator('multiply');
+                else if (key === '/') { e.preventDefault(); inputOperator('divide'); }
+                else if (key === '%') inputOperator('percent');
+                else if (key === 'Enter' || key === '=') { e.preventDefault(); calculate(); }
+                else if (key === 'Backspace') { e.preventDefault(); handleBackspace(); }
+                else if (key === 'Escape') { e.preventDefault(); clearAll(); }
+            });
+
+            if (!isTouchDevice) {
+                calculatorContainer.addEventListener('mousemove', function(e) {
+                    const rect = calculatorContainer.getBoundingClientRect();
+                    const rotateX = ((e.clientY - rect.top - (rect.height / 2)) / (rect.height / 2)) * -6;
+                    const rotateY = ((e.clientX - rect.left - (rect.width / 2)) / (rect.width / 2)) * 6;
+                    calculatorContainer.style.transform = `perspective(1000px) rotateX(${Math.max(-8, Math.min(8, rotateX))}deg) rotateY(${Math.max(-8, Math.min(8, rotateY))}deg)`;
+                });
+                calculatorContainer.addEventListener('mouseleave', function() {
+                    calculatorContainer.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+                });
+            }
+            window.addEventListener('resize', () => { adjustResultFontSize(); detectTouch(); }); updateDisplay();
+        })();
+    </script>
+</body>
+</html>

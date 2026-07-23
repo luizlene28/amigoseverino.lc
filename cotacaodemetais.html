@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cotação de Metais 3D - Multiplataforma</title>
+
+    <style>
+        :root {
+            --bg-dark: #0c0c1d;
+            --bg-card: #151530;
+            --gold: #f0c060;
+            --gold-light: #ffeaa7;
+            --silver: #a8b2bd;
+            --copper: #d37546;
+            --bronze: #cd7f32;
+            --lead: #5c6bc0;
+            --aluminum: #78909c;
+            --text: #f0f0f8;
+            --text-muted: #b0b0cc;
+            --secondary: #00b894;
+            --accent: #fdcb6e;
+            --border-gold: rgba(240, 192, 96, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            perspective: 1200px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fundo animado com gradiente radial pulsante */
+        .bg-ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(108, 92, 231, 0.15) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 70%, rgba(240, 192, 96, 0.08) 0%, transparent 55%);
+            animation: bgPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.6;
+        }
+
+        /* Cubo 3D Dinâmico */
+        .cube-container {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            width: 70px;
+            height: 70px;
+            z-index: 100;
+            perspective: 800px;
+            pointer-events: none;
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 10s linear infinite;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backface-visibility: hidden;
+        }
+
+        .cube-face.front { background: linear-gradient(135deg, #f0c060, #a07010); transform: translateZ(35px); }
+        .cube-face.back { background: linear-gradient(135deg, #5c6bc0, #283593); transform: rotateY(180deg) translateZ(35px); }
+        .cube-face.right { background: linear-gradient(135deg, #d37546, #8a3e17); transform: rotateY(90deg) translateZ(35px); }
+        .cube-face.left { background: linear-gradient(135deg, #78909c, #37474f); transform: rotateY(-90deg) translateZ(35px); }
+        .cube-face.top { background: linear-gradient(135deg, #cd7f32, #6b3e11); transform: rotateX(90deg) translateZ(35px); }
+        .cube-face.bottom { background: linear-gradient(135deg, #a8b2bd, #4f5b66); transform: rotateX(-90deg) translateZ(35px); }
+
+        @keyframes rotateCube {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* Header */
+        .app-header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .app-header .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 10px;
+            backdrop-filter: blur(8px);
+        }
+
+        .app-header h1 {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 10px rgba(255, 255, 255, 0.15));
+        }
+
+        /* Painel Principal (PC / Celular Adaptável) */
+        .metals-card {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(135deg, rgba(24, 24, 48, 0.95), rgba(16, 16, 38, 0.98));
+            backdrop-filter: blur(20px);
+            padding: 30px 24px;
+            border-radius: 28px;
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transform: rotateX(2deg) rotateY(-1deg);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1.1);
+        }
+
+        .metals-card:hover {
+            transform: rotateX(0deg) rotateY(0deg) translateY(-2px);
+            box-shadow: 0 40px 70px rgba(0, 0, 0, 0.7), 0 0 100px rgba(240, 192, 96, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            background: rgba(0, 184, 148, 0.15);
+            color: var(--secondary);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid rgba(0, 184, 148, 0.25);
+        }
+
+        .status-badge.loading {
+            background: rgba(253, 203, 110, 0.1);
+            color: var(--accent);
+            border-color: rgba(253, 203, 110, 0.2);
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            margin: 24px 0 12px 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        /* Grid Responsiva Inteligente */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .metal-item {
+            background: rgba(10, 10, 26, 0.6);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Cores das Bordas Laterais */
+        .gold-border { border-left: 4px solid var(--gold); }
+        .silver-border { border-left: 4px solid var(--silver); }
+        .copper-border { border-left: 4px solid var(--copper); }
+        .bronze-border { border-left: 4px solid var(--bronze); }
+        .lead-border { border-left: 4px solid var(--lead); }
+        .aluminum-border { border-left: 4px solid var(--aluminum); }
+
+        .item-full {
+            grid-column: span 2;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(95deg, rgba(240, 192, 96, 0.08), rgba(10, 10, 26, 0.7));
+        }
+
+        .metal-item h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .metal-item h4 span {
+            font-size: 0.65rem;
+            opacity: 0.5;
+            font-weight: normal;
+            text-transform: none;
+        }
+
+        .price-tag {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .item-full .price-tag {
+            font-size: 1.6rem;
+            color: var(--gold-light);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) rotateX(5deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(2deg) rotateY(-1deg); }
+        }
+
+        /* ================= RESPONSIVIDADE MULTIPLATAFORMA ================= */
+
+        /* PC e Notebooks */
+        @media (min-width: 768px) {
+            body { padding: 40px; }
+            .grid-layout { gap: 16px; }
+            .metal-item { padding: 18px; }
+            .price-tag { font-size: 1.45rem; }
+        }
+
+        /* Celulares e Tablets */
+        @media (max-width: 600px) {
+            .cube-container { top: 15px; left: 15px; width: 50px; height: 50px; }
+            .cube-face { width: 50px; height: 50px; font-size: 20px; }
+            .metals-card { padding: 20px 14px; border-radius: 22px; transform: none; max-width: 100%; }
+            .metals-card:hover { transform: translateY(-2px); }
+            .price-tag { font-size: 1.15rem; }
+            .item-full .price-tag { font-size: 1.4rem; }
+        }
+
+        /* Smartphones Pequenos (Evita quebras em telas estreitas) */
+        @media (max-width: 440px) {
+            .grid-layout { grid-template-columns: 1fr; } /* Transforma em lista vertical de 1 coluna */
+            .item-full { grid-column: span 1; flex-direction: column; align-items: flex-start; gap: 6px; }
+            .price-tag { font-size: 1.15rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-ambient"></div>
+    <div class="grid-bg"></div>
+
+    <!-- Cubo 3D Dinâmico -->
+    <div class="cube-container">
+        <div class="cube">
+            <div class="cube-face front">Au</div>
+            <div class="cube-face back">Pb</div>
+            <div class="cube-face right">Cu</div>
+            <div class="cube-face left">Al</div>
+            <div class="cube-face top">⚙️</div>
+            <div class="cube-face bottom">BR</div>
+        </div>
+    </div>
+
+    <div class="app-header">
+        <div class="badge">📊 Bolsa de Metais</div>
+        <h1>Cotação de Metais</h1>
+    </div>
+
+    <!-- Card Unificado de Metais -->
+    <div class="metals-card">
+        <div class="card-header">
+            <div class="card-title">⚙️ Mercado Brasileiro</div>
+            <div class="status-badge loading" id="loadStatus">🔄 Carregando...</div>
+        </div>
+
+        <!-- CATEGORIA: METAIS PRECIOSOS -->
+        <div class="section-title">✨ Metais Preciosos</div>
+        <div class="grid-layout">
+            <!-- Ouro 24K -->
+            <div class="metal-item item-full gold-border">
+                <div>
+                    <h4>Ouro 24K <span>(Puro - por grama)</span></h4>
+                    <div class="price-tag" id="priceOuro24k">R$ 0,00</div>
+                </div>
+                <div style="font-size: 1.6rem;">🏆</div>
+            </div>
+            <!-- Ouro 18K -->
+            <div class="metal-item gold-border">
+                <h4>Ouro 18K <span>(75.0% - g)</span></h4>
+                <div class="price-tag" id="priceOuro18k">R$ 0,00</div>
+            </div>
+            <!-- Ouro 10K -->
+            <div class="metal-item gold-border">
+                <h4>Ouro 10K <span>(41.7% - g)</span></h4>
+                <div class="price-tag" id="priceOuro10k">R$ 0,00</div>
+            </div>
+            <!-- Prata Pura -->
+            <div class="metal-item silver-border">
+                <h4>Prata Pura <span>(999 - por grama)</span></h4>
+                <div class="price-tag" id="pricePrataPura">R$ 0,00</div>
+            </div>
+            <!-- Prata 925 -->
+            <div class="metal-item silver-border">
+                <h4>Prata 925 <span>(De Lei - por grama)</span></h4>
+                <div class="price-tag" id="pricePrata925">R$ 0,00</div>
+            </div>
+        </div>
+
+        <!-- CATEGORIA: METAIS INDUSTRIAIS (SUCATARIA) -->
+        <div class="section-title">🏗️ Metais Industriais e Reciclagem</div>
+        <div class="grid-layout">
+            <!-- Cobre Comercial -->
+            <div class="metal-item copper-border">
+                <h4>Cobre Comercial <span>(por Quilo)</span></h4>
+                <div class="price-tag" id="priceCobre">R$ 0,00</div>
+            </div>
+            <!-- Bronze Comercial -->
+            <div class="metal-item bronze-border">
+                <h4>Bronze Industrial <span>(por Quilo)</span></h4>
+                <div class="price-tag" id="priceBronze">R$ 0,00</div>
+            </div>
+            <!-- Chumbo Comercial (NOVO) -->
+            <div class="metal-item lead-border">
+                <h4>Chumbo Comercial <span>(por Quilo)</span></h4>
+                <div class="price-tag" id="priceChumbo">R$ 0,00</div>
+            </div>
+            <!-- Alumínio Comercial -->
+            <div class="metal-item aluminum-border">
+                <h4>Alumínio Comercial <span>(por Quilo)</span></h4>
+                <div class="price-tag" id="priceAluminio">R$ 0,00</div>
+            </div>
+        </div>
+    </div>
+
+  <script>
+    // Valores comerciais reais direto no topo para garantir que a tela NUNCA fique zerada
+    let ouroBase = 728.50; 
+    let prataBase = 8.50;  
+    let cobreBase = 46.80;  
+    let bronzeBase = 38.50;
+    let chumboBase = 11.20; 
+    let alumBase = 13.40;   
+
+    async function carregarCotacoesMetais() {
+        // Envolve tudo num try/catch para nunca congelar a tela em "Carregando"
+        try {
+            const resUSD = await fetch("https://economia.awesomeapi.com.br/json/last/USD-BRL");
+            if (resUSD.ok) {
+                const dataUSD = await resUSD.json();
+                if (dataUSD.USDBRL) {
+                    const taxaDolar = parseFloat(dataUSD.USDBRL.bid);
+                    if (taxaDolar > 0) {
+                        // Recalcula dinamicamente baseado no dólar do dia
+                        ouroBase = (133.60 * taxaDolar); 
+                        prataBase = (1.55 * taxaDolar); 
+                        cobreBase = (8.55 * taxaDolar);
+                        bronzeBase = (7.05 * taxaDolar); 
+                        chumboBase = (2.05 * taxaDolar); 
+                        alumBase = (2.45 * taxaDolar);
+                    }
+                }
+            }
+            
+            // Atualiza o selo para indicar sucesso se encontrar o elemento
+            const badge = document.getElementById("loadStatus");
+            if (badge) {
+                badge.innerText = "🟢 Ao vivo";
+                badge.className = "status-badge";
+                badge.style.color = ""; badge.style.borderColor = "";
+            }
+        } catch (e) {
+            console.warn("Erro ao buscar dados da internet. Usando valores base.");
+            const badge = document.getElementById("loadStatus");
+            if (badge) {
+                badge.innerText = "🕒 Padrão (Offline)";
+                badge.className = "status-badge loading";
+            }
+        }
+
+        // Renderiza os valores na tela (Garante que se a API falhar, os R$ 728 aparecem e não R$ 0,00)
+        const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        
+        if(document.getElementById("priceOuro24k")) document.getElementById("priceOuro24k").innerText = fmt.format(ouroBase);
+        if(document.getElementById("priceOuro18k")) document.getElementById("priceOuro18k").innerText = fmt.format(ouroBase * 0.750);
+        if(document.getElementById("priceOuro10k")) document.getElementById("priceOuro10k").innerText = fmt.format(ouroBase * 0.417);
+        if(document.getElementById("pricePrataPura")) document.getElementById("pricePrataPura").innerText = fmt.format(prataBase);
+        if(document.getElementById("pricePrata925")) document.getElementById("pricePrata925").innerText = fmt.format(prataBase * 0.925);
+        if(document.getElementById("priceCobre")) document.getElementById("priceCobre").innerText = fmt.format(cobreBase);
+        if(document.getElementById("priceBronze")) document.getElementById("priceBronze").innerText = fmt.format(bronzeBase);
+        if(document.getElementById("priceChumbo")) document.getElementById("priceChumbo").innerText = fmt.format(chumboBase);
+        if(document.getElementById("priceAluminio")) document.getElementById("priceAluminio").innerText = fmt.format(alumBase);
+    }
+
+    // Inicialização direta e limpa para WebViews de APK
+    window.onload = function() {
+        carregarCotacoesMetais();
+        setInterval(carregarCotacoesMetais, 60000);
+    };
+</script>  
+</body>
+</html>
