@@ -7,15 +7,27 @@
     <title>SEVERINO-LC</title>
     <link rel="stylesheet" href="style.css">
     
+    <!-- CHAMADA OFICIAL DO GOOGLE ADMOB (WEBVIEW) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-app-pub-5064995654489535" crossorigin="anonymous"></script>
+    
+    <!-- CONFIGURAÇÃO DO ANÚNCIO INTERSTICIAL (TELA CHEIA) -->
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "ca-app-pub-5064995654489535",
+            enable_page_level_ads: true,
+            interstitials: { ad_slot: "2382377485" }
+        });
+    </script>
+    
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
+            background-color: #0f2027; /* Fallback sólido para WebViews antigos */
             background: radial-gradient(circle at center, #2c5364, #203a43, #0f2027);
             color: white;
             min-height: 100vh;
             overflow-x: hidden;
-            /* Evita rolagem lateral indesejada */
         }
         
         header {
@@ -28,19 +40,17 @@
         
         .container {
             display: grid;
-            /* MANTÉM 2 COLUNAS SEMPRE (Estrutura Original) */
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
-            /* Reduzi um pouco o gap para telas pequenas */
             padding: 10px;
             max-width: 100%;
+            box-sizing: border-box; /* Garante que o padding não cause overflow horizontal */
         }
         
         .card {
             background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02));
             border-radius: 20px;
-            padding: 15px 10px;
-            /* Padding mais enxuto para caber no celular */
+            padding: 15px 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -48,8 +58,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            /* Fonte levemente menor para não quebrar linha */
+            font-size: 13px; /* Leve ajuste para evitar quebra indesejada em palavras longas no A10s */
             
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             border-left: 1px solid rgba(255, 255, 255, 0.2);
@@ -65,11 +74,9 @@
             transform: translateY(-3px);
         }
         
-        /* Ajuste Responsivo das Mídias */
         .video-severino {
             width: 340px;
             max-width: 90%;
-            /* Se a tela for menor que 340px, ele encolhe */
             height: auto;
             display: block;
             margin: 0 auto 20px auto;
@@ -79,11 +86,8 @@
         
         .card video,
         .card img {
-            /* As imagens agora se adaptam ao tamanho do card */
-            width: 100%;
-            max-width: 80px;
-            height: auto;
-            aspect-ratio: 1/1;
+            width: 80px;
+            height: 80px; /* Definir altura fixa evita falhas de redimensionamento no WebView do Android 11 */
             object-fit: cover;
             border-radius: 15px;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -127,7 +131,7 @@
     <div class="container">
         <div class="card" onclick="window.location.href='biblia.html'">
             <img src="1-biblia_img.jpeg" alt="Biblia">
-            <div style="margin-top: 10px;">Bíblia Sagrada</div>
+            <div style="margin-top: 10px;">BÍBLIA SAGRADA</div>
         </div>
 
         <div class="card" onclick="window.location.href='velocimetro-4V.html'">
@@ -137,72 +141,72 @@
 
         <div class="card" onclick="window.location.href='veloznet.html'">
             <img src="logoveloznet.jpeg" alt="rota facil">
-            <div style="margin-top: 10px;">VelozNet-LC</div>
+            <div style="margin-top: 10px;">VELOZNET-LC</div>
         </div>
         
         <div class="card" onclick="window.location.href='rota.html'">
             <img src="rotafacil-final_img.jpeg" alt="rota facil">
-            <div style="margin-top: 10px;">Rota Fácil</div>
+            <div style="margin-top: 10px;">ROTA FÁCIL</div>
         </div>
         
         <div class="card" onclick="window.location.href='conversor_moeda.html'">
             <img src="conversormoeda-img.jpeg" alt="conversor moeda">
-            <div style="margin-top: 10px;">Conversor Moeda</div>
+            <div style="margin-top: 10px;">CONVERSOR MOEDA</div>
         </div>     
-       
+        
         <div class="card" onclick="window.location.href='consultaveiculos.html'">
             <img src="logaconsultaveiculo.jpeg" alt="velocimetro">
-            <div style="margin-top: 10px;">Consulta Veículos Severino-LC</div>
+            <div style="margin-top: 10px;">CONSULTA VEÍCULO-LC</div>
         </div>
         
         <div class="card" onclick="window.location.href='agendaeletronica.html'">
             <img src="agendaeltronica_Image_.jpeg" alt="velocimetro">
-            <div style="margin-top: 10px;">Agenda Eletrônica</div>
+            <div style="margin-top: 10px;">AGENDA ELETRÔNICA</div>
         </div>
         
         <div class="card" onclick="window.location.href='cotacaodemetais.html'">
             <img src="cotacaodemetais_img.jpeg" alt="velocimetro">
-            <div style="margin-top: 10px;">Cotação de Metais</div>
+            <div style="margin-top: 10px;">COTAÇÃO DE METAIS</div>
         </div>
         
         <div class="card" onclick="window.location.href='calculadora.html'">
             <img src="calculadora_img.jpeg" alt="calculadora">
-            <div style="margin-top: 10px;">Calculadora</div>
+            <div style="margin-top: 10px;">CALCULADORA</div>
         </div>
         
         <div class="card" onclick="window.location.href='calendario.html'">
             <img src="calendario-img.jpeg" alt="calculadora">
-            <div style="margin-top: 10px;">Calendário</div>
+            <div style="margin-top: 10px;">CALENDÁRIO</div>
         </div>
         
         <div class="card" onclick="window.location.href='bussola.html'">
             <img src="bussola-img.jpeg" alt="bussóla">
-            <div style="margin-top: 10px;">Bússola</div>
+            <div style="margin-top: 10px;">BÚSSOLA</div>
         </div>
         
         <div class="card" onclick="window.location.href='calculadora_IMC.html'">
             <img src="calculadoraIMC_img.jpeg" alt="calculadora IMC">
-            <div style="margin-top: 10px;">Calculadora IMC</div>
+            <div style="margin-top: 10px;">CALCULADORA IMC</div>
         </div>
         
         <div class="card" onclick="window.location.href='checklist.html'">
             <img src="cheklistmanutencao-img.jpeg" alt="checklist manutencao">
-            <div style="margin-top: 10px;">Checklist Manutenção</div>
+            <div style="margin-top: 10px;">CHECKLIST MANUTENÇÃO</div>
         </div>
         
-        <div class="card" onclick="window.location.href='saverinooffGrid_1.html'">
-            <img src="img_OffgridSeverino_img.jpeg" alt="severino offgrid bitola">
-            <div style="margin-top: 10px;">Severino Off-Grid Bitola Fio</div>
+         <div class="card" onclick="window.location.href='saverinooffGrid_1.html'">
+            <img src="OffgridSeverino_img.jpeg" alt="severino offgrid bitola">
+            <div style="margin-top: 10px;">Off-GRID BITOLA FIO</div>
         </div>
         
         <div class="card" onclick="window.location.href='codigoresitor_1.html'">
             <img src="codigo_cores_resistores.jpeg" alt="codigo resistores">
-            <div style="margin-top: 10px;">Código Cores Resistores</div>
+            <div style="margin-top: 10px;">CÓDIGO RESISTORES</div>
         </div>
         
         <div class="card" onclick="window.location.href='codigocoresfio.html'">
             <img src="1-codigofio_img.jpeg" alt="codigo Cores Fio">
-            <div style="margin-top: 10px;">Código Cores Fio</div>
+            <div style="margin-top: 10px;">CÓDIGO CORES FIO</div>
         </div> 
                      
     </div>
@@ -223,6 +227,10 @@
             document.getElementById('frame').style.display = 'none';
             document.getElementById('frame').src = "";
             document.querySelector('.closeBtn').style.display = 'none';
+            
+            if (typeof adsbygoogle !== 'undefined') {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            }
         }
     </script>
 </body>
