@@ -1070,16 +1070,13 @@
             carregarGoogleMapsScript();
             setTimeout(recentralizarMapaManual, 400);
             salvarEstado();
-          if (window.AppInventor && window.AppInventor.setWebViewString) {
-        window.AppInventor.setWebViewString('mapa_aberto');
-    }
+              }
   };    
+      
         window.fecharMapa = function() { 
             document.getElementById('tela-mapa').style.display = 'none';
             salvarEstado();
-          if (window.AppInventor && window.AppInventor.setWebViewString) {
-        window.AppInventor.setWebViewString('mapa_fechado');
-    }
+             }
    };
 
         window.switchPanel = function() {
