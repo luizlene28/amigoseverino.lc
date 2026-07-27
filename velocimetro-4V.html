@@ -1070,14 +1070,12 @@
             carregarGoogleMapsScript();
             setTimeout(recentralizarMapaManual, 400);
             salvarEstado();
-              }
-  };    
-      
+        };
+
         window.fecharMapa = function() { 
             document.getElementById('tela-mapa').style.display = 'none';
             salvarEstado();
-             }
-   };
+        };
 
         window.switchPanel = function() {
             const pDig = document.getElementById('panel-digital');
