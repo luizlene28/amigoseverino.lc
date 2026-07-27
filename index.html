@@ -214,14 +214,26 @@
     <iframe id="frame"></iframe>
     <button class="closeBtn" onclick="closeFrame()">X</button>
     
-    <script>
+   <script>
         function openLocal(file) {
             document.getElementById('frame').src = file;
             document.getElementById('frame').style.display = 'block';
             document.querySelector('.closeBtn').style.display = 'block';
+            
+            // Avisa o Kodular que um card/link foi aberto
+            if (window.AppInventor && window.AppInventor.setWebViewString) {
+                window.AppInventor.setWebViewString("abrir_interstitial");
+            }
         }
         
-        function openLink(url) { window.open(url, '_blank'); }
+        function openLink(url) { 
+            window.open(url, '_blank'); 
+            
+            // Avisa o Kodular caso o usuário clique em um link externo
+            if (window.AppInventor && window.AppInventor.setWebViewString) {
+                window.AppInventor.setWebViewString("abrir_interstitial");
+            }
+        }
         
         function closeFrame() {
             document.getElementById('frame').style.display = 'none';
