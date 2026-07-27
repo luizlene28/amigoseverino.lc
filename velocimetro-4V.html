@@ -1065,17 +1065,16 @@
             document.head.appendChild(script);
         }
 
-        window.abrirMapa = function() {
+          window.abrirMapa = function() {
             document.getElementById('tela-mapa').style.display = 'flex';
             carregarGoogleMapsScript();
             setTimeout(recentralizarMapaManual, 400);
-            salvarEstado();
         };
 
         window.fecharMapa = function() { 
-            document.getElementById('tela-mapa').style.display = 'none';
-            salvarEstado();
+            document.getElementById('tela-mapa').style.display = 'none'; 
         };
+
 
         window.switchPanel = function() {
             const pDig = document.getElementById('panel-digital');
