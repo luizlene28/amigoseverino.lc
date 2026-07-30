@@ -221,14 +221,18 @@
             document.querySelector('.closeBtn').style.display = 'block';
             
             // Avisa o Kodular que um card/link foi aberto
-            window.location.href = "app://abrir_interstitial";
+            if (window.AppInventor && window.AppInventor.setWebViewString) {
+                window.AppInventor.setWebViewString("abrir_interstitial");
+            }
         }
         
         function openLink(url) { 
             window.open(url, '_blank'); 
             
             // Avisa o Kodular caso o usuário clique em um link externo
-            window.location.href = "app://abrir_interstitial";
+            if (window.AppInventor && window.AppInventor.setWebViewString) {
+                window.AppInventor.setWebViewString("abrir_interstitial");
+            }
         }
         
         function closeFrame() {
