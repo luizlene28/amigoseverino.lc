@@ -486,16 +486,17 @@
       overflow: hidden !important;
     }
     
-    /* ========== BUSCADOR NO TOPO ========== */
+    /* ========== BUSCADOR NO TOPO - OCUPANDO TODA LARGURA ========== */
     .container-busca-profissional {
       position: absolute !important;
-      top: 10px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
       z-index: 200 !important; 
-      width: 92% !important;
-      max-width: 550px !important;
-      padding: 0 !important;
+      width: 100% !important;
+      padding: 5px 8px !important;
+      background: rgba(15, 15, 26, 0.95) !important;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.08) !important;
     }
 
     .busca-wrapper {
@@ -507,14 +508,14 @@
 
     #input-busca {
       width: 100% !important;
-      padding: 14px 48px 14px 18px !important;
+      padding: 14px 48px 14px 16px !important;
       font-size: 15px !important;
       font-weight: 500 !important;
       color: #333333 !important;
       background-color: #ffffff !important;
       border: none !important;
       border-radius: 10px !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3) !important;
       outline: none !important;
     }
 
@@ -549,7 +550,7 @@
       border-radius: 10px !important;
       box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4) !important;
       border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-      margin-top: 6px !important;
+      margin-top: 4px !important;
       z-index: 99999 !important;
       font-family: 'Inter', sans-serif !important;
     }
@@ -571,7 +572,7 @@
     /* ========== BARRA DE INFORMAÇÕES (GPS + ZAP) ========== */
     #painel-superior-mapa {
       position: absolute !important;
-      top: 58px !important;
+      top: 60px !important;
       left: 0 !important;
       right: 0 !important;
       background: rgba(20, 20, 30, 0.92) !important;
@@ -624,79 +625,79 @@
       height: 100% !important;
     }
     
-    /* ========== RELÓGIOS COLADOS NA BARRA ========== */
+    /* ========== RELÓGIOS ABAIXADOS E AUMENTADOS ========== */
     .mini-velocimetro-mapa {
       position: absolute !important;
-      top: 84px !important;
-      left: 6px !important;
+      top: 90px !important;
+      left: 8px !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 4px 10px !important;
-      border-radius: 8px !important;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5) !important;
+      padding: 6px 14px !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       pointer-events: none;
-      min-width: 60px !important;
+      min-width: 72px !important;
     }
     
     .mini-velocimetro-mapa .num {
       font-family: var(--font-digital) !important;
-      font-size: 1.3rem !important;
+      font-size: 1.6rem !important;
       font-weight: 700 !important;
       color: #00ff88 !important;
       line-height: 1.1 !important;
     }
     
     .mini-velocimetro-mapa .unidade {
-      font-size: 0.45rem !important;
+      font-size: 0.5rem !important;
       color: #888 !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
       letter-spacing: 0.3px !important;
-      margin-top: 1px !important;
+      margin-top: 2px !important;
     }
     
     .mini-altitude-mapa {
       position: absolute !important;
-      top: 84px !important;
-      right: 6px !important;
+      top: 90px !important;
+      right: 8px !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 4px 10px !important;
-      border-radius: 8px !important;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.5) !important;
+      padding: 6px 14px !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       pointer-events: none;
-      min-width: 60px !important;
+      min-width: 72px !important;
     }
     
     .mini-altitude-mapa .num {
       font-family: var(--font-digital) !important;
-      font-size: 1.1rem !important;
+      font-size: 1.3rem !important;
       font-weight: 700 !important;
       color: var(--accent-amber) !important;
       line-height: 1.1 !important;
     }
     
     .mini-altitude-mapa .unidade {
-      font-size: 0.45rem !important;
+      font-size: 0.5rem !important;
       color: #888 !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
       letter-spacing: 0.3px !important;
-      margin-top: 1px !important;
+      margin-top: 2px !important;
     }
 
     .container-topo-info {
@@ -875,7 +876,7 @@
   </div>
   
   <div id="tela-mapa">
-    <!-- BUSCADOR NO TOPO -->
+    <!-- BUSCADOR NO TOPO - LARGURA TOTAL -->
     <div class="container-busca-profissional">
       <div class="busca-wrapper">
         <input id="input-busca" type="text" placeholder="🔍 Buscar endereços, lugares, comércios...">
@@ -890,13 +891,13 @@
     </div>
     
     <div id="meu-mapa-container">
-      <!-- Velocidade - colado no alfinete GPS -->
+      <!-- Velocidade - esquerda -->
       <div class="mini-velocimetro-mapa">
         <span class="num" id="mini-speed-val">0</span>
         <span class="unidade">km/h</span>
       </div>
       
-      <!-- Altitude - colado no botão Zap -->
+      <!-- Altitude - direita -->
       <div class="mini-altitude-mapa">
         <span class="num" id="mini-altitude-val">0</span>
         <span class="unidade">ALT (m)</span>
