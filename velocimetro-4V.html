@@ -489,50 +489,38 @@
     #painel-superior-mapa {
       background: rgba(20, 20, 30, 0.97) !important;
       border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 75px 14px 12px 14px !important; 
+      padding: 55px 14px 10px 14px !important;
       color: #fff !important;
       display: flex !important;
       justify-content: space-between !important;
       align-items: center !important;
       z-index: 120 !important;
+      gap: 8px !important;
     }
     
     #texto-endereco {
       color: #00ff88 !important;
-      font-size: 0.85rem !important;
+      font-size: 0.8rem !important;
       font-weight: 500 !important;
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
       max-width: 50% !important;
+      flex: 1 !important;
     }
     
-    .caixa-botoes-topo-mapa {
-      display: flex !important;
-      gap: 6px !important;
-      align-items: center;
-    }
-    
-    .btn-salvar {
+    .btn-salvar-mapa {
       background: #f5a623 !important;
       color: #000 !important;
       border: none !important;
       padding: 8px 14px !important;
       border-radius: 20px !important;
       font-weight: 700 !important;
-      font-size: 0.75rem !important;
+      font-size: 0.7rem !important;
       cursor: pointer !important;
       text-transform: uppercase !important;
-    }
-    
-    .btn-voltar-mapa {
-      padding: 8px 16px !important;
-      background: #c91a30 !important;
-      color: #fff !important;
-      border: none !important;
-      border-radius: 20px !important;
-      font-weight: bold !important;
-      cursor: pointer !important;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
     }
     
     #meu-mapa-container {
@@ -548,101 +536,37 @@
       height: 100% !important;
     }
     
-    .caixa-controles-laterais {
-      position: absolute !important;
-      top: 15px !important;
-      right: 10px !important;
-      z-index: 105 !important;
-      display: flex !important;
-      flex-direction: column !important;
-      gap: 8px !important;
-    }
-
-    .btn-satelite {
-      background: rgba(20, 20, 30, 0.9) !important;
-      color: #fff !important;
-      border: 1px solid rgba(255, 255, 255, 0.2) !important;
-      padding: 10px 12px !important;
-      border-radius: 12px !important;
-      font-size: 0.75rem !important;
-      font-weight: bold !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-      width: 130px !important;
-      justify-content: center !important;
-    }
-    
-    .btn-streetview {
-      background: rgba(15, 15, 25, 0.98) !important; 
-      color: #ffffff !important; 
-      border: 1px solid rgba(255, 255, 255, 0.18) !important; 
-      padding: 10px 12px !important;
-      border-radius: 12px !important;
-      font-size: 0.75rem !important;
-      font-weight: bold !important;
-      cursor: pointer !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 6px !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6) !important;
-      width: 130px !important;
-      justify-content: center !important;
-    }
-    
-    #btn-recentralizar {
-      position: absolute !important;
-      bottom: 30px !important;
-      left: 20px !important;
-      z-index: 105 !important;
-      background: #e0243f !important;
-      color: #fff !important;
-      border: 1px solid rgba(255, 255, 255, 0.3) !important;
-      padding: 12px !important;
-      border-radius: 50% !important;
-      width: 52px !important;
-      height: 52px !important;
-      font-size: 20px !important;
-      font-weight: bold !important;
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
-    }
-    
-    /* ========== MINI VELOCÍMETRO & ALTITUDE (AUMENTADOS) ========== */
+    /* ========== MINI VELOCÍMETRO - CANTO SUPERIOR ESQUERDO ========== */
     .mini-velocimetro-mapa {
       position: absolute !important;
-      bottom: 95px !important;
-      left: 20px !important;
+      top: 80px !important;
+      left: 12px !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
       padding: 8px 16px !important;
-      border-radius: 18px !important;
+      border-radius: 14px !important;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       pointer-events: none;
-      min-width: 90px !important;
+      min-width: 85px !important;
     }
     
     .mini-velocimetro-mapa .num {
       font-family: var(--font-digital) !important;
-      font-size: 2rem !important;
+      font-size: 1.8rem !important;
       font-weight: 700 !important;
       color: #00ff88 !important;
       line-height: 1 !important;
     }
     
     .mini-velocimetro-mapa .unidade {
-      font-size: 0.6rem !important;
+      font-size: 0.55rem !important;
       color: #888 !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
@@ -686,36 +610,37 @@
       color: #666666;
     }
     
+    /* ========== MINI ALTITUDE - CANTO SUPERIOR DIREITO ========== */
     .mini-altitude-mapa {
       position: absolute !important;
-      bottom: 170px !important;
-      left: 20px !important;
+      top: 80px !important;
+      right: 12px !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
       padding: 8px 16px !important;
-      border-radius: 18px !important;
+      border-radius: 14px !important;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6) !important;
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
       pointer-events: none;
-      min-width: 90px !important;
+      min-width: 85px !important;
     }
     
     .mini-altitude-mapa .num {
       font-family: var(--font-digital) !important;
-      font-size: 1.6rem !important;
+      font-size: 1.4rem !important;
       font-weight: 700 !important;
       color: var(--accent-amber) !important;
       line-height: 1 !important;
     }
     
     .mini-altitude-mapa .unidade {
-      font-size: 0.6rem !important;
+      font-size: 0.55rem !important;
       color: #888 !important;
       font-weight: 700 !important;
       text-transform: uppercase !important;
@@ -723,7 +648,7 @@
       margin-top: 2px !important;
     }
 
-    /* ========== BUSCADOR MELHORADO ========== */
+    /* ========== BUSCADOR ========== */
     .container-busca-profissional {
       position: absolute !important;
       top: 15px !important;
@@ -744,21 +669,20 @@
 
     #input-busca {
       width: 100% !important;
-      padding: 16px 50px 16px 24px !important;
-      font-size: 17px !important;
+      padding: 14px 48px 14px 20px !important;
+      font-size: 16px !important;
       font-weight: 500 !important;
       color: #333333 !important;
       background-color: #ffffff !important;
       border: none !important;
-      border-radius: 30px !important;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+      border-radius: 25px !important;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5) !important;
       outline: none !important;
       transition: all 0.3s ease !important;
     }
 
     #input-busca:focus {
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7) !important;
-      transform: scale(1.02) !important;
+      box-shadow: 0 8px 35px rgba(0, 0, 0, 0.7) !important;
     }
 
     #btn-limpar-busca {
@@ -766,17 +690,17 @@
       right: 12px !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
-      background: rgba(0, 0, 0, 0.15) !important;
+      background: rgba(0, 0, 0, 0.12) !important;
       border: none !important;
       border-radius: 50% !important;
-      width: 32px !important;
-      height: 32px !important;
+      width: 30px !important;
+      height: 30px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
       cursor: pointer !important;
       color: #666 !important;
-      font-size: 18px !important;
+      font-size: 16px !important;
       font-weight: bold !important;
       transition: all 0.2s ease !important;
       opacity: 0 !important;
@@ -790,49 +714,27 @@
     }
 
     #btn-limpar-busca:hover {
-      background: rgba(0, 0, 0, 0.25) !important;
+      background: rgba(0, 0, 0, 0.2) !important;
       color: #333 !important;
     }
 
-    #btn-limpar-busca:active {
-      background: rgba(0, 0, 0, 0.35) !important;
-    }
-
     .pac-container {
-      border-radius: 15px !important;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
-      border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
-      margin-top: 8px !important;
+      border-radius: 12px !important;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4) !important;
+      border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+      margin-top: 6px !important;
       z-index: 99999 !important;
       font-family: 'Inter', sans-serif !important;
-      width: 95% !important;
-      max-width: 600px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
     }
 
     .pac-item {
-      padding: 12px 20px !important;
-      font-size: 15px !important;
+      padding: 12px 18px !important;
+      font-size: 14px !important;
       cursor: pointer !important;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
     }
 
     .pac-item:hover {
-      background: rgba(0, 255, 136, 0.1) !important;
-    }
-
-    .pac-item:first-child {
-      border-radius: 15px 15px 0 0 !important;
-    }
-
-    .pac-item:last-child {
-      border-radius: 0 0 15px 15px !important;
-      border-bottom: none !important;
-    }
-
-    .pac-icon {
-      display: none !important;
+      background: rgba(0, 255, 136, 0.08) !important;
     }
 
     .pac-matched {
@@ -840,7 +742,62 @@
       color: #007744 !important;
     }
 
-    /* ========== STREET VIEW BLINDADO ========== */
+    /* ========== BARRA INFERIOR DE BOTÕES ========== */
+    .barra-inferior-botoes {
+      position: absolute !important;
+      bottom: 25px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 110 !important;
+      display: flex !important;
+      flex-direction: row !important;
+      gap: 10px !important;
+      padding: 0 !important;
+    }
+
+    .btn-inferior-mapa {
+      background: rgba(20, 20, 30, 0.85) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+      padding: 10px 16px !important;
+      border-radius: 14px !important;
+      font-size: 0.7rem !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5) !important;
+      color: #ffffff !important;
+      white-space: nowrap !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .btn-inferior-mapa:active {
+      transform: scale(0.95) !important;
+      background: rgba(30, 30, 45, 0.9) !important;
+    }
+
+    #btn-recentralizar-mapa {
+      background: #e0243f !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    #btn-satelite-mapa {
+      background: rgba(20, 20, 30, 0.85) !important;
+    }
+
+    #btn-streetview-mapa {
+      background: rgba(15, 15, 25, 0.9) !important;
+    }
+
+    #btn-voltar-mapa-bottom {
+      background: #c91a30 !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* ========== STREET VIEW ========== */
     #tela-streetview {
       position: absolute !important;
       top: 0 !important;
@@ -873,24 +830,6 @@
       height: 100% !important;
       margin-top: 60px !important;
       flex: 1 !important;
-    }
-
-    /* ========== ADMOB ========== */
-    .container-admob-velozmapa {
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 50px !important;
-      min-height: 50px !important;
-      background: var(--bg-deep);
-      border-top: 1px solid var(--border-subtle);
-      display: flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      text-align: center !important;
-      margin: 0 !important;
-      z-index: 9998 !important; 
     }
   </style>
 </head>
@@ -961,21 +900,37 @@
 
     <div id="painel-superior-mapa">
       <span id="texto-endereco">📍 Aguardando GPS fixar...</span>
-      <div class="caixa-botoes-topo-mapa">
-        <button class="btn-salvar" onclick="salvarRotaAtual()"> 📲 Enviar p/ Zap</button>
-        <button class="btn-voltar-mapa" onclick="fecharMapa()">Voltar</button>
-      </div>
+      <button class="btn-salvar-mapa" onclick="salvarRotaAtual()">📲 Enviar p/ Zap</button>
     </div>
+    
     <div id="meu-mapa-container">
-      <div class="caixa-controles-laterais">
-        <button class="btn-satelite" onclick="alternarCamadaMapa()">🚀 <span id="txt-btn-satelite">Modo Satélite</span></button>
-        <button class="btn-streetview" onclick="window.toggleStreetView()">🚶 <span>Ver Rua</span></button>
+      <!-- Velocidade - canto superior esquerdo -->
+      <div class="mini-velocimetro-mapa">
+        <span class="num" id="mini-speed-val">0</span>
+        <span class="unidade">km/h</span>
       </div>
       
-      <button id="btn-recentralizar" onclick="recentralizarMapaManual()">🎯</button>
+      <!-- Altitude - canto superior direito -->
+      <div class="mini-altitude-mapa">
+        <span class="num" id="mini-altitude-val">0</span>
+        <span class="unidade">ALT (m)</span>
+      </div>
       
-      <div class="mini-velocimetro-mapa"><span class="num" id="mini-speed-val">0</span><span class="unidade">km/h</span></div>
-      <div class="mini-altitude-mapa"><span class="num" id="mini-altitude-val">0</span><span class="unidade">ALT (m)</span></div>
+      <!-- Barra inferior de botões -->
+      <div class="barra-inferior-botoes">
+        <button class="btn-inferior-mapa" id="btn-recentralizar-mapa" onclick="recentralizarMapaManual()">
+          🎯 Centralizar
+        </button>
+        <button class="btn-inferior-mapa" id="btn-satelite-mapa" onclick="alternarCamadaMapa()">
+          🚀 <span id="txt-btn-satelite">Satélite</span>
+        </button>
+        <button class="btn-inferior-mapa" id="btn-streetview-mapa" onclick="window.toggleStreetView()">
+          🚶 Ver Rua
+        </button>
+        <button class="btn-inferior-mapa" id="btn-voltar-mapa-bottom" onclick="fecharMapa()">
+          ✕ Voltar
+        </button>
+      </div>
       
       <div id="mapa"></div>
     </div>
@@ -992,7 +947,7 @@
   <script>
     (function() {
 
-        // ========== PERSISTÊNCIA CONTRA TROCA DE REDE ==========
+        // ========== PERSISTÊNCIA ==========
         function salvarEstado() {
             const inputBusca = document.getElementById('input-busca');
             const mapaAberto = document.getElementById('tela-mapa').style.display === 'flex';
@@ -1049,7 +1004,7 @@
             salvarEstado();
         };
 
-        // ========== VARIÁVEIS DE ANIMAÇÃO SUAVE ==========
+        // ========== ANIMAÇÃO SUAVE ==========
         let targetLat = null, targetLon = null, targetHeading = 0;
         let currentAnimLat = null, currentAnimLon = null, currentAnimHeading = 0;
         const LERP_FACTOR = 0.28;
@@ -1095,7 +1050,7 @@
         
         if (distVal) distVal.innerText = (totalDistance / 1000).toFixed(2) + " km";
         
-        // Função para limpar o campo de busca
+        // Limpar busca
         window.limparBusca = function() {
             if (inputBusca) {
                 inputBusca.value = '';
@@ -1105,7 +1060,7 @@
             }
         };
 
-        // Monitora o campo de busca para mostrar/ocultar o botão X
+        // Monitora campo de busca
         if (inputBusca && btnLimparBusca) {
             inputBusca.addEventListener('input', function() {
                 if (this.value.length > 0) {
@@ -1115,14 +1070,12 @@
                 }
             });
 
-            // Também verifica ao focar
             inputBusca.addEventListener('focus', function() {
                 if (this.value.length > 0) {
                     btnLimparBusca.classList.add('mostrar');
                 }
             });
 
-            // E ao perder o foco, esconde com delay para permitir clique no botão
             inputBusca.addEventListener('blur', function() {
                 setTimeout(() => {
                     if (document.activeElement !== btnLimparBusca) {
@@ -1131,7 +1084,6 @@
                 }, 200);
             });
 
-            // Ao clicar no botão X, mantém o foco no input
             btnLimparBusca.addEventListener('mousedown', function(e) {
                 e.preventDefault();
             });
@@ -1219,7 +1171,7 @@
             }
         };
 
-        // ===================== CORTE PRECISO =====================
+        // CORTE PRECISO
         function recortarRotaNaBolinha(lat, lon) {
             if (!window.linhaRotaInquebravel || !window.google || !window.google.maps) return;
             const caminho = window.linhaRotaInquebravel.getPath();
@@ -1281,7 +1233,7 @@
             }
         }
 
-        // ===================== ANIMAÇÃO SUAVE DO MAPA E MARCADOR =====================
+        // ANIMAÇÃO SUAVE
         function iniciarAnimacaoSuave() {
             function animar() {
                 if (!mapaObjeto || !marcadorUsuario) {
@@ -1375,17 +1327,13 @@
                 zIndex: 2
             });
 
-            // Configuração do Autocomplete mais abrangente
+            // Autocomplete
             const autocomplete = new google.maps.places.Autocomplete(inputBusca, {
                 types: ['geocode', 'establishment'],
                 componentRestrictions: {},
                 fields: ['place_id', 'geometry', 'name', 'formatted_address', 'types']
             });
             autocomplete.bindTo('bounds', mapaObjeto);
-            autocomplete.setBounds(new google.maps.LatLngBounds(
-                new google.maps.LatLng(-33.742, -73.983),
-                new google.maps.LatLng(5.272, -34.793)
-            ));
 
             autocomplete.addListener('place_changed', () => {
                 const place = autocomplete.getPlace();
@@ -1397,7 +1345,6 @@
                 
                 if (lastCoord) {
                     mapaBloqueadoAoCarro = true;
-                    document.getElementById('btn-recentralizar').style.background = '#e0243f';
                     window.calcularEDesenharRota(window.destinoAtualSalvo);
                     falarDirecaoGPS("Rota iniciada para " + place.name);
                 } else {
@@ -1407,7 +1354,6 @@
                 document.getElementById('texto-endereco').innerText = "🏁 " + place.name;
                 salvarEstado();
                 
-                // Mostra o botão X após selecionar um lugar
                 if (btnLimparBusca) {
                     btnLimparBusca.classList.add('mostrar');
                 }
@@ -1459,7 +1405,6 @@
             const liberarCameraManual = () => {
                 if (mapaBloqueadoAoCarro) {
                     mapaBloqueadoAoCarro = false;
-                    document.getElementById('btn-recentralizar').style.background = '#f5a623';
                 }
             };
 
@@ -1467,7 +1412,6 @@
             mapaObjeto.addListener('zoom_changed', liberarCameraManual);
             mapaObjeto.addListener('heading_changed', liberarCameraManual);
 
-            // Inicia a animação suave
             iniciarAnimacaoSuave();
 
             restaurarEstado();
@@ -1528,7 +1472,7 @@
         window.alternarCamadaMapa = function() {
             if (!mapaObjeto) return;
             mapaEmModoSatelite = !mapaEmModoSatelite;
-            document.getElementById('txt-btn-satelite').innerText = mapaEmModoSatelite ? "Modo Ruas" : "Modo Satélite";
+            document.getElementById('txt-btn-satelite').innerText = mapaEmModoSatelite ? "Ruas" : "Satélite";
             mapaObjeto.setMapTypeId(mapaEmModoSatelite ? google.maps.MapTypeId.HYBRID : google.maps.MapTypeId.ROADMAP);
             mapaObjeto.setTilt(45);
         };
@@ -1536,7 +1480,6 @@
         window.recentralizarMapaManual = function() {
             if (!lastCoord || !mapaObjeto) return;
             mapaBloqueadoAoCarro = true;
-            document.getElementById('btn-recentralizar').style.background = '#e0243f';
             if (targetLat !== null) {
                 currentAnimLat = targetLat;
                 currentAnimLon = targetLon;
@@ -1548,7 +1491,7 @@
             mapaObjeto.setHeading(ultimoRumoFiltrado);
         };
 
-        // ========== GPS NATIVO DE ALTA PRECISÃO ==========
+        // GPS
         function iniciarGPSNativo() {
             if (!navigator.geolocation) return;
             
@@ -1674,7 +1617,6 @@
             if (mapaObjeto) {
                 if (window.velocidadeAlvoGPS > 5 && !mapaBloqueadoAoCarro) {
                     mapaBloqueadoAoCarro = true;
-                    document.getElementById('btn-recentralizar').style.background = '#e0243f';
                 }
 
                 if (document.getElementById('texto-endereco').innerText.includes("Aguardando")) {
