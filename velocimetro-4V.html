@@ -625,18 +625,19 @@
       height: 100% !important;
     }
     
-    /* ========== RELÓGIOS AUMENTADOS +1/3 E ABAIXADOS ========== */
+    /* ========== RELÓGIOS - SUBIDOS E COLADOS NAS LATERAIS ========== */
     .mini-velocimetro-mapa {
       position: absolute !important;
-      top: 118px !important;
-      left: 10px !important;
+      top: 105px !important;
+      left: 0 !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 10px 22px !important;
-      border-radius: 14px !important;
+      border-left: none !important;
+      padding: 10px 22px 10px 14px !important;
+      border-radius: 0 14px 14px 0 !important;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55) !important;
       display: flex !important;
       flex-direction: column !important;
@@ -665,15 +666,16 @@
     
     .mini-altitude-mapa {
       position: absolute !important;
-      top: 118px !important;
-      right: 10px !important;
+      top: 105px !important;
+      right: 0 !important;
       z-index: 105 !important;
       background: rgba(20, 20, 30, 0.85) !important;
       backdrop-filter: blur(10px) !important;
       -webkit-backdrop-filter: blur(10px) !important;
       border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
-      padding: 10px 22px !important;
-      border-radius: 14px !important;
+      border-right: none !important;
+      padding: 10px 14px 10px 22px !important;
+      border-radius: 14px 0 0 14px !important;
       box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55) !important;
       display: flex !important;
       flex-direction: column !important;
@@ -891,13 +893,13 @@
     </div>
     
     <div id="meu-mapa-container">
-      <!-- Velocidade - esquerda -->
+      <!-- Velocidade - colado na esquerda -->
       <div class="mini-velocimetro-mapa">
         <span class="num" id="mini-speed-val">0</span>
         <span class="unidade">km/h</span>
       </div>
       
-      <!-- Altitude - direita -->
+      <!-- Altitude - colado na direita -->
       <div class="mini-altitude-mapa">
         <span class="num" id="mini-altitude-val">0</span>
         <span class="unidade">ALT (m)</span>
