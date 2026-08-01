@@ -213,14 +213,13 @@
     <iframe id="frame"></iframe>
         
   <script>
-     // Variável para rastrear se há um card aberto
-        var cardAberto = false;
-
-        function openLocal(file) {
+   function openLocal(file) {
             var frame = document.getElementById('frame');
             frame.src = file;
             frame.style.display = 'block';
-            cardAberto = true; // Marca que o card está ativo
+            
+            // Adiciona um estado único no histórico para o botão voltar do Android fechar o card
+            window.history.pushState({cardAberto: true}, "", "");
             
             // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
@@ -231,12 +230,22 @@
             }
         }
         
-        // Função para fechar o card
+        // Ouve o botão de voltar do Android de forma limpa e nativa
+        window.addEventListener('popstate', function(event) {
+            var frame = document.getElementById('frame');
+            
+            // Se o frame estiver aberto, apenas esconde ele. 
+            // Como usamos o pushState, isso impede que o app feche e resolve com um clique.
+            if (frame.style.display === 'block') {
+                frame.style.display = 'none';
+                frame.src = "";
+            }
+        });
+
         function closeFrame() {
             var frame = document.getElementById('frame');
             frame.style.display = 'none';
             frame.src = "";
-            cardAberto = false; // Marca que fechou
             
             if (typeof adsbygoogle !== 'undefined') {
                 (adsbygoogle = window.adsbygoogle || []).push({});
