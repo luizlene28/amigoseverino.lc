@@ -213,20 +213,14 @@
     <iframe id="frame"></iframe>
         
   <script>
-      function openLocal(file) {
-            var frame = document.getElementById('frame');
-            
-            // Garante que o histórico anterior esteja limpo antes de abrir um novo card
-            // Isso evita acumulação de camadas se abrir vários cards seguidos
-            if (history.state && history.state.modalOpen) {
-                history.back();
-            }
+     // Variável para rastrear se há um card aberto
+        var cardAberto = false;
 
+        function openLocal(file) {
+            var frame = document.getElementById('frame');
             frame.src = file;
             frame.style.display = 'block';
-            
-            // Adiciona o estado fresco para o card atual
-            window.history.pushState({modalOpen: true}, "", "");
+            cardAberto = true; // Marca que o card está ativo
             
             // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
@@ -237,21 +231,12 @@
             }
         }
         
-        // Ouve quando o usuário aperta o botão de voltar nativo do Android
-        window.addEventListener('popstate', function(event) {
-            var frame = document.getElementById('frame');
-            
-            // Fecha o frame imediatamente ao detectar o voltar
-            if (frame.style.display === 'block') {
-                frame.style.display = 'none';
-                frame.src = "";
-            }
-        });
-
+        // Função para fechar o card
         function closeFrame() {
             var frame = document.getElementById('frame');
             frame.style.display = 'none';
             frame.src = "";
+            cardAberto = false; // Marca que fechou
             
             if (typeof adsbygoogle !== 'undefined') {
                 (adsbygoogle = window.adsbygoogle || []).push({});
