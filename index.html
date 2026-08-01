@@ -218,8 +218,8 @@
             frame.src = file;
             frame.style.display = 'block';
             
-            // Adiciona um estado no histórico do navegador para o botão "Voltar" do Android funcionar
-            history.pushState({page: "subpage"}, "", "");
+            // Adiciona um estado limpo no histórico para interceptar o botão voltar do Android
+            window.history.pushState({modalOpen: true}, "", "");
             
             // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
@@ -234,10 +234,12 @@
         window.addEventListener('popstate', function(event) {
             var frame = document.getElementById('frame');
             if (frame.style.display === 'block') {
+                // Fecha o frame imediatamente
                 frame.style.display = 'none';
                 frame.src = "";
-                // Previne que o app feche na primeira apertada
-                history.pushState(null, "", "");
+                
+                // Limpa o estado do histórico para não deixar rastro fantasma
+                // Isso evita o problema da tela branca e do segundo clique
             }
         });
 
