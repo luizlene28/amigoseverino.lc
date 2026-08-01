@@ -213,19 +213,10 @@
     <iframe id="frame"></iframe>
         
   <script>
-   function openLocal(file) {
+  function openLocal(file) {
             var frame = document.getElementById('frame');
-            
-            // Se já houver um estado anterior no histórico, removemos ele para não acumular camadas
-            if (history.state && history.state.cardAberto) {
-                history.replaceState(null, "", "");
-            }
-
             frame.src = file;
             frame.style.display = 'block';
-            
-            // Adiciona o estado fresco e único para o card atual
-            window.history.pushState({cardAberto: true}, "", "");
             
             // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
@@ -236,16 +227,6 @@
             }
         }
         
-        // Ouve o botão de voltar do Android
-        window.addEventListener('popstate', function(event) {
-            var frame = document.getElementById('frame');
-            
-            if (frame.style.display === 'block') {
-                frame.style.display = 'none';
-                frame.src = "";
-            }
-        });
-
         function closeFrame() {
             var frame = document.getElementById('frame');
             frame.style.display = 'none';
