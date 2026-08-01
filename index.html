@@ -213,12 +213,19 @@
     <iframe id="frame"></iframe>
         
   <script>
-       function openLocal(file) {
+      function openLocal(file) {
             var frame = document.getElementById('frame');
+            
+            // Garante que o histórico anterior esteja limpo antes de abrir um novo card
+            // Isso evita acumulação de camadas se abrir vários cards seguidos
+            if (history.state && history.state.modalOpen) {
+                history.back();
+            }
+
             frame.src = file;
             frame.style.display = 'block';
             
-            // Adiciona um estado limpo no histórico para interceptar o botão voltar do Android
+            // Adiciona o estado fresco para o card atual
             window.history.pushState({modalOpen: true}, "", "");
             
             // Avisa o Kodular para abrir o anúncio intersticial
@@ -233,13 +240,11 @@
         // Ouve quando o usuário aperta o botão de voltar nativo do Android
         window.addEventListener('popstate', function(event) {
             var frame = document.getElementById('frame');
+            
+            // Fecha o frame imediatamente ao detectar o voltar
             if (frame.style.display === 'block') {
-                // Fecha o frame imediatamente
                 frame.style.display = 'none';
                 frame.src = "";
-                
-                // Limpa o estado do histórico para não deixar rastro fantasma
-                // Isso evita o problema da tela branca e do segundo clique
             }
         });
 
