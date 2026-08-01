@@ -213,12 +213,18 @@
     <iframe id="frame"></iframe>
         
   <script>
- function openLocal(file) {
+function openLocal(file) {
             var frame = document.getElementById('frame');
+            
+            // Se já houver um estado anterior no histórico, removemos ele para não acumular camadas
+            if (history.state && history.state.cardAberto) {
+                history.replaceState(null, "", "");
+            }
+
             frame.src = file;
             frame.style.display = 'block';
             
-            // Adiciona um estado único no histórico para o botão voltar do Android fechar o card
+            // Adiciona o estado fresco e único para o card atual
             window.history.pushState({cardAberto: true}, "", "");
             
             // Avisa o Kodular para abrir o anúncio intersticial
@@ -230,12 +236,10 @@
             }
         }
         
-        // Ouve o botão de voltar do Android de forma limpa e nativa
+        // Ouve o botão de voltar do Android
         window.addEventListener('popstate', function(event) {
             var frame = document.getElementById('frame');
             
-            // Se o frame estiver aberto, apenas esconde ele. 
-            // Como usamos o pushState, isso impede que o app feche e resolve com um clique.
             if (frame.style.display === 'block') {
                 frame.style.display = 'none';
                 frame.src = "";
