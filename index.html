@@ -218,6 +218,9 @@
             frame.src = file;
             frame.style.display = 'block';
             
+            // Adiciona um estado no histórico do navegador para o botão "Voltar" do Android funcionar
+            history.pushState({page: "subpage"}, "", "");
+            
             // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
                 window.AppInventor.setWebViewString("");
@@ -227,6 +230,17 @@
             }
         }
         
+        // Ouve quando o usuário aperta o botão de voltar nativo do Android
+        window.addEventListener('popstate', function(event) {
+            var frame = document.getElementById('frame');
+            if (frame.style.display === 'block') {
+                frame.style.display = 'none';
+                frame.src = "";
+                // Previne que o app feche na primeira apertada
+                history.pushState(null, "", "");
+            }
+        });
+
         function closeFrame() {
             var frame = document.getElementById('frame');
             frame.style.display = 'none';
