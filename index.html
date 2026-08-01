@@ -213,13 +213,13 @@
     <iframe id="frame"></iframe>
         
   <script>
-  function openLocal(file) {
+ function openLocal(file) {
             var frame = document.getElementById('frame');
             frame.src = file;
             frame.style.display = 'block';
             
-            // Adiciona um estado no histórico do navegador para o botão "Voltar" do Android funcionar
-            history.pushState({page: "subpage"}, "", "");
+            // Adiciona um estado único no histórico para o botão voltar do Android fechar o card
+            window.history.pushState({cardAberto: true}, "", "");
             
             // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
@@ -230,14 +230,15 @@
             }
         }
         
-        // Ouve quando o usuário aperta o botão de voltar nativo do Android
+        // Ouve o botão de voltar do Android de forma limpa e nativa
         window.addEventListener('popstate', function(event) {
             var frame = document.getElementById('frame');
+            
+            // Se o frame estiver aberto, apenas esconde ele. 
+            // Como usamos o pushState, isso impede que o app feche e resolve com um clique.
             if (frame.style.display === 'block') {
                 frame.style.display = 'none';
                 frame.src = "";
-                // Previne que o app feche na primeira apertada
-                history.pushState(null, "", "");
             }
         });
 
