@@ -211,15 +211,17 @@
     </div> 
     
     <iframe id="frame"></iframe>
-    <button class="closeBtn" onclick="closeFrame()">X</button>
-    
+        
   <script>
-        function openLocal(file) {
-            document.getElementById('frame').src = file;
-            document.getElementById('frame').style.display = 'block';
-            document.querySelector('.closeBtn').style.display = 'block';
+       function openLocal(file) {
+            var frame = document.getElementById('frame');
+            frame.src = file;
+            frame.style.display = 'block';
             
-            // Avisa o Kodular forçando a mudança da string
+            // Adiciona um estado no histórico do navegador para o botão "Voltar" do Android funcionar
+            history.pushState({page: "subpage"}, "", "");
+            
+            // Avisa o Kodular para abrir o anúncio intersticial
             if (window.AppInventor && window.AppInventor.setWebViewString) {
                 window.AppInventor.setWebViewString("");
                 setTimeout(function() {
@@ -228,19 +230,21 @@
             }
         }
         
-        function openLink(url) { 
-            window.open(url, '_blank'); 
-            
-            // Avisa o Kodular caso o usuário clique em um link externo
-            if (window.AppInventor && window.AppInventor.setWebViewString) {
-                window.AppInventor.setWebViewString("abrir_interstitial");
+        // Ouve quando o usuário aperta o botão de voltar nativo do Android
+        window.addEventListener('popstate', function(event) {
+            var frame = document.getElementById('frame');
+            if (frame.style.display === 'block') {
+                frame.style.display = 'none';
+                frame.src = "";
+                // Previne que o app feche na primeira apertada
+                history.pushState(null, "", "");
             }
-        }
-        
+        });
+
         function closeFrame() {
-            document.getElementById('frame').style.display = 'none';
-            document.getElementById('frame').src = "";
-            document.querySelector('.closeBtn').style.display = 'none';
+            var frame = document.getElementById('frame');
+            frame.style.display = 'none';
+            frame.src = "";
             
             if (typeof adsbygoogle !== 'undefined') {
                 (adsbygoogle = window.adsbygoogle || []).push({});
