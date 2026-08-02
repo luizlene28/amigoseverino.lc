@@ -212,50 +212,27 @@
     
     <iframe id="frame"></iframe>
         
-  <script>
-function openLocal(file) {
-            var frame = document.getElementById('frame');
-            
-            // Se já houver um estado anterior no histórico, removemos ele para não acumular camadas
-            if (history.state && history.state.cardAberto) {
-                history.replaceState(null, "", "");
-            }
+<script>
+// Função atualizada que abre a página/card E avisa o Kodular que o card abriu
+function openLocal(pagina) {
+    // 1. Avisa o Kodular que o card foi aberto (muda a variável para true)
+    window.openApp_WebViewString = "CARD_ABERTO";
+    if (window.WebviewInterface && typeof window.WebviewInterface.SetWebViewString === "function") {
+        window.WebviewInterface.SetWebViewString("CARD_ABERTO");
+    }
 
-            frame.src = file;
-            frame.style.display = 'block';
-            
-            // Adiciona o estado fresco e único para o card atual
-            window.history.pushState({cardAberto: true}, "", "");
-            
-            // Avisa o Kodular para abrir o anúncio intersticial
-            if (window.AppInventor && window.AppInventor.setWebViewString) {
-                window.AppInventor.setWebViewString("");
-                setTimeout(function() {
-                    window.AppInventor.setWebViewString("abrir_interstitial");
-                }, 50);
-            }
-        }
-        
-        // Ouve o botão de voltar do Android
-        window.addEventListener('popstate', function(event) {
-            var frame = document.getElementById('frame');
-            
-            if (frame.style.display === 'block') {
-                frame.style.display = 'none';
-                frame.src = "";
-            }
-        });
+    // 2. Abre a página ou card normalmente
+    window.location.href = pagina; 
+}
 
-        function closeFrame() {
-            var frame = document.getElementById('frame');
-            frame.style.display = 'none';
-            frame.src = "";
-            
-            if (typeof adsbygoogle !== 'undefined') {
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            }
-        }
-    </script>
+// Função para quando o usuário fechar o card ou voltar para o painel principal
+function fecharCardNoApp() {
+    window.openApp_WebViewString = "CARD_FECHADO";
+    if (window.WebviewInterface && typeof window.WebviewInterface.SetWebViewString === "function") {
+        window.WebviewInterface.SetWebViewString("CARD_FECHADO");
+    }
+}
+</script>
 </body>
 
 </html>
