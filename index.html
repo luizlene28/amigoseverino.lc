@@ -218,10 +218,7 @@ function openLocal(file) {
     frame.src = file;
     frame.style.display = 'block';
     
-    // Adiciona o estado no histórico para capturar o botão voltar
-    window.history.pushState({cardAberto: true}, "", "");
-    
-    // Avisa o Kodular para abrir o anúncio intersticial (já configurado nos seus blocos)
+    // Avisa o Kodular para abrir o anúncio intersticial
     if (window.AppInventor && window.AppInventor.setWebViewString) {
         window.AppInventor.setWebViewString("");
         setTimeout(function() {
@@ -230,20 +227,19 @@ function openLocal(file) {
     }
 }
 
-// Ouve o botão de voltar do Android de forma limpa
-window.addEventListener('popstate', function(event) {
+// Função chamada pelo Kodular para fechar o card de uma vez só com um clique
+function fecharCardDoApp() {
     var frame = document.getElementById('frame');
-    
     if (frame.style.display === 'block') {
         frame.style.display = 'none';
-        frame.src = "about:blank"; // Limpa totalmente o cache do iframe para não acumular histórico
+        frame.src = "about:blank";
     }
-});
+}
 
 function closeFrame() {
     var frame = document.getElementById('frame');
     frame.style.display = 'none';
-    frame.src = "about:blank"; // Limpa totalmente o cache do iframe
+    frame.src = "about:blank";
     
     if (typeof adsbygoogle !== 'undefined') {
         (adsbygoogle = window.adsbygoogle || []).push({});
