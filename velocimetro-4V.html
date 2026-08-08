@@ -1026,6 +1026,10 @@
         window.ultimaLocalizacaoRecalculo = null;
         window.timestampUltimoRecalculo = 0; 
 
+        // ========== SETA AMARELA DE NAVEGAÇÃO ==========
+        let setaNavegacao = null;
+        let marcadoresSeta = [];
+
         const distVal = document.getElementById('dist-val');
         const avgVal = document.getElementById('avg-val');
         const dirVal = document.getElementById('dir-val');
@@ -1217,6 +1221,9 @@
             if (window.linhaRotaInquebravelContorno && window.linhaRotaInquebravelContorno.getPath().getLength() > 0) {
                 window.linhaRotaInquebravelContorno.setPath(novoCaminho);
             }
+            
+            // Atualiza as setas de navegação após recortar a rota
+            atualizarSetasNavegacao();
         }
 
         function iniciarAnimacaoSuave() {
@@ -1266,6 +1273,157 @@
             requestAnimationFrame(animar);
         }
 
+        // ========== FUNÇÃO PARA CRIAR SETAS AMARELAS ==========
+        function criarSetaNavegacao(lat, lng, heading, distancia) {
+            if (!window.google || !window.google.maps) return null;
+            
+            // Cria um marcador com ícone de seta
+            const seta = new google.maps.Marker({
+                position: new google.maps.LatLng(lat, lng),
+                map: mapaObjeto,
+                icon: {
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                    scale: 4.5,
+                    fillColor: "#FFD700",
+                    fillOpacity: 1.0,
+                    strokeColor: "#FFA500",
+                    strokeWeight: 1.5,
+                    rotation: heading || 0
+                },
+                zIndex: 1000,
+                optimized: false
+            });
+            
+            return seta;
+        }
+
+        function atualizarSetasNavegacao() {
+            // Limpa setas antigas
+            if (marcadoresSeta) {
+                marcadoresSeta.forEach(m => {
+                    if (m && m.setMap) m.setMap(null);
+                });
+            }
+            marcadoresSeta = [];
+            setaNavegacao = null;
+
+            if (!window.linhaRotaInquebravel || !window.google || !window.google.maps) return;
+            
+            const caminho = window.linhaRotaInquebravel.getPath();
+            if (caminho.getLength() < 3) return;
+
+            const pontos = caminho.getArray();
+            const distanciaTotal = calcularDistanciaTotal(pontos);
+            
+            // Se a rota for curta, coloca menos setas
+            const numSetas = Math.min(Math.max(3, Math.floor(caminho.getLength() / 8)), 20);
+            const intervalo = Math.max(1, Math.floor(caminho.getLength() / numSetas));
+            
+            // Para cada ponto da rota, calcula a direção e coloca uma seta
+            for (let i = 0; i < caminho.getLength(); i += intervalo) {
+                if (i + 1 >= caminho.getLength()) break;
+                
+                const p1 = pontos[i];
+                const p2 = pontos[i + 1];
+                
+                // Calcula o heading entre os dois pontos
+                const lat1 = p1.lat();
+                const lng1 = p1.lng();
+                const lat2 = p2.lat();
+                const lng2 = p2.lng();
+                
+                const dLon = (lng2 - lng1) * Math.PI / 180;
+                const lat1Rad = lat1 * Math.PI / 180;
+                const lat2Rad = lat2 * Math.PI / 180;
+                const y = Math.sin(dLon) * Math.cos(lat2Rad);
+                const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+                let heading = Math.atan2(y, x) * 180 / Math.PI;
+                heading = (heading + 360) % 360;
+                
+                // Ponto médio para posicionar a seta
+                const midLat = (lat1 + lat2) / 2;
+                const midLng = (lng1 + lng2) / 2;
+                
+                // Verifica se é uma curva (mudança significativa de direção) ou rotatória
+                let deveMostrarSeta = true;
+                
+                // Verifica se há uma mudança de direção significativa nos pontos anteriores
+                if (i > 2) {
+                    const p0 = pontos[i - 1];
+                    const p1Anterior = pontos[i - 1];
+                    const p2Anterior = pontos[i];
+                    
+                    const headingAnterior = calcularHeading(
+                        p0.lat(), p0.lng(),
+                        p1Anterior.lat(), p1Anterior.lng()
+                    );
+                    
+                    const diferencaHeading = Math.abs(heading - headingAnterior);
+                    // Se a mudança for maior que 15 graus, é uma curva
+                    if (diferencaHeading > 15 && diferencaHeading < 345) {
+                        // Mostra a seta na curva
+                        deveMostrarSeta = true;
+                    } else {
+                        // Se for reto, mostra a seta a cada 3 pontos
+                        deveMostrarSeta = (i % 3 === 0);
+                    }
+                }
+                
+                // Também mostra setas em pontos de virada (heading próximo a 90° ou 270°)
+                if (heading > 80 && heading < 100) {
+                    deveMostrarSeta = true;
+                }
+                if (heading > 260 && heading < 280) {
+                    deveMostrarSeta = true;
+                }
+                
+                if (deveMostrarSeta) {
+                    const seta = criarSetaNavegacao(midLat, midLng, heading);
+                    if (seta) {
+                        marcadoresSeta.push(seta);
+                    }
+                }
+            }
+            
+            // Adiciona uma seta extra no final da rota (próximo ao destino)
+            if (caminho.getLength() > 2) {
+                const ultimo = pontos[caminho.getLength() - 1];
+                const penultimo = pontos[caminho.getLength() - 2];
+                const headingFinal = calcularHeading(
+                    penultimo.lat(), penultimo.lng(),
+                    ultimo.lat(), ultimo.lng()
+                );
+                const setaFinal = criarSetaNavegacao(
+                    (penultimo.lat() + ultimo.lat()) / 2,
+                    (penultimo.lng() + ultimo.lng()) / 2,
+                    headingFinal
+                );
+                if (setaFinal) {
+                    marcadoresSeta.push(setaFinal);
+                }
+            }
+        }
+
+        function calcularHeading(lat1, lng1, lat2, lng2) {
+            const dLon = (lng2 - lng1) * Math.PI / 180;
+            const lat1Rad = lat1 * Math.PI / 180;
+            const lat2Rad = lat2 * Math.PI / 180;
+            const y = Math.sin(dLon) * Math.cos(lat2Rad);
+            const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+            let heading = Math.atan2(y, x) * 180 / Math.PI;
+            return (heading + 360) % 360;
+        }
+
+        function calcularDistanciaTotal(pontos) {
+            let total = 0;
+            for (let i = 0; i < pontos.length - 1; i++) {
+                const p1 = pontos[i];
+                const p2 = pontos[i + 1];
+                total += haversine(p1.lat(), p1.lng(), p2.lat(), p2.lng());
+            }
+            return total;
+        }
+
        window.inicializarMapeamentoOriginal = function() {
             if (mapaObjeto) return;
             const temGpsValido = (lastCoord && Math.abs(lastCoord.lat) > 0.001);
@@ -1311,6 +1469,16 @@
                 strokeWeight: 10,
                 zIndex: 2
             });
+
+            // Adiciona um listener para quando a rota for desenhada, as setas serem atualizadas
+            const originalSetDirections = directionsRenderer.setDirections.bind(directionsRenderer);
+            directionsRenderer.setDirections = function(response) {
+                originalSetDirections(response);
+                // Aguarda um pouco para a rota ser desenhada
+                setTimeout(() => {
+                    atualizarSetasNavegacao();
+                }, 500);
+            };
 
             const autocomplete = new google.maps.places.Autocomplete(inputBusca, {
                 types: ['geocode', 'establishment'],
@@ -1441,6 +1609,11 @@
 
                     if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath(pontosMilimetricos);
                     if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath(pontosMilimetricos);
+
+                    // Atualiza as setas após desenhar a rota
+                    setTimeout(() => {
+                        atualizarSetasNavegacao();
+                    }, 300);
 
                     if (mapaBloqueadoAoCarro && mapaObjeto) {
                         mapaObjeto.setCenter(origem);
@@ -1611,6 +1784,11 @@
                     if (distFinal < 25) { 
                         if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath([]);
                         if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath([]);
+                        // Limpa as setas quando chegar ao destino
+                        if (marcadoresSeta) {
+                            marcadoresSeta.forEach(m => { if (m && m.setMap) m.setMap(null); });
+                            marcadoresSeta = [];
+                        }
                         window.destinoAtualSalvo = null; 
                         window.ultimaLocalizacaoRecalculo = null;
                         document.getElementById('texto-endereco').innerText = "🏁 FIM DE LINHA KKK!";
