@@ -31,7 +31,7 @@
         }
 
         body {
-            background: #1C1C1C; /* Sua cor escura, estática e super leve */
+            background: #1C1C1C;
             font-family: var(--font-main);
             color: var(--text);
             padding-bottom: 40px;
@@ -665,13 +665,22 @@
 
             container.innerHTML = filtrados.map(v => {
                 const textoLimpo = v.texto.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, " ").replace(/\r/g, "");
+                const referencia = `${LIVROS_API[livroAtual].nome} ${capituloAtual}:${v.versiculo}`;
+                const textoCompartilhar = `${referencia} - ${v.texto}`;
+                
                 return `
                     <div class="verso" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;">
                         <span><b>${v.versiculo}.</b> ${v.texto}</span>
-                        <button class="btn-nav ripple" 
-                                style="width: 38px; height: 38px; font-size: 1rem; margin-top: 2px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;" 
-                                onclick="falarVersiculo('${textoLimpo}', this)" 
-                                title="Ouvir versículo">🔊</button>
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                            <button class="btn-nav ripple" 
+                                    style="width: 38px; height: 38px; font-size: 1rem; margin-top: 2px;" 
+                                    onclick="falarVersiculo('${textoLimpo}', this)" 
+                                    title="Ouvir versículo">🔊</button>
+                            <button class="btn-nav ripple" 
+                                    style="width: 38px; height: 38px; font-size: 1rem; margin-top: 2px;" 
+                                    onclick="compartilharVersiculo('${textoCompartilhar.replace(/'/g, "\\'")}', this)" 
+                                    title="Compartilhar versículo">📤</button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -743,7 +752,9 @@
             // Se já tiver outro áudio tocando em outro versículo, para ele antes
             if (audioAtual) {
                 audioAtual.pause();
-                document.querySelectorAll('.verso button').forEach(b => b.textContent = "🔊");
+                document.querySelectorAll('.verso button').forEach(b => {
+                    if (b.textContent === "🛑") b.textContent = "🔊";
+                });
             }
 
             botao.textContent = "⏳"; // Ícone de carregando
@@ -788,9 +799,140 @@
                 // Se o navegador bloquear o play automático inicial, dispara o erro para ir pro plano B
                 audioAtual.onerror();
             });
-        };     
+        };
+
+        // ============ FUNÇÃO DE COMPARTILHAMENTO ============
+        window.compartilharVersiculo = async (texto, botao) => {
+            const textoCompleto = texto + "\n\n📖 Compartilhado da Bíblia Sagrada";
+            
+            // Verifica se o navegador suporta a API Web Share (nativa)
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Versículo Bíblico',
+                        text: textoCompleto,
+                    });
+                    
+                    // Feedback visual de sucesso
+                    botao.textContent = "✅";
+                    setTimeout(() => {
+                        botao.textContent = "📤";
+                    }, 1500);
+                    
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        // Se o compartilhamento nativo falhar, usa o fallback
+                        compartilharFallback(textoCompleto, botao);
+                    }
+                }
+            } else {
+                // Fallback para navegadores que não suportam Web Share API
+                compartilharFallback(textoCompleto, botao);
+            }
+        };
+
+        function compartilharFallback(texto, botao) {
+            // Método alternativo: copiar para área de transferência
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(texto).then(() => {
+                    botao.textContent = "📋";
+                    setTimeout(() => {
+                        botao.textContent = "📤";
+                    }, 1500);
+                    
+                    // Mostra uma pequena notificação
+                    mostrarNotificacao('Versículo copiado! Cole onde desejar.');
+                }).catch(() => {
+                    // Se falhar, tenta o método antigo
+                    copiarTextoAntigo(texto, botao);
+                });
+            } else {
+                copiarTextoAntigo(texto, botao);
+            }
+        }
+
+        function copiarTextoAntigo(texto, botao) {
+            // Método antigo de cópia usando textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = texto;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                botao.textContent = "📋";
+                setTimeout(() => {
+                    botao.textContent = "📤";
+                }, 1500);
+                mostrarNotificacao('Versículo copiado! Cole onde desejar.');
+            } catch (err) {
+                botao.textContent = "❌";
+                setTimeout(() => {
+                    botao.textContent = "📤";
+                }, 1500);
+                mostrarNotificacao('Erro ao copiar. Tente novamente.');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        function mostrarNotificacao(mensagem) {
+            // Remove notificação anterior se existir
+            const notificacaoAntiga = document.querySelector('.notificacao-compartilhar');
+            if (notificacaoAntiga) {
+                notificacaoAntiga.remove();
+            }
+            
+            // Cria elemento de notificação
+            const notificacao = document.createElement('div');
+            notificacao.className = 'notificacao-compartilhar';
+            notificacao.textContent = mensagem;
+            notificacao.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(226, 176, 74, 0.95);
+                color: #1C1C1C;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                z-index: 1000;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+                animation: slideUp 0.4s ease, fadeOut 0.4s ease 2s forwards;
+                pointer-events: none;
+            `;
+            
+            // Adiciona estilos de animação
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideUp {
+                    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+                @keyframes fadeOut {
+                    from { opacity: 1; }
+                    to { opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notificacao);
+            
+            // Remove após animação
+            setTimeout(() => {
+                if (notificacao.parentNode) {
+                    notificacao.remove();
+                    style.remove();
+                }
+            }, 2500);
+        }
+       
         window.onload = inicializar;
-</script>
+    </script>
     
 </body>
 </html>
