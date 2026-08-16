@@ -1026,9 +1026,6 @@
         window.ultimaLocalizacaoRecalculo = null;
         window.timestampUltimoRecalculo = 0; 
 
-        // ========== SETA ÚNICA CAUDALOSA EM CURVAS ==========
-        let setaUnica = null;
-
         const distVal = document.getElementById('dist-val');
         const avgVal = document.getElementById('avg-val');
         const dirVal = document.getElementById('dir-val');
@@ -1220,9 +1217,6 @@
             if (window.linhaRotaInquebravelContorno && window.linhaRotaInquebravelContorno.getPath().getLength() > 0) {
                 window.linhaRotaInquebravelContorno.setPath(novoCaminho);
             }
-            
-            // Atualiza a seta única após recortar a rota
-            atualizarSetaUnica();
         }
 
         function iniciarAnimacaoSuave() {
@@ -1272,112 +1266,6 @@
             requestAnimationFrame(animar);
         }
 
-        // ========== FUNÇÃO PARA CRIAR SETA ÚNICA CAUDALOSA ==========
-        function criarSetaCaudalosa(lat, lng, heading) {
-            if (!window.google || !window.google.maps || !mapaObjeto) return null;
-            
-            // Desenha uma seta mais alongada (caudalosa) usando um polígono personalizado
-            // A seta será um triângulo com uma "haste" longa
-            const setaPath = [
-                { x: 0, y: -25 },   // ponta da seta
-                { x: -10, y: -10 },
-                { x: -4, y: -10 },
-                { x: -4, y: 20 },
-                { x: 4, y: 20 },
-                { x: 4, y: -10 },
-                { x: 10, y: -10 }
-            ];
-            
-            // Converte para o formato de ícone do Google Maps
-            const setaIcon = {
-                path: setaPath,
-                fillColor: "#FFD700",
-                fillOpacity: 1.0,
-                strokeColor: "#FFA500",
-                strokeWeight: 2.0,
-                scale: 1.2,
-                rotation: heading || 0,
-                anchor: new google.maps.Point(0, 0)
-            };
-            
-            const seta = new google.maps.Marker({
-                position: new google.maps.LatLng(lat, lng),
-                map: mapaObjeto,
-                icon: setaIcon,
-                zIndex: 1000,
-                optimized: false
-            });
-            
-            return seta;
-        }
-
-        function atualizarSetaUnica() {
-            // Remove a seta antiga
-            if (setaUnica) {
-                setaUnica.setMap(null);
-                setaUnica = null;
-            }
-
-            if (!window.linhaRotaInquebravel || !window.google || !window.google.maps) return;
-            
-            const caminho = window.linhaRotaInquebravel.getPath();
-            if (caminho.getLength() < 4) return;
-
-            const pontos = caminho.getArray();
-            
-            // Detecta a curva mais acentuada
-            let maiorDiferenca = 0;
-            let indiceCurva = -1;
-            let headingCurva = 0;
-            
-            for (let i = 2; i < caminho.getLength() - 1; i++) {
-                const pAnterior = pontos[i - 1];
-                const pAtual = pontos[i];
-                const pProximo = pontos[i + 1];
-                
-                const heading1 = calcularHeading(
-                    pAnterior.lat(), pAnterior.lng(),
-                    pAtual.lat(), pAtual.lng()
-                );
-                
-                const heading2 = calcularHeading(
-                    pAtual.lat(), pAtual.lng(),
-                    pProximo.lat(), pProximo.lng()
-                );
-                
-                let diferenca = heading2 - heading1;
-                while (diferenca > 180) diferenca -= 360;
-                while (diferenca < -180) diferenca += 360;
-                
-                const anguloAbs = Math.abs(diferenca);
-                if (anguloAbs > maiorDiferenca && anguloAbs > 20) {
-                    maiorDiferenca = anguloAbs;
-                    indiceCurva = i;
-                    headingCurva = heading2;
-                }
-            }
-            
-            // Se encontrou uma curva significativa, coloca a seta
-            if (indiceCurva > 0 && indiceCurva < caminho.getLength() - 1) {
-                const pAtual = pontos[indiceCurva];
-                const pProximo = pontos[indiceCurva + 1];
-                const midLat = (pAtual.lat() + pProximo.lat()) / 2;
-                const midLng = (pAtual.lng() + pProximo.lng()) / 2;
-                
-                setaUnica = criarSetaCaudalosa(midLat, midLng, headingCurva);
-            }
-        }
-
-        function calcularHeading(lat1, lng1, lat2, lng2) {
-            const dLon = (lng2 - lng1) * Math.PI / 180;
-            const lat1Rad = lat1 * Math.PI / 180;
-            const lat2Rad = lat2 * Math.PI / 180;
-            const y = Math.sin(dLon) * Math.cos(lat2Rad);
-            const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
-            let heading = Math.atan2(y, x) * 180 / Math.PI;
-            return (heading + 360) % 360;
-        }
-
        window.inicializarMapeamentoOriginal = function() {
             if (mapaObjeto) return;
             const temGpsValido = (lastCoord && Math.abs(lastCoord.lat) > 0.001);
@@ -1423,15 +1311,6 @@
                 strokeWeight: 10,
                 zIndex: 2
             });
-
-            // Adiciona um listener para quando a rota for desenhada, a seta ser atualizada
-            const originalSetDirections = directionsRenderer.setDirections.bind(directionsRenderer);
-            directionsRenderer.setDirections = function(response) {
-                originalSetDirections(response);
-                setTimeout(() => {
-                    atualizarSetaUnica();
-                }, 500);
-            };
 
             const autocomplete = new google.maps.places.Autocomplete(inputBusca, {
                 types: ['geocode', 'establishment'],
@@ -1562,11 +1441,6 @@
 
                     if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath(pontosMilimetricos);
                     if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath(pontosMilimetricos);
-
-                    // Atualiza a seta após desenhar a rota
-                    setTimeout(() => {
-                        atualizarSetaUnica();
-                    }, 300);
 
                     if (mapaBloqueadoAoCarro && mapaObjeto) {
                         mapaObjeto.setCenter(origem);
@@ -1737,11 +1611,6 @@
                     if (distFinal < 25) { 
                         if (window.linhaRotaInquebravel) window.linhaRotaInquebravel.setPath([]);
                         if (window.linhaRotaInquebravelContorno) window.linhaRotaInquebravelContorno.setPath([]);
-                        // Remove a seta ao chegar ao destino
-                        if (setaUnica) {
-                            setaUnica.setMap(null);
-                            setaUnica = null;
-                        }
                         window.destinoAtualSalvo = null; 
                         window.ultimaLocalizacaoRecalculo = null;
                         document.getElementById('texto-endereco').innerText = "🏁 FIM DE LINHA KKK!";
