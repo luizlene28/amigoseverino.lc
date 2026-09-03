@@ -87,7 +87,6 @@
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
         }
 
-        // NOVO BUSCADOR SEGURO: Não causa conflito de CORS com o seu Nginx
         async function buscarCoordenadas(local) {
             let termo = local.replace(/-/g, ' ');
             try {
@@ -121,11 +120,11 @@
                     return alert("Localidade não encontrada. Verifique se digitou o nome correto.");
                 }
                 
-                // Puxa a rota da sua VPS com o mapa do Brasil inteiro completo
-                const res = await fetch(`https://amigoseverino.com.br/osrm-api/route/v1/driving/${de.lon},${de.lat};${para.lon},${para.lat}?overview=full&geometries=geojson`);
+                // Rota alterada para a API gratuita e pública sem depender da sua VPS Hostinger
+                const res = await fetch(`https://router.project-osrm.org/route/v1/driving/${de.lon},${de.lat};${para.lon},${para.lat}?overview=full&geometries=geojson`);
                 
                 if(!res.ok) {
-                    throw new Error("Servidor OSRM recusou o cálculo.");
+                    throw new Error("Servidor público OSRM recusou o cálculo.");
                 }
 
                 const data = await res.json();
